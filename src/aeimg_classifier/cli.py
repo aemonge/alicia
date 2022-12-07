@@ -23,6 +23,7 @@ References:
 import argparse
 import logging
 import sys
+import click
 
 from aeimg_classifier import __version__
 
@@ -38,22 +39,6 @@ _logger = logging.getLogger(__name__)
 # Python scripts/interactive interpreter, e.g. via
 # `from aeimg_classifier.skeleton import fib`,
 # when using this Python module as a library.
-
-
-def fib(n):
-    """Fibonacci example function
-
-    Args:
-      n (int): integer
-
-    Returns:
-      int: n-th Fibonacci number
-    """
-    assert n > 0
-    a, b = 1, 1
-    for _i in range(n - 1):
-        a, b = b, a + b
-    return a
 
 
 # ---- CLI ----
@@ -72,7 +57,7 @@ def parse_args(args):
     Returns:
       :obj:`argparse.Namespace`: command line parameters namespace
     """
-    parser = argparse.ArgumentParser(description="Just a Fibonacci demonstration")
+    parser = argparse.ArgumentParser(description="Just a Fibonacci demonstration for me me")
     parser.add_argument(
         "--version",
         action="version",
@@ -123,17 +108,58 @@ def main(args):
     args = parse_args(args)
     setup_logging(args.loglevel)
     _logger.debug("Starting crazy calculations...")
-    print("The {}-th Fibonacci number is {}".format(args.n, fib(args.n)))
+    print("The {}-th Fibonacci number **is** {}".format(args.n, fib(args.n)))
     _logger.info("Script ends here")
 
+@click.command()
+@click.option(
+    "verbose",
+    "-v",
+    "--verbose",
+    default = False,
+    is_flag = True,
+    type=click.BOOL
+)
+@click.option(
+    "architecture",
+    "-a",
+    "--arch",
+    default = 'demo',
+    type=click.Choice(['demo', 'dummy', 'basic', '...'])
+)
+@click.option(
+    "image_type",
+    "-t",
+    "--image-type",
+    default = 'pets',
+    type=click.Choice(['pets', 'numbers', 'fashion', 'homes'])
+)
+@click.option(
+    "tags_file",
+    "--tags-file",
+    type=click.Path(exists=True, file_okay=True, readable=True)
+)
+@click.argument(
+    "images_dir",
+    type=click.Path(exists=True, dir_okay=True, readable=True),
+    required=1
+)
 
-def run():
-    """Calls :func:`main` passing the CLI arguments extracted from :obj:`sys.argv`
+def run(images_dir, verbose, architecture, image_type, tags_file):
 
-    This function can be used as entry point to create console scripts with setuptools.
+    """ I'll try to guess if you're a cute 🐱 or a fierce 🐶.
+
+            And as an extra 🥣 I'll see if I can separate all pets into them into category and breed.
+
+        In the near future 🚆 I will:
+
+            * [ ] `-t numbers` Classify simple ⨐ numbers.
+
+            * [ ] `-t fashion` Classify simple fashion 👚 clothes.
+
+            * [ ] `-t homes`  Classify my dad's pictures of his 🏡 architect work.
     """
-    main(sys.argv[1:])
-
+    print(f"🐼 I'm a panda!, this are the arguments {[images_dir, verbose, architecture, image_type, tags_file]}")
 
 if __name__ == "__main__":
     # ^  This is a guard statement that will prevent the following code from
