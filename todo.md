@@ -3,7 +3,7 @@
 ### With a dummy model
 
 * [x] **CLI** Build the CLI arguments parser.
-* [ ] **CLI Analytics** display on the Analytics on an table on the CLI, to understand
+* [x] **CLI Analytics** display on the Analytics on an table on the CLI, to understand
   - Epoch number.
   - Learn per epoch.
   - Test Accuracy (mean) per epoch.
