@@ -1,3 +1,7 @@
+# 🐛 Tech debt
+
+* [ ] Make pylint understand venv paths rightfully.
+
 ## Part 0 - Own Requirements to achieve the other parts
 
 ### With a dummy model
@@ -12,7 +16,7 @@
   - Time each epoch took to finish.
   - Was GPU enabled?.
   - Display the model information: hidden layer count and size of each hidden layer tensors.
-* [ ] **CLI Plot** Introduce a plot to compare the 'Training Loss' vs the 'Validation Loss' over epochs, to be able to
+* [x] **CLI Plot** Introduce a plot to compare the 'Training Loss' vs the 'Validation Loss' over epochs, to be able to
   see possible over-fitting of the algorithm chosen.
 * [ ] A class probability bar-graph to display the results form three random data picks.
 * [ ] Semi automatic data splitter into: Training, Testing, and Verifying.

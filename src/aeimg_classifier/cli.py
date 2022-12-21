@@ -67,8 +67,15 @@ def setup_logging(loglevel):
 # ---- CLI: Arguments ----
 @click.command()
 @click.option(
+    "graph",
+    "-g",
+    "--graph",
+    default = False,
+    is_flag = True,
+    type=click.BOOL
+)
+@click.option(
     "verbose",
-    "-v",
     "--verbose",
     default = False,
     is_flag = True,
@@ -100,21 +107,24 @@ def setup_logging(loglevel):
 )
 
 # ---- CLI: Main ----
-def run(images_dir, verbose, architecture, image_type, tags_file):
+def run(images_dir, graph, verbose, architecture, image_type, tags_file):
 
-    """ I'll try to guess if you're a cute 🐱 or a fierce 🐶.
+  """ I'll try to guess if you're a cute 🐱 or a fierce 🐶, or what type of 🏘️ you should be.
 
-            And as an extra 🥣 I'll see if I can separate all pets into them into category and breed.
+    And as an extra 🥣 I'll see if I can separate all pets into them into category and breed.
 
-        In the near future 🚆 I will:
+  In the near future 🚆 I will:
 
-            * [ ] `-t numbers` Classify simple ⨐ numbers.
+    * [ ] `-t numbers` Classify simple mnist ⨐ numbers.
 
-            * [ ] `-t fashion` Classify simple fashion 👚 clothes.
+    * [ ] `-t fashion` Classify simple mnist fashion 👚 clothes.
 
-            * [ ] `-t homes`  Classify my dad's pictures of his 🏡 architect work.
-    """
-    dummy()
+    * [ ] `-t pets`  Classify my dad's pictures of his 🐱 architect work.
+
+    * [ ] `-t homes`  Classify my dad's pictures of his 🏡 architect work.
+
+  """
+  dummy(show_graph = graph)
     # print(f"🐼 I'm a panda!, this are the arguments {[images_dir, verbose, architecture, image_type, tags_file]}")
 
 if __name__ == "__main__":
