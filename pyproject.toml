@@ -12,5 +12,8 @@ version_scheme = "no-guess-dev"
 max-line-length=120
 indent-string='  '
 
-[tool.pylint.master]
-disable=missing-module-docstring
+# [tool.pylint.master]
+# init-hooks = 'import sys; sys.path.append("")'
+# /opt/homebrew/Caskroom/miniconda/base/envs/deep-image/lib/python3.10/site-packages
+# init-hook="from pylint.config import find_pylintrc; import os, sys; sys.path.append(os.path.dirname(find_pylintrc()))"
+# disable=missing-module-docstring

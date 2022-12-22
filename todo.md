@@ -1,6 +1,7 @@
 # 🐛 Tech debt
 
 * [ ] Make pylint understand venv paths rightfully.
+* [ ] Make pylint and pyright to understand the callback method class, or create a abstract class
 
 ## Part 0 - Own Requirements to achieve the other parts
 
