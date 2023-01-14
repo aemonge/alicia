@@ -1,7 +1,11 @@
 import time # pylint: disable=missing-module-docstring
 import os as OS
+import re
+import numpy as Np
 from torch import optim as Optim
 from torch import nn as Nn
+from torch.nn import functional as F
+import torch as Torch
 from PIL import Image
 from natsort import natsorted
 from torch.utils.data import DataLoader, Dataset
@@ -9,10 +13,12 @@ from torchvision import transforms as Transforms
 import plotext as plt
 
 class CustomDataset(Dataset):
-  def __init__(self, main_dir, transform):
+  def __init__(self, main_dir, transform = None, label_transform = None):
+    all_imgs = OS.listdir(main_dir)
+
     self.main_dir = main_dir
     self.transform = transform
-    all_imgs = OS.listdir(main_dir)
+    self.label_transform = label_transform
     self.total_imgs = natsorted(all_imgs)
 
   def __len__(self):
@@ -21,13 +27,25 @@ class CustomDataset(Dataset):
   def __getitem__(self, idx):
     img_loc = OS.path.join(self.main_dir, self.total_imgs[idx])
     image = Image.open(img_loc).convert("RGB")
-    tensor_image = self.transform(image)
-    return tensor_image
+    file_name = re.sub(r'.*\/(.*).jpg', r'\1', img_loc)
+
+    if self.transform:
+      image = self.transform(image)
+    if self.label_transform:
+      label = self.label_transform('dog')
+    else:
+      # label = Torch.Tensor(1)
+      # label = Torch.Tensor([1, 1, 1])
+      label = Torch.Tensor(Np.zeros((128, 784))) # TODO: Understand why this works bro ?! Beside the Mat1xMat2
+      # label = Torch.tensor([[1]])
+
+    return image, label
 
 class BasicModel:
   TRAIN_DATA_SIZE = .7
   TEST_DATA_SIZE = 0.2
   VALIDATION_DATA_SIZE = 0.1
+  START_SIZE = 28*28
   """
     A Basic Model aiming to guess the numbers from MNIST dataset.
   """
@@ -42,7 +60,7 @@ class BasicModel:
     self.data = { "train": [], "test": [], "validation": [] }
     self.epochs = epochs
     self.model = Nn.Sequential(
-      Nn.Linear(28*28, 128), # 784
+      Nn.Linear(self.START_SIZE, 128), # 784
       Nn.ReLU(),
       Nn.Linear(128, 64),
       Nn.ReLU(),
@@ -50,12 +68,12 @@ class BasicModel:
       Nn.LogSoftmax(dim=1)
     )
     self.transform = Transforms.Compose([
-      # Transforms.Resize(255),
+      Transforms.Resize(self.START_SIZE),
       # Transforms.CenterCrop(28),
       Transforms.ToTensor()
     ])
     self.criterion = Nn.NLLLoss()
-    self.optimizer = Optim.SGD(self.model.parameters(), lr=0.003)
+    # self.optimizer = Optim.SGD(self.model.parameters(), lr=0.003)
     # self.transform = Transforms.Compose([
     #   Transforms.ToTensor(),
     #   Transforms.Normalize((0.5,), (0.5,))
@@ -64,9 +82,9 @@ class BasicModel:
     # raw_set = datasets.MNIST('data/mnist-numbers/raw', download=True)
     # train_set = datasets.MNIST('data/mnist-numbers/train', download=True, train=True, transform=self.transform)
     # validation_set = datasets.MNIST('data/mnist-numbers/validation', download=True, train=True, transform=self.transform)
-    my_dataset = CustomDataset(self.data_dir, transform=self.transform)
+    self.my_dataset = CustomDataset(self.data_dir, transform=self.transform)
     self.loaders = {
-      "train": DataLoader(my_dataset, batch_size=32, shuffle=True),
+      "train": DataLoader(self.my_dataset, batch_size=32, shuffle=True),
       # "validation": DataLoader(validation_set, batch_size=64, shuffle=True)
     }
 
@@ -74,7 +92,7 @@ class BasicModel:
 
     #   img.save('data/mnist-numbers/raw/{:05d}.jpg'.format(idx))
 
-    # self.criterion = nn.CrossEntropyLoss()
+    # self.criterion = Nn.CrossEntropyLoss()
     # self.optimizer = nn.optim.Adam(self.model.parameters(), lr=0,)
     self.analytics = {
       # "test": {
@@ -139,22 +157,43 @@ class BasicModel:
     # print(self.mnist_numbers["data"].T)
     # print(self.mnist_numbers["label"][0])
 
+    # target_tensor = Torch.from_numpy(self.my_dataset.target).long()
+    # criterion = Nn.CrossEntropyLoss(self.model, )
+    optimizer = Optim.SGD(self.model.parameters(), lr=0.003, momentum=0.9)
+    criterion = Nn.CrossEntropyLoss()
+
     for epoch in range(self.epochs):
+      # TODO: Start and fix the main loop, keep in mind that x in simple the image matrix, no labels
       # print(self.data['train'])
       running_loss = 0
-      for x in self.loaders['train']:
-        # file, label = x.values()
-        # print(file, label)
+      # for x in enumerate(self.loaders['train']):
+      for id, (label, file) in enumerate(self.loaders['train']): # Id -> Label
+        print('======>>>>>>> ')
+        # print(label, file)
+        optimizer.zero_grad()
+        output = self.model(file)
+        loss = criterion(output, label)
+
+        # loss = Nn.NLLLoss()(output, str(label))
+        # loss = Nn.functional.nll_loss(output, str(label))
+        # loss = criterion(output, self.mnist_numbers["label"][id])
+        # loss = criterion(output, 'dog')
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+      #   file, label = x.values() # (x, 'dog')
+      #   print(file, label, '\n\n')
         # self.optimizer.zero_grad()
 
-        output = self.model(x)
-        # loss = self.criterion(output, label)
+        # output = self.model(file)
+        # loss = self.criterion(output, id)
         # loss.backward()
         # self.optimizer.step()
         # running_loss += loss.item()
-        # print(file, label)
-    else:
-      print(f"Training loss: {running_loss/len(self.loaders['train'])}")
+        # print(file, id)
+      else:
+        print(f"Training loss: {running_loss/len(self.loaders['train'])}")
 
         # images = images.
     #   for images, labels in trianloader:

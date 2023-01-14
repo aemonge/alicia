@@ -3,6 +3,10 @@
 * [ ] Make pylint understand venv paths rightfully.
 * [ ] Make pylint and pyright to understand the callback method class, or create a abstract class
 
+# Last Reference:
+
+* /Users/aemonge/udacity/introduction-pAIthon-devs/neural-networks/deep-learning-v2-pytorch/intro-to-pytorch
+
 ## Part 0 - Own Requirements to achieve the other parts
 
 ### With a dummy model
