@@ -29,7 +29,7 @@ class DispalyAnalytics:
   PADDING_CHAR = '\t'
   BREAK_CHAR = '\n'
 
-  def __init__(self, width=65, verbose=False):
+  def __init__(self, width=55, verbose=False):
     """
       Initializes the class.
 
@@ -42,7 +42,7 @@ class DispalyAnalytics:
     self.text_adjustment = 8
     self.verbose = verbose
 
-  def header(self, model="Dummy", gpu=False):
+  def header(self, model="Dummy", gpu=False, verbose = {}):
     """
       Pretty print Header.
 
@@ -63,6 +63,18 @@ class DispalyAnalytics:
     print(self.__get_hr(color='blue', padding=0))
     gpu_msg = f"GPU { colored('enabled', attrs=['bold']) if gpu else 'disabled' }"
     print(f"Model \"{colored(model, 'blue')}\" Starts with {gpu_msg}")
+    if verbose: # TODO: incorporate the transformation smartly, or simply skip them they should match
+      print(self.__get_hr(char="―", color='grey', padding=0))
+      print(verbose['model'])
+      print(self.__get_hr(char="―", color='grey', padding=0))
+      print('  images.dtype: \t', verbose['images'].dtype)
+      print('  images.shape: \t', verbose['images'].shape)
+      print('  images.re-shaped: \t', verbose['images'].view(verbose['images'].shape[0], -1).shape)
+      print(self.__get_hr(char="―", color='grey', padding=0))
+      print('  labels.shape: \t', verbose['labels'].shape)
+      print('  labels.re-shape: \t', verbose['labels'][:,0].shape)
+      print('  labels.re-dtype: \t', verbose['labels'][:,0].long().dtype)
+
     print(self.__get_hr(char="― ", color='cyan', padding=0))
 
   def footer(self, total_time=3, validation_accuracy=0.98, validation_loss=5):

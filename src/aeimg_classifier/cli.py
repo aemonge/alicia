@@ -93,8 +93,9 @@ def run(images_dir, graph, verbose, architecture, image_type, tags_file):
     model = DummyModel(show_graph=graph, step_print_fn=print_da())
     model.run()
   if architecture == 'basic':
-    model = BasicModel(data_dir=images_dir, step_print_fn=print_da())
+    model = BasicModel(data_dir=images_dir, step_print_fn=print_da(), verbose=verbose)
     model.splitData()
+    # model.shapes()
     model.run()
 
 

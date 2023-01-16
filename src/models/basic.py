@@ -1,16 +1,15 @@
 import time # pylint: disable=missing-module-docstring
 import os as OS
-import re
-import numpy as Np
+import torch as Torch
+
+from torchvision import transforms as Transforms
+from torch.utils.data import DataLoader, Dataset
 from torch import optim as Optim
 from torch import nn as Nn
-from torch.nn import functional as F
-import torch as Torch
-from PIL import Image
 from natsort import natsorted
-from torch.utils.data import DataLoader, Dataset
-from torchvision import transforms as Transforms
-import plotext as plt
+from PIL import Image
+
+BATCH_SIZE = 4
 
 class CustomDataset(Dataset):
   def __init__(self, main_dir, transform = None, label_transform = None):
@@ -21,46 +20,66 @@ class CustomDataset(Dataset):
     self.label_transform = label_transform
     self.total_imgs = natsorted(all_imgs)
 
+    self.class_map = dict({
+      'one': 0, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+      'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10
+    })
+
   def __len__(self):
     return len(self.total_imgs)
 
   def __getitem__(self, idx):
+    """
+    Notes:
+      SEE: https://stackoverflow.com/questions/51911749/what-is-the-difference-between-torch-tensor-and-torch-tensor
+    Args:
+      idx (int): Index
+    Returns:
+      tuple: (image, target) where target is index of the target class.
+    """
     img_loc = OS.path.join(self.main_dir, self.total_imgs[idx])
     image = Image.open(img_loc).convert("RGB")
-    file_name = re.sub(r'.*\/(.*).jpg', r'\1', img_loc)
 
     if self.transform:
       image = self.transform(image)
+
     if self.label_transform:
       label = self.label_transform('dog')
     else:
-      # label = Torch.Tensor(1)
-      # label = Torch.Tensor([1, 1, 1])
-      label = Torch.Tensor(Np.zeros((128, 784))) # TODO: Understand why this works bro ?! Beside the Mat1xMat2
-      # label = Torch.tensor([[1]])
+      class_id = self.class_map['ten']
+      # class_id = Torch.Tensor(data=[class_id]*10)
+      # class_id = Torch.Tensor(data=[[class_id]*10]*10)
+      # class_id = Torch.Tensor(data=[[[class_id]*10]])
+      class_id = Torch.Tensor([0]*BATCH_SIZE)
 
-    return image, label
+    return image, class_id
 
 class BasicModel:
-  TRAIN_DATA_SIZE = .7
-  TEST_DATA_SIZE = 0.2
-  VALIDATION_DATA_SIZE = 0.1
-  START_SIZE = 28*28
   """
     A Basic Model aiming to guess the numbers from MNIST dataset.
   """
-  def __init__(self, data_dir=None, step_print_fn=None, epochs=3):
-    # if data is None:
-    #   raise Exception("Please provide a valid `.mat` file")
-    # else :
-    #   self.mnist_numbers = loadmat(data)
 
+  TRAIN_DATA_SIZE = .7
+  TEST_DATA_SIZE = 0.2
+  VALIDATION_DATA_SIZE = 0.1
+  IMG_SIZE = 28
+
+  def __init__(self, data_dir=None, step_print_fn=None, epochs=3, verbose=False):
+    self.verbose = verbose
     self.print = step_print_fn
     self.data_dir = data_dir
     self.data = { "train": [], "test": [], "validation": [] }
     self.epochs = epochs
+    # self.model = Nn.Sequential(
+    #   Nn.Linear(self.START_SIZE, 10),
+    #   Nn.LogSoftmax(dim=1), # 784
+    # )
+
+    # 4 * 28 = 112
     self.model = Nn.Sequential(
-      Nn.Linear(self.START_SIZE, 128), # 784
+      # Nn.Linear(28, self.IMG_SIZE * self.IMG_SIZE), # I should NOT adjust this, I expect the in WxH input
+      # Nn.ReLU(),
+      Nn.Linear(self.IMG_SIZE * self.IMG_SIZE, 128),
       Nn.ReLU(),
       Nn.Linear(128, 64),
       Nn.ReLU(),
@@ -68,44 +87,63 @@ class BasicModel:
       Nn.LogSoftmax(dim=1)
     )
     self.transform = Transforms.Compose([
-      Transforms.Resize(self.START_SIZE),
-      # Transforms.CenterCrop(28),
-      Transforms.ToTensor()
+      # Transforms.Resize(self.START_SIZE),
+      Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
+      Transforms.ToTensor(),
+      Transforms.Normalize((0.5,), (0.5,))
+      # , Transforms.Normalize(
+      #   mean=[0.485, 0.456, 0.406],
+      #   std=[0.229, 0.224, 0.225]
+      # )
     ])
     self.criterion = Nn.NLLLoss()
-    # self.optimizer = Optim.SGD(self.model.parameters(), lr=0.003)
-    # self.transform = Transforms.Compose([
-    #   Transforms.ToTensor(),
-    #   Transforms.Normalize((0.5,), (0.5,))
-    # ])
-    # datasets and loaders
-    # raw_set = datasets.MNIST('data/mnist-numbers/raw', download=True)
-    # train_set = datasets.MNIST('data/mnist-numbers/train', download=True, train=True, transform=self.transform)
-    # validation_set = datasets.MNIST('data/mnist-numbers/validation', download=True, train=True, transform=self.transform)
-    self.my_dataset = CustomDataset(self.data_dir, transform=self.transform)
+
+    self.my_dataset = CustomDataset(self.data_dir, transform = self.transform)
     self.loaders = {
-      "train": DataLoader(self.my_dataset, batch_size=32, shuffle=True),
-      # "validation": DataLoader(validation_set, batch_size=64, shuffle=True)
+      "train": DataLoader(self.my_dataset, batch_size = BATCH_SIZE),
     }
-
-    # for idx, (img, _) in enumerate(raw_set): # NOTE: Only done once
-
-    #   img.save('data/mnist-numbers/raw/{:05d}.jpg'.format(idx))
-
-    # self.criterion = Nn.CrossEntropyLoss()
-    # self.optimizer = nn.optim.Adam(self.model.parameters(), lr=0,)
     self.analytics = {
-      # "test": {
-      #   "mean": random.random(),
-      #   "std": random.randint(0, 5),
-      #   "loss": random.randint(0, 10 - epoch)
-      # },
       "training": {
         # "mean": random.random(),
         # "std": random.randint(0, 5),
         "loss": 0
       },
     }
+
+    if self.verbose:
+      for id, (images, labels) in enumerate(self.loaders['train']):
+        if id == 0: # TODO: There *has* to be a better way to get to this dat without looping
+          self.print.header(model="Basic", verbose = { 'images': images, 'labels': labels, 'model': self.model })
+    else:
+      self.print.header(model="Basic")
+
+  def run(self):
+    timer = time.time()
+
+    optimizer = Optim.SGD(self.model.parameters(), lr=0.003, momentum=0.9)
+    criterion = Nn.CrossEntropyLoss()
+
+    for epoch in range(self.epochs):
+      running_loss = 0
+
+      for (images, labels) in iter(self.loaders['train']): # Id -> Label
+        optimizer.zero_grad()
+
+        # Let's reshape as we just learned by experimenting 🤟
+        images = images.view(images.shape[0], -1)
+        labels = labels[:,0].long()
+        output = self.model(images)
+        loss = criterion(output, labels)
+
+        loss.backward()
+        optimizer.step()
+
+        self.analytics['training']['loss'] += loss.item()
+      else:
+        training_loss = self.analytics['training']['loss'] / len(self.loaders['train'])
+        print(f"Training loss: {training_loss}")
+
+    self.print.footer()
 
   def splitData(self):
     # TODO: Make the split to be random.
@@ -130,96 +168,6 @@ class BasicModel:
     to_id += int(len(file_list) * self.VALIDATION_DATA_SIZE)
 
     self.data['validation'] = file_list[from_id:to_id]
-
-  def train(self):
-    """
-      Train the model.
-    """
-    self.splitData()
-    self.model.train()
-    for epoch in range(self.epochs):
-      for data in self.data['train']:
-        self.optimizer.zero_
-
-  def run(self):
-    timer = time.time()
-    self.print.header(model="Basic")
-
-    # dataiter = iter(self.loaders["train"])
-    # images, labels = next(dataiter)
-    # print(images.shape)
-    # print(labels.shape)
-    # print(images[0])
-    # plt.image_plot('data/mnist-numbers/00004.jpg', grayscale=True)
-    # plt.plot_size(height=20, width=35)
-    # plt.show()
-
-    # print(self.mnist_numbers["data"].T)
-    # print(self.mnist_numbers["label"][0])
-
-    # target_tensor = Torch.from_numpy(self.my_dataset.target).long()
-    # criterion = Nn.CrossEntropyLoss(self.model, )
-    optimizer = Optim.SGD(self.model.parameters(), lr=0.003, momentum=0.9)
-    criterion = Nn.CrossEntropyLoss()
-
-    for epoch in range(self.epochs):
-      # TODO: Start and fix the main loop, keep in mind that x in simple the image matrix, no labels
-      # print(self.data['train'])
-      running_loss = 0
-      # for x in enumerate(self.loaders['train']):
-      for id, (label, file) in enumerate(self.loaders['train']): # Id -> Label
-        print('======>>>>>>> ')
-        # print(label, file)
-        optimizer.zero_grad()
-        output = self.model(file)
-        loss = criterion(output, label)
-
-        # loss = Nn.NLLLoss()(output, str(label))
-        # loss = Nn.functional.nll_loss(output, str(label))
-        # loss = criterion(output, self.mnist_numbers["label"][id])
-        # loss = criterion(output, 'dog')
-        loss.backward()
-        optimizer.step()
-
-        running_loss += loss.item()
-      #   file, label = x.values() # (x, 'dog')
-      #   print(file, label, '\n\n')
-        # self.optimizer.zero_grad()
-
-        # output = self.model(file)
-        # loss = self.criterion(output, id)
-        # loss.backward()
-        # self.optimizer.step()
-        # running_loss += loss.item()
-        # print(file, id)
-      else:
-        print(f"Training loss: {running_loss/len(self.loaders['train'])}")
-
-        # images = images.
-    #   for images, labels in trianloader:
-
-      # return
-      # time.sleep(self.sleep_time)
-
-      # analytics = {
-      #   "test": {
-      #     "mean": random.random(),
-      #     "std": random.randint(0, 5),
-      #     "loss": random.randint(0, 10 - epoch)
-      #   },
-      #   "training": {
-      #     "mean": random.random(),
-      #     "std": random.randint(0, 5),
-      #     "loss": random.randint(0, 10 - epoch)
-      #   },
-      # }
-      # self.steps["testAcc"].append(analytics["test"]["loss"])
-      # self.steps["trainingAcc"].append(analytics["training"]["loss"])
-      # self.print.step(epoch=epoch, run_time=(self.now() - timer), step_analysis=analytics)
-      # timer = time.time()
-
-    self.print.footer()
-
 
 """
 @SEE: [~/udacity/introduction-pAIthon-devs/neural-networks/deep-learning/student-admissions](http://localhost:8888/notebooks/StudentAdmissions.ipynb)
