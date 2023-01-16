@@ -53,5 +53,7 @@ MANIFEST
 .conda*/
 .python-version
 .env
-data
+data/*/**
+!data/*/labels.csv
 .jukit
+tmp

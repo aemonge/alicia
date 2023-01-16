@@ -14,6 +14,7 @@ __license__ = "MIT"
 # ---- Python API ----
 from models.dummy import DummyModel
 from models.basic import BasicModel
+from models.cat import Cat
 from lib.dispaly_analytics import DispalyAnalytics as print_da
 
 # ---- CLI: Helpers ----
@@ -63,7 +64,7 @@ def setup_logging(loglevel):
 @click.command()
 @click.option("graph", "-g", "--graph", default=True, is_flag=True, type=click.BOOL)
 @click.option("verbose", "--verbose", default=False, is_flag=True, type=click.BOOL)
-@click.option("architecture", "-a", "--arch", default='dummy', type=click.Choice(['demo', 'dummy', 'basic', '...']))
+@click.option("architecture", "-a", "--arch", default='dummy', type=click.Choice(['demo', 'dummy', 'basic', 'cat', '...']))
 @click.option("image_type",
               "-t",
               "--image-type",
@@ -91,12 +92,15 @@ def run(images_dir, graph, verbose, architecture, image_type, tags_file):
   """
   if architecture == 'dummy':
     model = DummyModel(show_graph=graph, step_print_fn=print_da())
-    model.run()
   if architecture == 'basic':
     model = BasicModel(data_dir=images_dir, step_print_fn=print_da(), verbose=verbose)
     model.splitData()
     # model.shapes()
-    model.run()
+  if architecture == 'cat':
+    model = Cat(data_dir=images_dir)
+
+  model.run()
+  model.test()
 
 
 if __name__ == "__main__":

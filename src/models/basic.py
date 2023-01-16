@@ -1,62 +1,49 @@
-import time # pylint: disable=missing-module-docstring
-import os as OS
+# pylint: disable=missing-module-docstring
+import time
+import os as Os
+import numpy as Np
+import plotext as Plt
+from matplotlib import pyplot as Pyplot
 import torch as Torch
 
 from torchvision import transforms as Transforms
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 from torch import optim as Optim
 from torch import nn as Nn
-from natsort import natsorted
-from PIL import Image
+
+from datasets.ae_image_dataset import AeImageDataset
+# pylint: enable=missing-module-docstring
 
 BATCH_SIZE = 4
-
-class CustomDataset(Dataset):
-  def __init__(self, main_dir, transform = None, label_transform = None):
-    all_imgs = OS.listdir(main_dir)
-
-    self.main_dir = main_dir
-    self.transform = transform
-    self.label_transform = label_transform
-    self.total_imgs = natsorted(all_imgs)
-
-    self.class_map = dict({
-      'one': 0, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
-      'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10
-    })
-
-  def __len__(self):
-    return len(self.total_imgs)
-
-  def __getitem__(self, idx):
-    """
-    Notes:
-      SEE: https://stackoverflow.com/questions/51911749/what-is-the-difference-between-torch-tensor-and-torch-tensor
-    Args:
-      idx (int): Index
-    Returns:
-      tuple: (image, target) where target is index of the target class.
-    """
-    img_loc = OS.path.join(self.main_dir, self.total_imgs[idx])
-    image = Image.open(img_loc).convert("RGB")
-
-    if self.transform:
-      image = self.transform(image)
-
-    if self.label_transform:
-      label = self.label_transform('dog')
-    else:
-      class_id = self.class_map['ten']
-      # class_id = Torch.Tensor(data=[class_id]*10)
-      # class_id = Torch.Tensor(data=[[class_id]*10]*10)
-      # class_id = Torch.Tensor(data=[[[class_id]*10]])
-      class_id = Torch.Tensor([0]*BATCH_SIZE)
-
-    return image, class_id
 
 class BasicModel:
   """
     A Basic Model aiming to guess the numbers from MNIST dataset.
+
+    Attributes
+    ----------
+      verbose : boolean
+        Whether to print the model information.
+      print : function
+        Function to print messages.
+      data_dir : string
+        The path to the MNIST dataset folder.
+      epochs : integer
+        The number of epochs to train the model.
+
+    Constants
+    ----------
+      TRAIN_DATA_SIZE : float
+        The size of the training dataset.
+      TEST_DATA_SIZE : float
+        The size of the test dataset.
+      VALIDATION_DATA_SIZE : float
+        The size of the validation dataset.
+      IMG_SIZE : integer
+        The size of the images.
+
+    Methods
+    -------
   """
 
   TRAIN_DATA_SIZE = .7
@@ -65,20 +52,29 @@ class BasicModel:
   IMG_SIZE = 28
 
   def __init__(self, data_dir=None, step_print_fn=None, epochs=3, verbose=False):
+    """
+      Constructor.
+
+      Parameters
+      ----------
+        data_dir : string
+          The path to the MNIST dataset folder.
+        step_print_fn : function
+          Function to print messages.
+        epochs : integer
+          The number of epochs to train the model.
+        verbose : boolean
+          Whether to print the model information.
+    """
     self.verbose = verbose
     self.print = step_print_fn
     self.data_dir = data_dir
-    self.data = { "train": [], "test": [], "validation": [] }
     self.epochs = epochs
-    # self.model = Nn.Sequential(
-    #   Nn.Linear(self.START_SIZE, 10),
-    #   Nn.LogSoftmax(dim=1), # 784
-    # )
 
-    # 4 * 28 = 112
-    self.model = Nn.Sequential(
-      # Nn.Linear(28, self.IMG_SIZE * self.IMG_SIZE), # I should NOT adjust this, I expect the in WxH input
-      # Nn.ReLU(),
+    self.__data = { "train": [], "test": [], "validation": [] }
+    self.__criterion = Nn.CrossEntropyLoss()
+
+    self.__model = Nn.Sequential(
       Nn.Linear(self.IMG_SIZE * self.IMG_SIZE, 128),
       Nn.ReLU(),
       Nn.Linear(128, 64),
@@ -86,141 +82,159 @@ class BasicModel:
       Nn.Linear(64, 10),
       Nn.LogSoftmax(dim=1)
     )
-    self.transform = Transforms.Compose([
-      # Transforms.Resize(self.START_SIZE),
+    self.__transform = Transforms.Compose([
       Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
       Transforms.ToTensor(),
       Transforms.Normalize((0.5,), (0.5,))
-      # , Transforms.Normalize(
-      #   mean=[0.485, 0.456, 0.406],
-      #   std=[0.229, 0.224, 0.225]
-      # )
     ])
-    self.criterion = Nn.NLLLoss()
-
-    self.my_dataset = CustomDataset(self.data_dir, transform = self.transform)
-    self.loaders = {
-      "train": DataLoader(self.my_dataset, batch_size = BATCH_SIZE),
+    self.__optimizer = Optim.SGD(self.__model.parameters(), lr=0.003, momentum=0.9)
+    self.__dataset = AeImageDataset(self.data_dir, transform = self.__transform)
+    self.__loaders = {
+      "train": DataLoader(self.__dataset, batch_size = BATCH_SIZE, shuffle=True),
     }
-    self.analytics = {
+    self.__analytics = {
       "training": {
-        # "mean": random.random(),
-        # "std": random.randint(0, 5),
-        "loss": 0
+        "loss": 0 # mean, std
       },
     }
 
     if self.verbose:
-      for id, (images, labels) in enumerate(self.loaders['train']):
+      for id, (images, labels) in enumerate(self.__loaders['train']):
         if id == 0: # TODO: There *has* to be a better way to get to this dat without looping
-          self.print.header(model="Basic", verbose = { 'images': images, 'labels': labels, 'model': self.model })
+          self.print.header(model="Basic", verbose = { 'images': images, 'labels': labels, 'model': self.__model,
+                                                      'classes': self.__dataset.class_map })
     else:
       self.print.header(model="Basic")
 
   def run(self):
-    timer = time.time()
-
-    optimizer = Optim.SGD(self.model.parameters(), lr=0.003, momentum=0.9)
-    criterion = Nn.CrossEntropyLoss()
-
+    """
+      Run the model.
+    """
     for epoch in range(self.epochs):
-      running_loss = 0
+      self.__analytics['training']['loss'] = 0
 
-      for (images, labels) in iter(self.loaders['train']): # Id -> Label
-        optimizer.zero_grad()
+      for (images, labels) in iter(self.__loaders['train']): # Id -> Label
+        self.__optimizer.zero_grad()
 
         # Let's reshape as we just learned by experimenting 🤟
         images = images.view(images.shape[0], -1)
         labels = labels[:,0].long()
-        output = self.model(images)
-        loss = criterion(output, labels)
+        output = self.__model(images)
+        loss = self.__criterion(output, labels)
 
         loss.backward()
-        optimizer.step()
+        self.__optimizer.step()
 
-        self.analytics['training']['loss'] += loss.item()
+        self.__analytics['training']['loss'] += loss.item()
       else:
-        training_loss = self.analytics['training']['loss'] / len(self.loaders['train'])
-        print(f"Training loss: {training_loss}")
+        training_loss = self.__analytics['training']['loss'] / len(self.__loaders['train'])
+        print(f"  Epoch: {epoch}\t\t Training loss: {round(training_loss, 3)}")
 
     self.print.footer()
 
+  def test(self):
+    """
+      Test the model.
+    """
+    images, labels = next(iter(self.__loaders['train']))
+
+    img = images[0].view(1, 784)
+    # Turn off gradients to speed up this part
+    with Torch.no_grad():
+      logps = self.__model(img)
+
+    # Output of the network are log-probabilities, need to take exponential for probabilities
+    self.print.test(self.print_resutls, img, Torch.exp(logps))
+
+  def print_resutls(self, img, probabilities_classes):
+    """
+      Print the results of the model.
+
+      Parameters
+      ----------
+        img : torch.Tensor
+          The input image.
+        probabilities_classes : torch.Tensor
+          The output of the network.
+    """
+    self._plot_wrapper()
+    self._plot_img(img)
+    self._plot_probabilities_classes(probabilities_classes)
+    Plt.show()
+    Plt.clf()
+
   def splitData(self):
-    # TODO: Make the split to be random.
     """
       Read directory and store all the file names in a list.
     """
+    # TODO: Make the split to be random.
     file_list = []
-    for path, subdirs, files in OS.walk(self.data_dir): # pylint: disable=unused-variable
+    for path, subdirs, files in Os.walk(self.data_dir): # pylint: disable=unused-variable
       for name in files:
-        file_no_extension = OS.path.splitext(name)[0]
-        file_list.append({"file": OS.path.join(name), "label": file_no_extension})
+        file_no_extension = Os.path.splitext(name)[0]
+        file_list.append({"file": Os.path.join(name), "label": file_no_extension})
 
     from_id = 0
     to_id = int(len(file_list) * self.TRAIN_DATA_SIZE)
-    self.data['train'] = file_list[from_id:to_id]
+    self.__data['train'] = file_list[from_id:to_id]
 
     from_id = to_id
     to_id += int(len(file_list) * self.TEST_DATA_SIZE)
 
-    self.data['test'] = file_list[from_id:to_id]
+    self.__data['test'] = file_list[from_id:to_id]
     from_id = to_id
     to_id += int(len(file_list) * self.VALIDATION_DATA_SIZE)
 
-    self.data['validation'] = file_list[from_id:to_id]
+    self.__data['validation'] = file_list[from_id:to_id]
 
-"""
-@SEE: [~/udacity/introduction-pAIthon-devs/neural-networks/deep-learning/student-admissions](http://localhost:8888/notebooks/StudentAdmissions.ipynb)
+  def __tensor_to_image(self, img, img_path):
+    """
+      Convert a tensor to an image and saved in the img_path.
 
-def train_nn(features, targets, epochs, learnrate):
+      Parameters
+      ----------
+        img : torch.Tensor
+          The tensor to convert.
+        img_path : string
+          The path to the image.
+    """
+    img = img.view(1, 28, 28).permute(1, 2, 0)
+    Pyplot.imshow(img)
+    Pyplot.axis('off')
+    Pyplot.savefig(img_path, bbox_inches='tight', pad_inches=0, transparent=True)
 
-    # Use to same seed to make debugging easier
-    np.random.seed(42)
+  def _plot_wrapper(self):
+    """
+      Plot the results of the test in a nice box with class map and the image.
+    """
+    Plt.subplots(1, 2)
+    Plt.plot_size(73, 20)
 
-    n_records, n_features = features.shape
-    last_loss = None
+  def _plot_img(self, img):
+    """
+      Plot the image in it's right section
 
-    # Initialize weights
-    weights = np.random.normal(scale=1 / n_features**.5, size=n_features)
+      Parameters
+      ----------
+        img : torch.Tensor
+          The tensor image to display.
+    """
+    tmp_path = 'tmp/mnist-number.jpg'
+    self.__tensor_to_image(img, tmp_path)
+    Plt.subplot(1, 2)
+    Plt.image_plot(tmp_path)
 
-    for e in range(epochs):
-        del_w = np.zeros(weights.shape)
-        for x, y in zip(features.values, targets):
-            # Loop through all records, x is the input, y is the target
+  def _plot_probabilities_classes(self, probabilities_classes):
+    """
+      Plot class map in it's left section
 
-            # Activation of the output unit
-            #   Notice we multiply the inputs and the weights here
-            #   rather than storing h as a separate variable
-            output = sigmoid(np.dot(x, weights))
-
-            # The error, the target minus the network output
-            error = error_formula(y, output)
-
-            # The error term
-            #   Notice we calulate f'(h) here instead of defining a separate
-            #   sigmoid_prime function. This just makes it faster because we
-            #   can re-use the result of the sigmoid function stored in
-            #   the output variable
-            error_term = error_term_formula(x, y, output)
-
-            # The gradient descent step, the error times the gradient times the inputs
-            del_w += error_term * x
-
-        # Update the weights here. The learning rate times the
-        # change in weights, divided by the number of records to average
-        weights += learnrate * del_w / n_records
-
-        # Printing out the mean square error on the training set
-        if e % (epochs / 10) == 0:
-            out = sigmoid(np.dot(features, weights))
-            loss = np.mean((out - targets) ** 2)
-            print("Epoch:", e)
-            if last_loss and last_loss < loss:
-                print("Train loss: ", loss, "  WARNING - Loss Increasing")
-            else:
-                print("Train loss: ", loss)
-            last_loss = loss
-            print("=========")
-    print("Finished training!")
-    return weights
-"""
+      Parameters
+      ----------
+        probabilities_classes : torch.Tensor
+          The tensor probabilities_classes to display.
+    """
+    classes = list(self.__dataset.class_map.keys())
+    probabilities_classes = Np.array(probabilities_classes.view(10))
+    probabilities_classes = Np.round(probabilities_classes, 2)
+    Plt.subplot(1, 1)
+    Plt.bar(classes, probabilities_classes, width= 0.1, orientation='h')

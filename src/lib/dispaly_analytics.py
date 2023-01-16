@@ -29,7 +29,7 @@ class DispalyAnalytics:
   PADDING_CHAR = '\t'
   BREAK_CHAR = '\n'
 
-  def __init__(self, width=55, verbose=False):
+  def __init__(self, width=65, verbose=False):
     """
       Initializes the class.
 
@@ -57,23 +57,27 @@ class DispalyAnalytics:
       -------
         None
     """
-    if not self.verbose:
+    if not verbose:
       os.system('clear')
 
     print(self.__get_hr(color='blue', padding=0))
     gpu_msg = f"GPU { colored('enabled', attrs=['bold']) if gpu else 'disabled' }"
-    print(f"Model \"{colored(model, 'blue')}\" Starts with {gpu_msg}")
+    print(f" Model \"{colored(model, 'blue')}\" Starts with {gpu_msg}")
     if verbose: # TODO: incorporate the transformation smartly, or simply skip them they should match
       print(self.__get_hr(char="―", color='grey', padding=0))
-      print(verbose['model'])
+      print('  Classes: ', verbose['classes'].keys())
       print(self.__get_hr(char="―", color='grey', padding=0))
-      print('  images.dtype: \t', verbose['images'].dtype)
-      print('  images.shape: \t', verbose['images'].shape)
-      print('  images.re-shaped: \t', verbose['images'].view(verbose['images'].shape[0], -1).shape)
+      print(' ', verbose['model'])
       print(self.__get_hr(char="―", color='grey', padding=0))
-      print('  labels.shape: \t', verbose['labels'].shape)
-      print('  labels.re-shape: \t', verbose['labels'][:,0].shape)
-      print('  labels.re-dtype: \t', verbose['labels'][:,0].long().dtype)
+
+      print('  images: \t\t', verbose['images'].shape, '\t', verbose['images'].dtype)
+      reimage= verbose['images'].view(verbose['images'].shape[0], -1)
+      print('  images.transformed: \t', reimage.shape, '\t\t', reimage.dtype)
+      print(self.__get_hr(char="―", color='grey', padding=0))
+
+      print('  labels: \t\t', verbose['labels'].shape, '\t\t', verbose['labels'].dtype)
+      relabel = verbose['labels'][:,0].long()
+      print('  labels.transformed: \t', relabel.shape, '\t\t', relabel.dtype)
 
     print(self.__get_hr(char="― ", color='cyan', padding=0))
 
@@ -95,7 +99,7 @@ class DispalyAnalytics:
         None
     """
     print(self.__get_hr(char= "― ", color='cyan', padding=0))
-    msg = f"∑ Accuracy {colored(str(validation_accuracy), attrs=['bold'])}%"
+    msg = f" ∑ Accuracy {colored(str(validation_accuracy), attrs=['bold'])}%"
     msg += f"{self.PADDING_CHAR}∑ Loss: {colored(str(validation_loss), attrs=['bold'])}"
     msg += f"{self.PADDING_CHAR}∑ Total Time: {colored(str(total_time), attrs=['bold'])}s"
     print(msg)
@@ -143,6 +147,29 @@ class DispalyAnalytics:
     plt.ticks_style('bold')
     plt.title('Overall Loss')
     print(self.__add_padding_to_graph(plt.build()))
+
+  def test(self, fn, *args, **kwargs):
+    """
+      Pretty print Header for Test, and also uses `fn` to print inside the test box desired results
+
+      Parameters
+      ----------
+      fn : function
+        test function.
+      *args : list
+        the arguments for the fn function
+      **kwargs : dict
+        the keyword arguments for the fn function
+
+      Returns
+      -------
+        None
+    """
+    print(self.__get_hr(color='green', padding=0))
+    print(f" Tests: ")
+    print(self.__get_hr(color='grey', padding=0))
+    fn(*args, **kwargs)
+    print(self.__get_hr(color='green', padding=0))
 
   def __get_hr(self, char = LINE_CHAR, color = COLOR, padding = PADDING):
     """

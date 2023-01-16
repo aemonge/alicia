@@ -3,9 +3,13 @@
 * [ ] Make pylint understand venv paths rightfully.
 * [ ] Make pylint and pyright to understand the callback method class, or create a abstract class
 
-# Last Reference:
+# External documentation
+
+> Useful links found and used while developing this
 
 * /Users/aemonge/udacity/introduction-pAIthon-devs/neural-networks/deep-learning-v2-pytorch/intro-to-pytorch
+* (https://medium.com/analytics-vidhya/creating-a-custom-dataset-and-dataloader-in-pytorch-76f210a1df5d)
+* (https://stackoverflow.com/questions/51911749/what-is-the-difference-between-torch-tensor-and-torch-tensor)
 
 ## Part 0 - Own Requirements to achieve the other parts
 
@@ -23,7 +27,7 @@
   - Display the model information: hidden layer count and size of each hidden layer tensors.
 * [x] **CLI Plot** Introduce a plot to compare the 'Training Loss' vs the 'Validation Loss' over epochs, to be able to
   see possible over-fitting of the algorithm chosen.
-* [ ] A class probability bar-graph to display the results form three random data picks.
+* [x] A class probability bar-graph to display the results form three random data picks.
 * [ ] Semi automatic data splitter into: Training, Testing, and Verifying.
 
 ### Getting real with Number Recognition (mnist)
@@ -32,31 +36,31 @@
 
 Re-do previous steps but now with a custom and extended real AI algorithms.
 
-* [ ] Implement a argument to choose different models to use.
-* [ ] Implement the most simplistic neural network with none sequential functions
-  - Backtrace for training.
-  - Disable backtrace for testing.
-  - Disable backtrace for Verification.
+* [x] Implement a argument to choose different models to use.
+* [-] Implement the most simplistic neural network with none sequential functions
+      - Backtrace for training.
+      - Disable backtrace for testing.
+      - Disable backtrace for Verification.
 * [ ] Implement a copy of the previous neural network using sequential function.
 * [ ] Get extremely crazy and creative to create a super complex model.
 * [ ] Test all three models and compare them, with you Analytics.
 * [ ] Extend your Analytics, to be able to have a one-on-one comparison of the three algorithms.
 * [ ] Create a sensible fourth algorithm, as a chosen algorithm.
-  - Make sure this has the best results seen with your Analytics.
+      - Make sure this has the best results seen with your Analytics.
 * [ ] Add a fifth algorithm by downloading and using a pre-trained model.
 * [ ] Run such a model against your Analytics.
 * [ ] Add a sixth or seventh downloaded pre-trained model.
 * [ ] Choose one of such models, and extend (transfer learning) it as a custom one.
 
 #### Model Names
-1. Dummy
-2. Simple
-3. Crazy
-4. Optimum
-5. [downloaded name]
-6. [downloaded name]
-7. [downloaded name]
-8. AeM-[downloaded name]
+1. [x] Dummy
+2. [-] Basic
+3. [ ] Crazy
+4. [ ] Optimum
+5. [ ] [downloaded name]
+6. [ ] [downloaded name]
+7. [ ] [downloaded name]
+8. [ ] AeM-[downloaded name]
 
 ### Approaching Udacity
 > (https://github.com/zalandoresearch/fashion-mnist)
