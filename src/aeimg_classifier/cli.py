@@ -16,6 +16,7 @@ from models.dummy import DummyModel
 from models.basic import BasicModel
 from models.cat import Cat
 from lib.dispaly_analytics import DispalyAnalytics as print_da
+from lib.torchvision_downloader import TorchvisionDownloader
 
 # ---- CLI: Helpers ----
 def parse_args(args):
@@ -61,10 +62,11 @@ def setup_logging(loglevel):
 
 
 # ---- CLI: Arguments ----
+architecture_opts = ['demo', 'dummy', 'basic', 'cat', 'download_mnist_num', '...']
 @click.command()
 @click.option("graph", "-g", "--graph", default=True, is_flag=True, type=click.BOOL)
 @click.option("verbose", "--verbose", default=False, is_flag=True, type=click.BOOL)
-@click.option("architecture", "-a", "--arch", default='dummy', type=click.Choice(['demo', 'dummy', 'basic', 'cat', '...']))
+@click.option("architecture", "-a", "--arch", default='dummy', type=click.Choice(architecture_opts))
 @click.option("image_type",
               "-t",
               "--image-type",
@@ -98,9 +100,12 @@ def run(images_dir, graph, verbose, architecture, image_type, tags_file):
     # model.shapes()
   if architecture == 'cat':
     model = Cat(data_dir=images_dir)
+  if architecture == 'download_mnist_num':
+    TorchvisionDownloader(image_dir = images_dir, dataset = 'MNIST').call()
 
-  model.run()
-  model.test()
+  if architecture != 'download_mnist_num':
+    model.run()
+    model.test()
 
 
 if __name__ == "__main__":

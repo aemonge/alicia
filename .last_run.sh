@@ -10,3 +10,4 @@ ls src/aeimg_classifier/* src/lib/* src/models/* | entr -rc aeimg-classify -a ba
 ls src/aeimg_classifier/* src/lib/* src/models/* | entr -rc aeimg-classify -a basic data/mnist-numbers
 ls src/aeimg_classifier/* src/lib/* src/models/* | entr -rc aeimg-classify -a basic data/mnist-numbers-tiny
 ls src/aeimg_classifier/* src/lib/* src/models/* | entr -rc aeimg-classify -a basic data/mnist-numbers-tiny --verbose
+ls src/aeimg_classifier/* src/lib/* src/models/* | entr -rc aeimg-classify -a download_mnist_num data/test
