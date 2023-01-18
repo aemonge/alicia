@@ -104,8 +104,8 @@ def run(images_dir, graph, verbose, architecture, image_type, tags_file):
     TorchvisionDownloader(image_dir = images_dir, dataset = 'MNIST').call()
 
   if architecture != 'download_mnist_num':
-    model.run()
-    model.test()
+    model.train()
+    model.preview(3)
 
 
 if __name__ == "__main__":

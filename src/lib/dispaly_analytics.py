@@ -76,8 +76,6 @@ class DispalyAnalytics:
       print(self.__get_hr(char="―", color='grey', padding=0))
 
       print('  labels: \t\t', verbose['labels'].shape, '\t\t', verbose['labels'].dtype)
-      relabel = verbose['labels'][:,0].long()
-      print('  labels.transformed: \t', relabel.shape, '\t\t', relabel.dtype)
 
     print(self.__get_hr(char="― ", color='cyan', padding=0))
 

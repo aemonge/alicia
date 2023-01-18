@@ -99,14 +99,18 @@ class BasicModel:
     }
 
     if self.verbose:
-      for id, (images, labels) in enumerate(self.__loaders['train']):
-        if id == 0: # TODO: There *has* to be a better way to get to this dat without looping
-          self.print.header(model="Basic", verbose = { 'images': images, 'labels': labels, 'model': self.__model,
-                                                      'classes': self.__dataset.class_map })
+      images, labels = next(iter(self.__loaders['train']))
+      verbose_info = {
+        'images': images,
+        'labels': labels,
+        'model': self.__model,
+        'classes': self.__dataset.class_map
+      }
+      self.print.header(model="Basic", verbose = verbose_info)
     else:
       self.print.header(model="Basic")
 
-  def run(self):
+  def train(self):
     """
       Run the model.
     """
@@ -118,7 +122,7 @@ class BasicModel:
 
         # Let's reshape as we just learned by experimenting 🤟
         images = images.view(images.shape[0], -1)
-        labels = labels[:,0].long()
+        labels = labels.long() # [:,0].long()
         output = self.__model(images)
         loss = self.__criterion(output, labels)
 
@@ -128,23 +132,23 @@ class BasicModel:
         self.__analytics['training']['loss'] += loss.item()
       else:
         training_loss = self.__analytics['training']['loss'] / len(self.__loaders['train'])
-        print(f"  Epoch: {epoch}\t\t Training loss: {round(training_loss, 3)}")
+        print(f"  Epoch: {epoch}\t\t Training loss: {round(training_loss, 6)}")
 
     self.print.footer()
 
-  def test(self):
+  def preview(self, image_count = 1):
     """
-      Test the model.
+      Preview the model results by selection random images
     """
-    images, labels = next(iter(self.__loaders['train']))
 
-    img = images[0].view(1, 784)
-    # Turn off gradients to speed up this part
-    with Torch.no_grad():
-      logps = self.__model(img)
+    for _ in range(image_count):
+      images, labels = next(iter(self.__loaders['train']))
+      img = images[0].view(1, 784)
+      # Turn off gradients to speed up this part
+      with Torch.no_grad():
+        logps = self.__model(img)
 
-    # Output of the network are log-probabilities, need to take exponential for probabilities
-    self.print.test(self.print_resutls, img, Torch.exp(logps))
+      self.print.test(self.print_resutls, img, Torch.exp(logps))
 
   def print_resutls(self, img, probabilities_classes):
     """

@@ -46,7 +46,7 @@ class AeImageDataset(Dataset):
     self.main_dir = main_dir
     self.transform = transform
     self.label_transform = label_transform
-    self.class_map = dict()
+    class_map = set()
 
     self.__total_imgs = Natsorted(all_imgs)
     self.__labels = dict()
@@ -54,8 +54,10 @@ class AeImageDataset(Dataset):
     with open(f"{self.main_dir}/labels.csv") as file:
       reader = Csv.reader(file)
       for row in reader:
-        self.class_map[row[1]] = 0.0
+        class_map.add(row[1])
         self.__labels[row[0]] = row[1]
+
+    self.class_map = { x:i for i,x in enumerate(list(class_map)) }
 
   def __len__(self):
     """
@@ -89,6 +91,6 @@ class AeImageDataset(Dataset):
       print('Not implemented')
 
     class_id = self.class_map[class_id]
-    class_id = Torch.Tensor([0]*BATCH_SIZE)
+    class_tensor = Torch.tensor(class_id)
 
-    return image, class_id
+    return image, class_tensor
