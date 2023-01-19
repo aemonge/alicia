@@ -203,7 +203,7 @@ class BasicModel:
           The path to the image.
     """
     img = img.view(1, 28, 28).permute(1, 2, 0)
-    Pyplot.imshow(img)
+    Pyplot.imshow(img, cmap='gray')
     Pyplot.axis('off')
     Pyplot.savefig(img_path, bbox_inches='tight', pad_inches=0, transparent=True)
 

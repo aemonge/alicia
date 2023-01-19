@@ -14,6 +14,8 @@ class TorchvisionDownloader(object):
     if not os.path.exists(self.__tmp_path) or not os.path.exists(f"{self.__tmp_path}/{self.datasetName}"):
       print(colored(' Downloading ... 🌑 ', 'blue', attrs=['bold']))
       self.__downloadDataset()
+    elif self.datasetName == 'FashionMNIST':
+      self.__dataset = torchvision.datasets.FashionMNIST(self.__tmp_path)
     else:
       self.__dataset = torchvision.datasets.MNIST(self.__tmp_path)
 
@@ -27,9 +29,12 @@ class TorchvisionDownloader(object):
   def __downloadDataset(self):
     if not os.path.exists(self.__tmp_path):
       os.mkdir(self.__tmp_path)
-    if self.datasetName == 'MNIST':
-      with contextlib.redirect_stdout(io.StringIO()):
+
+    with contextlib.redirect_stdout(io.StringIO()):
+      if self.datasetName == 'MNIST':
         self.__dataset = torchvision.datasets.MNIST(self.__tmp_path, download=True)
+      elif self.datasetName == 'FashionMNIST':
+        self.__dataset = torchvision.datasets.FashionMNIST(self.__tmp_path, download=True)
 
   def __clearTmp(self):
     filelist = glob.glob(f"{self.__tmp_path}/{self.datasetName}/raw/*")
@@ -42,11 +47,21 @@ class TorchvisionDownloader(object):
     idx = 0
     for img, label in self.__dataset:
       cb_fn(img, idx)
+      label = self.__customLabelMapping(label)
       self.__labels.append(f"{idx},{label}")
       idx+=1
 
   def __writeImages(self, img, idx):
     img.save(f"{self.image_dir}/{idx}.jpg")
+
+  def __customLabelMapping(self, label):
+    if self.datasetName == 'FashionMNIST':
+      return [
+        'Top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+        'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot'
+      ][label]
+    else:
+      return id
 
   def __writeLabels(self):
     with open(f'{self.image_dir}/labels.csv', 'w') as f:

@@ -62,7 +62,7 @@ def setup_logging(loglevel):
 
 
 # ---- CLI: Arguments ----
-architecture_opts = ['demo', 'dummy', 'basic', 'cat', 'download_mnist_num', '...']
+architecture_opts = ['demo', 'dummy', 'basic', 'cat', 'download_mnist_num', 'download_mnist_fashion', '...']
 @click.command()
 @click.option("graph", "-g", "--graph", default=True, is_flag=True, type=click.BOOL)
 @click.option("verbose", "--verbose", default=False, is_flag=True, type=click.BOOL)
@@ -97,13 +97,15 @@ def run(images_dir, graph, verbose, architecture, image_type, tags_file):
   if architecture == 'basic':
     model = BasicModel(data_dir=images_dir, step_print_fn=print_da(), verbose=verbose)
     model.splitData()
-    # model.shapes()
   if architecture == 'cat':
     model = Cat(data_dir=images_dir)
-  if architecture == 'download_mnist_num':
-    TorchvisionDownloader(image_dir = images_dir, dataset = 'MNIST').call()
+  if architecture == 'download_mnist_num' or architecture == 'download_mnist_fashion':
+    if architecture == 'download_mnist_num':
+      TorchvisionDownloader(image_dir = images_dir, dataset = 'MNIST').call()
+    else:
+      TorchvisionDownloader(image_dir = images_dir, dataset = 'FashionMNIST').call()
 
-  if architecture != 'download_mnist_num':
+  if architecture != 'download_mnist_num' and architecture != 'download_mnist_fashion':
     model.train()
     model.preview(3)
 
