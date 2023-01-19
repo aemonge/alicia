@@ -60,6 +60,11 @@ Don't forget to tell your contributors to also install and use pre-commit.
 
 .. _pre-commit: https://pre-commit.com/
 
+To build locally and develop locally
+
+    tox .
+    pip install -e .
+
 Note
 ====
 

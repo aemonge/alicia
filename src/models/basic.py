@@ -12,6 +12,7 @@ from torch import optim as Optim
 from torch import nn as Nn
 
 from datasets.ae_image_dataset import AeImageDataset
+from lib.dispaly_analytics import DispalyAnalytics as print_da
 # pylint: enable=missing-module-docstring
 
 BATCH_SIZE = 4
@@ -51,7 +52,7 @@ class BasicModel:
   VALIDATION_DATA_SIZE = 0.1
   IMG_SIZE = 28
 
-  def __init__(self, data_dir=None, step_print_fn=None, epochs=3, verbose=False):
+  def __init__(self, data_dir=None, step_print_fn=print_da(), epochs=3, verbose=False):
     """
       Constructor.
 

@@ -61,7 +61,7 @@ class TorchvisionDownloader(object):
         'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot'
       ][label]
     else:
-      return id
+      return label
 
   def __writeLabels(self):
     with open(f'{self.image_dir}/labels.csv', 'w') as f:

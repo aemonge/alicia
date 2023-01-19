@@ -54,6 +54,6 @@ MANIFEST
 .python-version
 .env
 data/*/**
-!data/*/labels.csv
 .jukit
 tmp
+temp
