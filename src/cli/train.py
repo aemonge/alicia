@@ -9,9 +9,10 @@ import click
 @click.pass_context
 @click.argument("architecture", default='dummy', type=click.Choice(ARCHITECTURES), required=1)
 @click.argument("data_dir", type=click.Path(exists=True, dir_okay=True, readable=True), required=1)
-def train(ctx, architecture, data_dir, verbose):
+def train(ctx, architecture, data_dir):
   """
-    Train a given architecture with a data directory containing the images and a `labels.csv` file.
+    Train a given architecture with a data directory containing a '/test' and '/train' subfolder
+    each with the images files and a `labels.csv` file.
   """
   model = None
   verbose = ctx.obj['verbose']
@@ -26,3 +27,9 @@ def train(ctx, architecture, data_dir, verbose):
     print('Not implemented, yet 🐼')
 
   model.train()
+  csv = model.call()
+  with open('out/labels.guess.csv', 'w') as f:
+    for v in csv:
+      f.write(v)
+      f.write('\n')
+  f.close()

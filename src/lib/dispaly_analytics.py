@@ -15,7 +15,7 @@ class DispalyAnalytics:
     -------
       header(model="Dummy", gpu=False):
         Pretty print Header.
-      footer(total_time=3, validation_accuracy=0.98, validation_loss=5)
+      footer(total_time=3, accuracy=0.98)
         Pretty print Footer with the result
       step(epoch=0, run_time=0.0, step_analysis={})
         Pretty print the current model step.
@@ -79,7 +79,7 @@ class DispalyAnalytics:
 
     print(self.__get_hr(char="― ", color='cyan', padding=0))
 
-  def footer(self, total_time=3, validation_accuracy=0.98, validation_loss=5):
+  def footer(self, total_time=3, accuracy=0.98):
     """
       Pretty print Footer with the result
 
@@ -87,19 +87,16 @@ class DispalyAnalytics:
       ----------
         total_time : int
           total time of the analysis.
-        validation_accuracy : float
-          validation accuracy.
-        validation_loss : int
-          validation loss.
+        accuracy : float
+          Final accuracy.
 
       Returns
       -------
         None
     """
     print(self.__get_hr(char= "― ", color='cyan', padding=0))
-    msg = f" ∑ Accuracy {colored(str(validation_accuracy), attrs=['bold'])}%"
-    msg += f"{self.PADDING_CHAR}∑ Loss: {colored(str(validation_loss), attrs=['bold'])}"
-    msg += f"{self.PADDING_CHAR}∑ Total Time: {colored(str(total_time), attrs=['bold'])}s"
+    msg = f" ∑ Accuracy {colored(str(round(accuracy, 3)), attrs=['bold'])}%"
+    msg += f"{self.PADDING_CHAR}∑ Total Time: {colored(str(round(total_time, 4)), attrs=['bold'])}s"
     print(msg)
     print(self.__get_hr(color='blue', padding=0))
 

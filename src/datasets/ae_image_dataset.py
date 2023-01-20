@@ -4,6 +4,7 @@ import re as Re
 import csv as Csv
 import torch as Torch
 
+from torchvision import transforms as Transforms
 from natsort import natsorted as Natsorted
 from PIL import Image
 from torch.utils.data import Dataset
@@ -30,7 +31,7 @@ class AeImageDataset(Dataset):
     -------
   """
 
-  def __init__(self, main_dir, transform = None, label_transform = None):
+  def __init__(self, main_dir, class_map = set(), transform = None, label_transform = None):
     """
 
       Parameters
@@ -46,7 +47,6 @@ class AeImageDataset(Dataset):
     self.main_dir = main_dir
     self.transform = transform
     self.label_transform = label_transform
-    class_map = set()
 
     self.__total_imgs = Natsorted(all_imgs)
     self.__labels = dict()
@@ -80,12 +80,16 @@ class AeImageDataset(Dataset):
         Batch image and its class label.
     """
     img_loc = Os.path.join(self.main_dir, self.__total_imgs[idx])
-    img_name = Re.search(r'\/(.[^\/]*)\.(jpg|png)', img_loc)[1]
+    img_rg = Re.search(r'\/(.[^\/]*)\.(jpg|png)', img_loc)
+    file_name = f"{img_rg[1]}.{img_rg[2]}"
+    img_name = img_rg[1]
     image = Image.open(img_loc).convert("RGB")
     class_id = self.__labels[img_name]
 
     if self.transform:
       image = self.transform(image)
+    else:
+      image = Transforms.Compose([Transforms.ToTensor()])(image)
 
     if self.label_transform:
       print('Not implemented')
@@ -93,4 +97,4 @@ class AeImageDataset(Dataset):
     class_id = self.class_map[class_id]
     class_tensor = Torch.tensor(class_id)
 
-    return image, class_tensor
+    return image, [class_tensor, file_name]
