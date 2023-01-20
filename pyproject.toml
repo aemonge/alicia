@@ -12,6 +12,9 @@ version_scheme = "no-guess-dev"
 max-line-length=120
 indent-string='  '
 
+[tool.pylint.typecheck]
+generated-members="numpy.*, torch.*"
+
 # [tool.pylint.master]
 # init-hooks = 'import sys; sys.path.append("")'
 # /opt/homebrew/Caskroom/miniconda/base/envs/deep-image/lib/python3.10/site-packages

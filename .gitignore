@@ -57,3 +57,4 @@ data/*/**
 .jukit
 tmp
 temp
+out
