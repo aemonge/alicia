@@ -21,3 +21,4 @@ aeimg-classify download FashionMNIST data/MNIST && aeimg-classify --verbose test
 aeimg-classify download MNIST data/mnist/train data/mnist/test
 rm -rf data/mnist && mkdir -p data/mnist/train && mkdir -p data/mnist/test
 ls src/*/* | entr -rc aeimg-classify --verbose train basic data/mnist
+rm -rf data/fashion/test data/fashion/train && mkdir -p data/fashion/test data/fashion/train;  aeimg-classify download FashionMNIST data/fashion/train data/fashion/test && aeimg-classify --verbose test -n 4 basic data/fashion

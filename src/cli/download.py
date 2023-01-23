@@ -17,13 +17,6 @@ def download(ctx, dataset, train_dir, test_dir, split_percentage):
     The downloaded files will be process out to leave the raw JPGs images in the both directories
       with a `labels.csv` file on them.
   """
-  if dataset == 'MNIST':
-    TorchvisionDownloader(
-      train_dir = train_dir, test_dir = test_dir, dataset = 'MNIST', split_percentage = split_percentage
-    ).call()
-  elif dataset == 'FashionMNIST':
-    TorchvisionDownloader(
-      train_dir = train_dir, test_dir = test_dir, dataset = 'MNIST', split_percentage = split_percentage
-    ).call()
-  else:
-    print('Not implemented, yet 🐼')
+  TorchvisionDownloader(
+    train_dir = train_dir, test_dir = test_dir, dataset = dataset, split_percentage = split_percentage
+  ).call()

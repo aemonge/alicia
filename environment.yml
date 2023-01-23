@@ -1,0 +1,29 @@
+name: deep-image
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10.9
+  - pip
+  - pip:
+      # - pandas
+      # - pillow
+      # - pynvim # Support for my editor
+      - click
+      - natsort
+      - ipython
+      - pyright
+      - pylint
+      - yapf
+      - yapf
+      - jedi-language-server
+      - matplotlib
+      - numpy
+      - plotext
+      - pylint
+      - pyscaffold
+      - termcolor
+      - torch
+      - torchvision
+      - tox
+prefix: /opt/homebrew/Caskroom/miniconda/base/envs/deep-image

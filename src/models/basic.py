@@ -16,7 +16,7 @@ from datasets.ae_image_dataset import AeImageDataset
 from lib.dispaly_analytics import DispalyAnalytics as print_da
 # pylint: enable=missing-module-docstring
 
-BATCH_SIZE = 4
+BATCH_SIZE = 16
 
 class BasicModel:
   """
@@ -53,7 +53,7 @@ class BasicModel:
   VALIDATION_DATA_SIZE = 0.1
   IMG_SIZE = 28
 
-  def __init__(self, data_dir=None, step_print_fn=print_da(), epochs=1, verbose=False):
+  def __init__(self, data_dir=None, step_print_fn=print_da(), epochs=9, verbose=False):
     """
       Constructor.
 

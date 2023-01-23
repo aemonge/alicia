@@ -15,10 +15,11 @@ class TorchvisionDownloader(object):
     self.__test_labels = []
 
   def call(self):
-    if not os.path.exists(self.__tmp_path) or not os.path.exists(f"{self.__tmp_path}/{self.datasetName}"):
-      print(colored(' Downloading ... 🌑 ', 'blue', attrs=['bold']), end='\r')
-      self.__downloadDataset()
-    elif self.datasetName == 'FashionMNIST':
+    # TODO: Check if the data has been already downloaded with the dataset, not by file path
+    print(colored(' Downloading ... 🌑 ', 'blue', attrs=['bold']), end='\r')
+    self.__downloadDataset()
+
+    if self.datasetName == 'FashionMNIST':
       self.__dataset = torchvision.datasets.FashionMNIST(self.__tmp_path)
     else:
       self.__dataset = torchvision.datasets.MNIST(self.__tmp_path)
