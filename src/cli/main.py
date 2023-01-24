@@ -2,7 +2,7 @@ import click
 
 from cli.train import train
 from cli.download import download
-from cli.test import test
+from cli.classify import classify
 
 __author__ = "aemonge"
 __copyright__ = "aemonge"
@@ -27,7 +27,7 @@ def call(ctx, verbose):
 
 call.add_command(download)
 call.add_command(train)
-call.add_command(test)
+call.add_command(classify)
 
 if __name__ == '__main__':
   # ^  This is a guard statement that will prevent the following code from
