@@ -27,16 +27,14 @@ class TorchvisionDownloader():
         Downloads the dataset.
 
   """
-  def __init__(self, test_dir = 'data/test', train_dir = 'data/train', dataset = 'MNIST', split_percentage = 70):
+  def __init__(self, dir = 'data', dataset = 'MNIST', split_percentage = 70):
     """
       Constructor
 
       Parameters
       ----------
         test_dir : str, optional
-          Path to the test directory. The default is 'data/test'.
-        train_dir : str, optional
-          Path to the train directory. The default is 'data/train'.
+          Path to the directory to save the split of `./train` and `./test`. The default is './data'.
         dataset : str, optional
           Name of the dataset. The default is 'MNIST'.
         split_percentage : int, optional
@@ -49,11 +47,22 @@ class TorchvisionDownloader():
     self.__dataset = None
     self.__tmp_path = "tmp"
     self.dataset_name = dataset
-    self.train_dir = train_dir
-    self.test_dir = test_dir
     self.split_percentage = split_percentage
     self.__train_labels = []
     self.__test_labels = []
+
+    self.train_dir = Pathlib.Path(dir, 'train')
+    self.test_dir = Pathlib.Path(dir, 'test')
+
+    if not self.train_dir.exists():
+      os.mkdir(self.train_dir)
+    else:
+      raise Exception("Train directory already exists!")
+
+    if not self.test_dir.exists():
+      os.mkdir(self.test_dir)
+    else:
+      raise Exception("Test directory already exists!")
 
   def call(self):
     """
