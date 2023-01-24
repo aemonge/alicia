@@ -50,6 +50,7 @@ class BasicModel:
   TEST_DATA_SIZE = 0.2
   VALIDATION_DATA_SIZE = 0.1
   IMG_SIZE = 28
+  LEARNING_RATE = 1 / 137
 
   def __init__(self, data_dir=None, step_print_fn=print_da(), epochs=1, verbose=False, model_file=None):
     """
@@ -75,6 +76,19 @@ class BasicModel:
       "Sandal": 0, "Shirt": 0, "Sneaker": 0, "Top": 0, "Trouser": 0
     }
     self.__loaders = { "train": None, "test": None }
+    self.__transforms = {
+      "preview": Transforms.Compose([
+        Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
+        Transforms.ToTensor(),
+        Transforms.Normalize((0.5,), (0.5,))
+      ]),
+      "train": Transforms.Compose([
+        Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
+        Transforms.ToTensor(),
+        Transforms.Normalize((0.5,), (0.5,))
+      ])
+    }
+
     self.__create_model()
 
     if model_file:
@@ -184,13 +198,15 @@ class BasicModel:
       -------
         None
     """
+    loader = DataLoader(
+      AliciaDataset(path, class_map=self.class_map, transform=self.__transforms['preview']),
+      batch_size = image_count,
+      shuffle=True
+    )
+    (images, _) = next(iter(loader))
 
-    dataset = AliciaDataset(path)
-    loader = DataLoader(dataset, batch_size = 1, shuffle=True),
-
-    for _ in range(image_count):
-      images, _ = next(iter(loader))
-      img = images[0].view(1, 784)
+    for img in images:
+      img = img.view(1, 784)
       # Turn off gradients to speed up this part
       with Torch.no_grad():
         logps = self.__model(img)
@@ -210,17 +226,11 @@ class BasicModel:
       -------
         None
     """
-    class_keys = self.class_map.keys()
-    transform =  Transforms.Compose([
-      Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
-      Transforms.ToTensor(),
-      Transforms.Normalize((0.5,), (0.5,))
-    ])
     self.__model.eval()
-    data = AliciaDataset(
-      output_directory, class_map=set(class_keys), transform=transform
+    loader = DataLoader(
+      AliciaDataset(output_directory, class_map=self.class_map, transform=self.__transforms['preview']),
+      batch_size = BATCH_SIZE
     )
-    loader = DataLoader(data, batch_size = BATCH_SIZE)
     csv = []
 
     for (images, labels) in iter(loader):
@@ -286,22 +296,13 @@ class BasicModel:
         None
     """
     self.__criterion = Nn.CrossEntropyLoss()
-
-    train_transform = Transforms.Compose([
-      Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
-      Transforms.ToTensor(),
-      Transforms.Normalize((0.5,), (0.5,))
-    ])
-    test_transform = Transforms.Compose([
-      Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
-      Transforms.ToTensor(),
-      Transforms.Normalize((0.5,), (0.5,))
-    ])
-    self.__optimizer = Optim.SGD(self.__model.parameters(), lr=0.003, momentum=0.9)
-    self.__train_dataset = AliciaDataset(f"{self.data_dir}/train", transform = train_transform)
-    self.__test_dataset = AliciaDataset(f"{self.data_dir}/test",
-                                        transform = test_transform, class_map = self.__train_dataset.class_map
-                                        )
+    self.__optimizer = Optim.SGD(self.__model.parameters(), lr=self.LEARNING_RATE, momentum=0.9)
+    self.__train_dataset = AliciaDataset(
+      f"{self.data_dir}/train", transform = self.__transforms['train']
+    )
+    self.__test_dataset = AliciaDataset(
+      f"{self.data_dir}/test", transform = self.__transforms['preview'], class_map = self.__train_dataset.class_map
+    )
     self.__loaders = {
       "train": DataLoader(self.__train_dataset, batch_size = BATCH_SIZE, shuffle=True),
       "test": DataLoader(self.__test_dataset, batch_size = BATCH_SIZE, shuffle=True),

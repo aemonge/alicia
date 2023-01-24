@@ -61,7 +61,7 @@ class AliciaDataset(Dataset):
       class_map = set()
 
     for img in all_imgs:
-      self.__labels[Pathlib.Path(img).stem] = None
+      self.__labels[Pathlib.Path(img).name] = None
 
     if labels_file.is_file():
       with labels_file.open(encoding="utf-8") as file:
