@@ -1,13 +1,54 @@
-import torchvision
+# pylint: disable=missing-module-docstring
+# pylint: disable=multiple-imports
 import glob, os, os.path, contextlib, io
+import pathlib as Pathlib
 from termcolor import colored
+import torchvision
+# pylint: enable=missing-module-docstring
 
-class TorchvisionDownloader(object):
+class TorchvisionDownloader():
+  """
+    Downloads a dataset from torchvision.
+
+    Attributes
+    ----------
+      dataset_name : str
+        The name of the dataset to download.
+      train_dir : str
+        The directory to download the training data to.
+      test_dir : str
+        The directory to download the test data to.
+      split_percentage : integer
+        The percentage of the dataset to download.
+
+    Methods
+    -------
+      call : None
+        Downloads the dataset.
+
+  """
   def __init__(self, test_dir = 'data/test', train_dir = 'data/train', dataset = 'MNIST', split_percentage = 70):
+    """
+      Constructor
 
-    self.datasetName = dataset
+      Parameters
+      ----------
+        test_dir : str, optional
+          Path to the test directory. The default is 'data/test'.
+        train_dir : str, optional
+          Path to the train directory. The default is 'data/train'.
+        dataset : str, optional
+          Name of the dataset. The default is 'MNIST'.
+        split_percentage : int, optional
+          Percentage of the dataset to be used for training. The default is 70.
+
+      Returns
+      -------
+        None
+    """
     self.__dataset = None
-    self.__tmp_path = f"tmp"
+    self.__tmp_path = "tmp"
+    self.dataset_name = dataset
     self.train_dir = train_dir
     self.test_dir = test_dir
     self.split_percentage = split_percentage
@@ -15,78 +56,183 @@ class TorchvisionDownloader(object):
     self.__test_labels = []
 
   def call(self):
-    # TODO: Check if the data has been already downloaded with the dataset, not by file path
-    print(colored(' Downloading ... 🌑 ', 'blue', attrs=['bold']), end='\r')
-    self.__downloadDataset()
+    """
+      Downloads the dataset from torchvision.
 
-    if self.datasetName == 'FashionMNIST':
+      Parameters
+      ----------
+        None
+
+      Returns
+      -------
+        None
+    """
+    print(colored(' Downloading ... 🌑 ', 'blue', attrs=['bold']), end='\r')
+    self.__download_dataset()
+
+    if self.dataset_name == 'FashionMNIST':
       self.__dataset = torchvision.datasets.FashionMNIST(self.__tmp_path)
     else:
       self.__dataset = torchvision.datasets.MNIST(self.__tmp_path)
 
     print(end='\x1b[2K')
     print(colored(' Processing ...  🌕 ', 'yellow', attrs=['bold']), end='\r')
-    self.__iterateDataset(self.__writeImages)
-    self.__writeLabels()
-    self.__clearTmp()
+    self.__iterate_dataset(self.__write_images)
+    self.__write_labels()
+    self.__clear_tmp()
     print(end='\x1b[2K')
     print(colored(' Ready           💚', 'green', attrs=['bold']))
 
-  def __downloadDataset(self):
+  def __download_dataset(self):
+    """
+      Downloads the dataset from the internet and saves it in the tmp folder.
+
+      Parameters
+      ----------
+        None
+
+      Returns
+      -------
+        None
+    """
+    # TODO: Check if the data has been already downloaded with the dataset, not by file path
     if not os.path.exists(self.__tmp_path):
       os.mkdir(self.__tmp_path)
 
     with contextlib.redirect_stdout(io.StringIO()):
       with contextlib.redirect_stderr(io.StringIO()):
-        if self.datasetName == 'MNIST':
+        if self.dataset_name == 'MNIST':
           self.__dataset = torchvision.datasets.MNIST(self.__tmp_path, download=True)
-        elif self.datasetName == 'FashionMNIST':
+        elif self.dataset_name == 'FashionMNIST':
           self.__dataset = torchvision.datasets.FashionMNIST(self.__tmp_path, download=True)
 
-  def __clearTmp(self):
-    filelist = glob.glob(f"{self.__tmp_path}/{self.datasetName}/raw/*")
-    for f in filelist:
-      os.remove(f)
-    os.rmdir(f"{self.__tmp_path}/{self.datasetName}/raw")
-    os.rmdir(f"{self.__tmp_path}/{self.datasetName}")
+  def __clear_tmp(self):
+    """
+      Clear the tmp directory
 
-  def __iterateDataset(self, cb_fn):
+      Parameters
+      ----------
+        None
+
+      Returns
+      -------
+        None
+    """
+    filelist = glob.glob(f"{self.__tmp_path}/{self.dataset_name}/raw/*")
+    for file in filelist:
+      os.remove(file)
+    os.rmdir(f"{self.__tmp_path}/{self.dataset_name}/raw")
+    os.rmdir(f"{self.__tmp_path}/{self.dataset_name}")
+
+  def __idx_to_img(self, idx):
+    """
+      Convert the index to the image filename
+
+      Parameters
+      ----------
+        idx : int
+            The index of the image
+
+      Returns
+      -------
+        str
+          The filename for the image
+    """
+    return f"{idx}.jpg"
+
+  def __iterate_dataset(self, cb_fn):
+    """
+      Iterates over the dataset and calls the callback function
+
+      Parameters
+      ----------
+        cb_fn : function
+          Callback function to be called on each image
+
+      Returns
+      -------
+        None
+    """
     idx = 0
     max_train_idx = int(len(self.__dataset) * self.split_percentage / 100)
 
     for img, label in self.__dataset:
-      label = self.__customLabelMapping(label)
+      label = self.__custom_label_mapping(label)
 
       if idx < max_train_idx:
         cb_fn(img, idx, self.train_dir)
-        self.__train_labels.append(f"{idx},{label}")
+        self.__train_labels.append(f"{self.__idx_to_img(idx)},{label}")
       else:
         cb_fn(img, idx, self.test_dir)
-        self.__test_labels.append(f"{idx},{label}")
+        self.__test_labels.append(f"{self.__idx_to_img(idx)},{label}")
 
       idx+=1
 
-  def __writeImages(self, img, idx, path):
-    img.save(f"{path}/{idx}.jpg")
+  def __write_images(self, img, idx, path):
+    """
+      Write the image to the specified path transforming the .mat file into images.
 
-  def __customLabelMapping(self, label):
-    if self.datasetName == 'FashionMNIST':
+      Parameters
+      ----------
+        img : torch.Tensor
+          The image tensor
+        idx : int
+          The index of the dataset, that will be transformed into the filename of the image
+        path : str
+          The path where the image will be written
+
+      Returns
+      -------
+        None
+    """
+    file = Pathlib.Path(path, self.__idx_to_img(idx))
+    img.save(file.as_posix())
+
+  def __custom_label_mapping(self, label):
+    """
+      Custom label mapping for the dataset, specifically map the FashionMNIST words to an index.
+
+      Parameters
+      ----------
+        label : str
+          The label to be mapped.
+
+      Returns
+      -------
+        int
+          The integer that represents the mapping.
+    """
+    if self.dataset_name == 'FashionMNIST':
       return [
         'Top', 'Trouser', 'Pullover', 'Dress', 'Coat',
         'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot'
       ][label]
-    else:
-      return label
+    # else:
+    return label
 
-  def __writeLabels(self):
-    with open(f'{self.train_dir}/labels.csv', 'w') as f:
+  def __write_labels(self):
+    """
+      Write the labels to a CSV files from the test and train directories.
+
+      Parameters
+      -------
+        None
+
+      Returns
+      -------
+        None
+    """
+    train_file = Pathlib.Path(self.train_dir, 'labels.csv')
+    test_file = Pathlib.Path(self.test_dir, 'labels.csv')
+
+    with train_file.open(mode = 'w', encoding='utf-8') as file:
       for label in self.__train_labels:
-        f.write(label)
-        f.write('\n')
-    f.close()
+        file.write(label)
+        file.write('\n')
+    file.close()
 
-    with open(f'{self.test_dir}/labels.csv', 'w') as f:
+    with test_file.open(mode = 'w', encoding='utf-8') as file:
       for label in self.__test_labels:
-        f.write(label)
-        f.write('\n')
-    f.close()
+        file.write(label)
+        file.write('\n')
+    file.close()

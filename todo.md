@@ -81,7 +81,7 @@ Re-do previous steps but now with a custom and extended real AI algorithms.
 * [ ] **Training the network** The parameters of the feedforward classifier are appropriately trained, while the parameters of the feature network are left static
 * [ ] **Validation Loss and Accuracy** During training, the validation loss and accuracy are displayed
 * [ ] **Testing Accuracy** The network's accuracy is measured on the test data
-* [ ] **Saving the model** The trained model is saved as a checkpoint along with associated hyperparameters and the class_to_idx dictionary
+* [x] **Saving the model** The trained model is saved as a checkpoint along with associated hyperparameters and the class_to_idx dictionary
 * [ ] **Loading checkpoints** There is a function that successfully loads a checkpoint and rebuilds the model
 * [ ] **Image Processing** The process_image function successfully converts a PIL image into an object that can be used as input to a trained model
 * [ ] **Class Prediction** The predict function successfully takes the path to an image and a checkpoint, then returns the top K most probably classes for that image

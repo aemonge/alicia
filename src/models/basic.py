@@ -53,7 +53,7 @@ class BasicModel:
   VALIDATION_DATA_SIZE = 0.1
   IMG_SIZE = 28
 
-  def __init__(self, data_dir=None, step_print_fn=print_da(), epochs=9, verbose=False):
+  def __init__(self, data_dir=None, step_print_fn=print_da(), epochs=1, verbose=False, model_file=None):
     """
       Constructor.
 
@@ -72,58 +72,28 @@ class BasicModel:
     self.print = step_print_fn
     self.data_dir = data_dir
     self.epochs = epochs
-
-    self.__criterion = Nn.CrossEntropyLoss()
-
-    self.__model = Nn.Sequential(
-      Nn.Linear(self.IMG_SIZE * self.IMG_SIZE, 128),
-      Nn.ReLU(),
-      Nn.Linear(128, 64),
-      Nn.ReLU(),
-      Nn.Linear(64, 10),
-      Nn.LogSoftmax(dim=1)
-    )
-    train_transform = Transforms.Compose([
-      Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
-      Transforms.ToTensor(),
-      Transforms.Normalize((0.5,), (0.5,))
-    ])
-    test_transform = Transforms.Compose([
-      Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
-      Transforms.ToTensor(),
-      Transforms.Normalize((0.5,), (0.5,))
-    ])
-    self.__optimizer = Optim.SGD(self.__model.parameters(), lr=0.003, momentum=0.9)
-    self.__train_dataset = AeImageDataset(f"{self.data_dir}/train", transform = train_transform)
-    self.__test_dataset = AeImageDataset(f"{self.data_dir}/test", transform = test_transform)
-    self.__loaders = {
-      "train": DataLoader(self.__train_dataset, batch_size = BATCH_SIZE, shuffle=True),
-      "test": DataLoader(self.__test_dataset, batch_size = BATCH_SIZE, shuffle=True),
+    self.class_map =  {
+      "Ankle boot": 0, "Bag": 0, "Coat": 0, "Dress": 0, "Pullover": 0,
+      "Sandal": 0, "Shirt": 0, "Sneaker": 0, "Top": 0, "Trouser": 0
     }
-    self.__analytics = {
-      "training": {
-        "loss": 0 # mean, std
-      },
-      "test": {
-        "loss": 0 # mean, std
-      },
-    }
+    self.__loaders = { "train": None, "test": None }
+    self.__create_model()
 
-    if self.verbose:
-      images, labels = next(iter(self.__loaders['train']))
-      verbose_info = {
-        'images': images,
-        'labels': labels[0],
-        'model': self.__model,
-        'classes': self.__train_dataset.class_map
-      }
-      self.print.header(model="Basic", verbose = verbose_info)
+    if model_file:
+      self.__load_model(model_file)
     else:
-      self.print.header(model="Basic")
+      self.__init_model()
 
   def train(self):
     """
-      Run the model.
+      Train the neural network model.
+
+      Parameters
+      ----------
+
+      Returns
+      -------
+        None
     """
     test_loader_count = len(self.__loaders['test'].dataset)
     train_loader_count = len(self.__loaders['train'].dataset)
@@ -186,10 +156,39 @@ class BasicModel:
     self.__plot_loss(train_losses, test_losses)
     self.print.footer(total_time=time_count, accuracy=(test_correct * 100 / test_loader_count))
 
-  def preview(self, image_count = 1):
+  def save(self, path):
+    """
+      Save the neural network model.
+
+      Parameters
+      ----------
+        path : str
+          The location where to save the neural network model.
+
+      Returns
+      -------
+        None
+    """
+    Torch.save({'state_dict': self.__model.state_dict(), 'class_map': self.__train_dataset.class_map}, path)
+
+  def preview(self, image_count = 1, path = ''):
     """
       Preview the model results by selection random images
+
+      Parameters
+      ----------
+        image_count : integer
+          The amount of images to display as a preview of the classification.
+        path : string
+          The location of the images.
+
+      Returns
+      -------
+        None
     """
+
+    dataset = AeImageDataset(path)
+    loader = DataLoader(dataset, batch_size = 1, shuffle=True),
 
     for _ in range(image_count):
       images, _ = next(iter(self.__loaders['train']))
@@ -201,7 +200,19 @@ class BasicModel:
       self.print.test(self.print_resutls, img, Torch.exp(logps))
 
   def __get_guessed_class(self, logps):
-    listed_class = list(self.__train_dataset.class_map.keys())
+    """
+      Get the most probable class for a given logps.
+
+      Parameters
+      ----------
+        logps : [float]
+          The array of logarithm probabilities.
+
+      Returns
+      -------
+        None
+    """
+    listed_class = list(self.class_map.keys())
     logps = Torch.exp(logps)
     logps = Np.array(logps.view(10))
     logps = Np.round(logps, 2)
@@ -210,7 +221,19 @@ class BasicModel:
     return listed_class[guess_id]
 
   def call(self, output_directory = 'out'):
-    class_keys = self.__train_dataset.class_map.keys()
+    """
+      Runs the model to classify images, with the best prediction gotten.
+
+      Parameters
+      ----------
+        output_directory : str
+          The path of the images to classify.
+
+      Returns
+      -------
+        None
+    """
+    class_keys = self.class_map.keys()
     transform =  Transforms.Compose([
       Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
       Transforms.ToTensor(),
@@ -224,13 +247,11 @@ class BasicModel:
     csv = []
 
     for (images, labels) in iter(loader):
-      for ix, img in enumerate(images):
+      for idx, img in enumerate(images):
         img = img.view(1, 784)
         with Torch.no_grad():
           logps = self.__model(img)
-
-        csv.append(f"{ labels[1][ix] },{ self.__get_guessed_class(logps) }")
-        # self.print.test(self.print_resutls, img, Torch.exp(logps))
+        csv.append(f"{ labels[1][idx] },{ self.__get_guessed_class(logps) }")
     return csv
 
   def print_resutls(self, img, probabilities_classes):
@@ -243,6 +264,10 @@ class BasicModel:
           The input image.
         probabilities_classes : torch.Tensor
           The output of the network.
+
+      Returns
+      -------
+        None
     """
     Plt.clf()
     self.__plot_wrapper()
@@ -251,7 +276,111 @@ class BasicModel:
     Plt.show()
     Plt.clf()
 
+  def __init_model(self):
+    """
+      Initialize the model, with the transformations, optimizer, criterion, and analytics metrics.
+
+      Parameters
+      ----------
+
+      Returns
+      -------
+        None
+    """
+    self.__criterion = Nn.CrossEntropyLoss()
+
+    train_transform = Transforms.Compose([
+      Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
+      Transforms.ToTensor(),
+      Transforms.Normalize((0.5,), (0.5,))
+    ])
+    test_transform = Transforms.Compose([
+      Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
+      Transforms.ToTensor(),
+      Transforms.Normalize((0.5,), (0.5,))
+    ])
+    self.__optimizer = Optim.SGD(self.__model.parameters(), lr=0.003, momentum=0.9)
+    self.__train_dataset = AeImageDataset(f"{self.data_dir}/train", transform = train_transform)
+    self.__test_dataset = AeImageDataset(f"{self.data_dir}/test", transform = test_transform)
+    self.__loaders = {
+      "train": DataLoader(self.__train_dataset, batch_size = BATCH_SIZE, shuffle=True),
+      "test": DataLoader(self.__test_dataset, batch_size = BATCH_SIZE, shuffle=True),
+    }
+    self.__analytics = {
+      "training": {
+        "loss": 0 # mean, std
+      },
+      "test": {
+        "loss": 0 # mean, std
+      },
+    }
+
+    if self.verbose:
+      images, labels = next(iter(self.__loaders['train']))
+      verbose_info = {
+        'images': images,
+        'labels': labels[0],
+        'model': self.__model,
+        'classes': self.__train_dataset.class_map
+      }
+      self.print.header(model="Basic", verbose = verbose_info)
+    else:
+      self.print.header(model="Basic")
+
+  def __create_model(self): # , input_size, hidden_layers, output_size):
+    """
+      Create the neural network model.
+
+      Parameters
+      ----------
+        None
+
+      Returns
+      -------
+        None
+    """
+    self.__model = Nn.Sequential(
+      Nn.Linear(self.IMG_SIZE * self.IMG_SIZE, 128),
+      Nn.ReLU(),
+      Nn.Linear(128, 64),
+      Nn.ReLU(),
+      Nn.Linear(64, 10),
+      Nn.LogSoftmax(dim=1)
+    )
+
+  def __load_model(self, path):
+    """
+      Load the model from a path to retrain it or use it to classify.
+
+      Parameters
+      ----------
+        path : str
+          The path where to load the model.
+
+      Returns
+      -------
+        None
+    """
+    data = Torch.load(path)
+    self.class_map = data['class_map']
+    self.__model.load_state_dict(data['state_dict'])
+    self.__model.eval()
+
   def __plot_loss(self, train_losses, test_losses):
+    """
+      Print as plot the losses during training and testing
+
+      Parameters
+      ----------
+        train_losses : list
+          The training losses.
+        tes_losses : list
+          The test losses.
+
+      Returns
+      -------
+        None
+    """
     Plt.plot(train_losses, label="train")
     Plt.plot(test_losses, label="test")
     Plt.plot_size(73, 20)
@@ -267,6 +396,10 @@ class BasicModel:
           The tensor to convert.
         img_path : string
           The path to the image.
+
+      Returns
+      -------
+        None
     """
     img = img.view(1, 28, 28).permute(1, 2, 0)
     Pyplot.imshow(img)
@@ -276,6 +409,14 @@ class BasicModel:
   def __plot_wrapper(self):
     """
       Plot the results of the test in a nice box with class map and the image.
+
+      Parameters
+      ----------
+        None
+
+      Returns
+      -------
+        None
     """
     Plt.subplots(1, 2)
     Plt.plot_size(73, 20)
@@ -288,6 +429,10 @@ class BasicModel:
       ----------
         img : torch.Tensor
           The tensor image to display.
+
+      Returns
+      -------
+        None
     """
     tmp_path = 'tmp/mnist-number.jpg'
     self.__tensor_to_image(img, tmp_path)
@@ -302,8 +447,12 @@ class BasicModel:
       ----------
         probabilities_classes : torch.Tensor
           The tensor probabilities_classes to display.
+
+      Returns
+      -------
+        None
     """
-    classes = list(self.__train_dataset.class_map.keys())
+    classes = list(self.class_map.keys())
     probabilities_classes = Np.array(probabilities_classes.view(10))
     probabilities_classes = Np.round(probabilities_classes, 2)
     Plt.subplot(1, 1)
