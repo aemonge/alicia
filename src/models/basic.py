@@ -52,7 +52,7 @@ class BasicModel:
   IMG_SIZE = 28
   LEARNING_RATE = 1 / 137
 
-  def __init__(self, data_dir=None, step_print_fn=print_da(), epochs=1, verbose=False, model_file=None):
+  def __init__(self, data_dir=None, step_print_fn=print_da(), epochs=1, verbose=False, model_file=None, use_gpu = False):
     """
       Constructor.
 
@@ -89,12 +89,20 @@ class BasicModel:
       ])
     }
 
+    if use_gpu and not Torch.cuda.is_available():
+      raise Exception("GPU is not available")
+
+    self.enabled_gpu = use_gpu
+    device = Torch.device("cuda" if self.enabled_gpu else "cpu")
+
+    Torch.device(device)
     self.__create_model()
 
     if model_file:
       self.__load_model(model_file)
     else:
       self.__init_model()
+    self.__model.to(device)
 
   def train(self):
     """
@@ -324,7 +332,7 @@ class BasicModel:
         'model': self.__model,
         'classes': self.__train_dataset.class_map
       }
-      self.print.header(model="Basic", verbose = verbose_info)
+      self.print.header(model="Basic", verbose = verbose_info, gpu=self.enabled_gpu)
     else:
       self.print.header(model="Basic")
 
