@@ -1,4 +1,4 @@
 {
   "venv": "deep-image"
-  "venvPath": "/opt/homebrew/Caskroom/miniconda/base/envs/"
+  "venvPath": "/usr/local/Caskroom/miniconda/base/envs/"
 }

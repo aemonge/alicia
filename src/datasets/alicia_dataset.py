@@ -13,7 +13,7 @@ from torch.utils.data import Dataset
 
 BATCH_SIZE = 4
 
-class AeImageDataset(Dataset):
+class AliciaDataset(Dataset):
   """
     Custom dataset for loading data from a folder, and labels form the folder file `labels.csv`
 
@@ -107,7 +107,7 @@ class AeImageDataset(Dataset):
     """
     file = Pathlib.Path(self.main_dir, self.__total_imgs[idx])
     image = Image.open(file.as_posix()).convert("RGB")
-    class_id = self.__labels[file.stem]
+    class_id = self.__labels[file.name]
 
     if self.transform:
       image = self.transform(image)

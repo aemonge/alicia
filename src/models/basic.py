@@ -1,18 +1,16 @@
 # pylint: disable=missing-module-docstring
 import time
-import os as Os
 import numpy as Np
 import plotext as Plt
 from matplotlib import pyplot as Pyplot
 import torch as Torch
-import numpy as Numpy
 
 from torchvision import transforms as Transforms
 from torch.utils.data import DataLoader
 from torch import optim as Optim
 from torch import nn as Nn
 
-from datasets.ae_image_dataset import AeImageDataset
+from datasets.alicia_dataset import AliciaDataset
 from lib.dispaly_analytics import DispalyAnalytics as print_da
 # pylint: enable=missing-module-docstring
 
@@ -131,7 +129,7 @@ class BasicModel:
             self.__analytics['test']['loss'] += loss.item()
 
             ps = Torch.exp(log_ps)
-            top_p, top_class = ps.topk(1, dim=1)
+            _, top_class = ps.topk(1, dim=1)
             equals = top_class == labels.view(*top_class.shape)
             test_correct += equals.sum().item()
 
@@ -187,38 +185,17 @@ class BasicModel:
         None
     """
 
-    dataset = AeImageDataset(path)
+    dataset = AliciaDataset(path)
     loader = DataLoader(dataset, batch_size = 1, shuffle=True),
 
     for _ in range(image_count):
-      images, _ = next(iter(self.__loaders['train']))
+      images, _ = next(iter(loader))
       img = images[0].view(1, 784)
       # Turn off gradients to speed up this part
       with Torch.no_grad():
         logps = self.__model(img)
 
       self.print.test(self.print_resutls, img, Torch.exp(logps))
-
-  def __get_guessed_class(self, logps):
-    """
-      Get the most probable class for a given logps.
-
-      Parameters
-      ----------
-        logps : [float]
-          The array of logarithm probabilities.
-
-      Returns
-      -------
-        None
-    """
-    listed_class = list(self.class_map.keys())
-    logps = Torch.exp(logps)
-    logps = Np.array(logps.view(10))
-    logps = Np.round(logps, 2)
-
-    guess_id = Numpy.argmax(logps)
-    return listed_class[guess_id]
 
   def call(self, output_directory = 'out'):
     """
@@ -240,7 +217,7 @@ class BasicModel:
       Transforms.Normalize((0.5,), (0.5,))
     ])
     self.__model.eval()
-    data = AeImageDataset(
+    data = AliciaDataset(
       output_directory, class_map=set(class_keys), transform=transform
     )
     loader = DataLoader(data, batch_size = BATCH_SIZE)
@@ -276,6 +253,27 @@ class BasicModel:
     Plt.show()
     Plt.clf()
 
+  def __get_guessed_class(self, logps):
+    """
+      Get the most probable class for a given logps.
+
+      Parameters
+      ----------
+        logps : [float]
+          The array of logarithm probabilities.
+
+      Returns
+      -------
+        None
+    """
+    listed_class = list(self.class_map.keys())
+    logps = Torch.exp(logps)
+    logps = Np.array(logps.view(10))
+    logps = Np.round(logps, 2)
+
+    guess_id = Np.argmax(logps)
+    return listed_class[guess_id]
+
   def __init_model(self):
     """
       Initialize the model, with the transformations, optimizer, criterion, and analytics metrics.
@@ -300,8 +298,10 @@ class BasicModel:
       Transforms.Normalize((0.5,), (0.5,))
     ])
     self.__optimizer = Optim.SGD(self.__model.parameters(), lr=0.003, momentum=0.9)
-    self.__train_dataset = AeImageDataset(f"{self.data_dir}/train", transform = train_transform)
-    self.__test_dataset = AeImageDataset(f"{self.data_dir}/test", transform = test_transform)
+    self.__train_dataset = AliciaDataset(f"{self.data_dir}/train", transform = train_transform)
+    self.__test_dataset = AliciaDataset(f"{self.data_dir}/test",
+                                        transform = test_transform, class_map = self.__train_dataset.class_map
+                                        )
     self.__loaders = {
       "train": DataLoader(self.__train_dataset, batch_size = BATCH_SIZE, shuffle=True),
       "test": DataLoader(self.__test_dataset, batch_size = BATCH_SIZE, shuffle=True),

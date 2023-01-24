@@ -25,9 +25,9 @@ def call(ctx, verbose):
   ctx.obj['verbose'] = verbose
 
 
-call.add_command(download)
-call.add_command(train)
 call.add_command(classify)
+call.add_command(train)
+call.add_command(download)
 
 if __name__ == '__main__':
   # ^  This is a guard statement that will prevent the following code from

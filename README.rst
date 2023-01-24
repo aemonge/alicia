@@ -30,17 +30,15 @@
 |
 
 ================
-aeimg-classifier
+AlicIA
 ================
 
 
-    Add a short description here!
+    A set of different neural network models to classify images, and measure their respective performance.
 
 
-A longer description of your project goes here...
+Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore culpa sint ad nisi Lorem pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia. Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet voluptate voluptate dolor minim nulla est proident. Nostrud officia pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat reprehenderit commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa proident adipisicing id nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et culpa duis.
 
-
-.. _pyscaffold-notes:
 
 Making Changes & Contributing
 =============================
@@ -49,7 +47,7 @@ This project uses `pre-commit`_, please make sure to install it before making an
 changes::
 
     pip install pre-commit
-    cd aeimg-classifier
+    cd alicia
     pre-commit install
 
 It is a good idea to update the hooks to the latest version::

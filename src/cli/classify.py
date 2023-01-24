@@ -16,21 +16,6 @@ from models.cat import Cat
 def classify(ctx, model_file, data_dir, number_images):
   """
     Classify images using a trained model.
-
-    Parameters
-    ----------
-      ctx : click.Context
-          Click context object
-      model_file : str
-        Path to the model file
-      data_dir : str
-        Path to the data directory
-      number_images : int
-        Increment the number of images to display with the class bar chart and images preview
-
-    Returns
-    -------
-      None
   """
   model = None
   verbose = ctx.obj['verbose']
