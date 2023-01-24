@@ -29,3 +29,4 @@ cat data/fashion/train/labels.csv| cut -f2 -d, | sort | uniq > fashion.classes.t
 rm -rf data/mnist; mkdir -p data/mnist/train data/mnist/test; alicia -v download MNIST data/mnist/train data/mnist/test
 alicia -v train basic data/mnist -s data/mnist.basic.pth -e 15
 alicia classify -n 4 data/mnist.basic.pth out
+rm -rf data/fashion ; mkdir data/fashion; alicia -v download FashionMNIST data/fashion
