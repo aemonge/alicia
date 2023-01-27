@@ -94,9 +94,11 @@ class DispalyAnalytics:
       -------
         None
     """
+
+    time_f = time.strftime("%H:%M:%S", time.gmtime(total_time))
     print(self.__get_hr(char= "― ", color='cyan', padding=0))
     msg = f" ∑ Accuracy {colored(str(round(accuracy, 3)), attrs=['bold'])}%"
-    msg += f"{self.PADDING_CHAR}∑ Total Time: {colored(str(round(total_time, 4)), attrs=['bold'])}s"
+    msg += f"{self.PADDING_CHAR}∑ Total Time: {colored(str(time_f), attrs=['bold'])}"
     print(msg)
     print(self.__get_hr(color='blue', padding=0))
 

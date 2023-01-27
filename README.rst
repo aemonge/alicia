@@ -63,6 +63,10 @@ To build locally and develop locally
     tox .
     pip install -e .
 
+Load tags into your editor
+
+    ctags -R
+
 Note
 ====
 

@@ -80,7 +80,7 @@ class BasicModel:
       "preview": Transforms.Compose([
         Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
         Transforms.ToTensor(),
-        Transforms.Normalize((0.5,), (0.5,))
+        Transforms.Normalize((0.5,), (0.5,)) # TODO: Make sure this matches the requirements of the Net: mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
       ]),
       "train": Transforms.Compose([
         Transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
@@ -127,7 +127,7 @@ class BasicModel:
       for (images, labels) in iter(self.__loaders['train']): # Id -> Label
         self.__optimizer.zero_grad()
 
-        # Let's reshape as we just learned by experimenting 🤟
+        # Let's reshape as we just learned by experimenting 🤟 TODO: Don't reshape, but normalize in transforms.
         images = images.view(images.shape[0], -1)
         labels = labels[0].long() # [:,0].long()
         output = self.__model(images)
@@ -165,9 +165,9 @@ class BasicModel:
 
         time_now = time.time()
         time_count += time_now - start_time
+        time_f = time.strftime("%H:%M:%S", time.gmtime(time_now - start_time))
         print(
-          f" Epoch: {epoch+1}/{self.epochs}, ",
-          f" Time: {(time_now - start_time):.4f}s, "
+          f" Epoch: {epoch+1}/{self.epochs}, Time: {time_f},",
           f" Accuracy: {(test_correct * 100 / test_loader_count):.2f}%"
         )
         print( f"   Loss: [ Train: {training_loss:.4f}, Test: {test_loss:.4f} ]")

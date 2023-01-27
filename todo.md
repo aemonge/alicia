@@ -31,7 +31,7 @@
   see possible over-fitting of the algorithm chosen.
 * [x] A class probability bar-graph to display the results form three random data picks.
 * [x] Semi automatic data splitter into: Training, Testing, and Verifying.
-* [ ] Save the hyperparameters (learning rate, number of hidden units, and training epochs), by understanding the reason for saving them.
+* [ ] Save the hyperparameters (learning rate, visible units, number of hidden units, and training epochs), by understanding the reason for saving them.
 
 ### Getting real with Number Recognition (mnist)
 > (https://deepai.org/dataset/mnist)
@@ -52,28 +52,30 @@ Re-do previous steps but now with a custom and extended real AI algorithms.
 * [ ] Extend your Analytics, to be able to have a one-on-one comparison of the three algorithms.
 * [ ] Create a sensible fourth algorithm, as a chosen algorithm.
       - Make sure this has the best results seen with your Analytics.
+* [ ] Define a new, untrained feed-forward network as a classifier, using ReLU activations and dropout
 * [ ] Add a fifth algorithm by downloading and using a pre-trained model.
 * [ ] Run such a model against your Analytics.
 * [ ] Add a sixth or seventh downloaded pre-trained model.
 * [ ] Choose one of such models, and extend (transfer learning) it as a custom one.
 
 #### Model Names
-1. [x] Dummy
-2. [x] Basic
-3. [ ] Raw
-4. [ ] Crazy
-5. [ ] Optimum
-6. [ ] [downloaded name]
-7. [ ] [downloaded name]
-8. [ ] [downloaded name]
-9. [ ] Alicia-[downloaded name]
+01. [x] Dummy
+02. [x] Basic
+03. [ ] Raw
+04. [ ] Crazy
+05. [ ] Optimum
+06. [ ] VGG (AlexNet is fast; like how you would expect it)
+07. [ ] Inception
+08. [ ] SqueezeNet
+09. [ ] DenseNet
+10. [ ] Alicia-[downloaded name]
 
 ### Approaching Udacity
 > (https://github.com/zalandoresearch/fashion-mnist)
 
 * [x] Extend all your implementation to Recognition of the [fashion-mnist](https://github.com/zalandoresearch/fashion-mnist)
 * [ ] Extend all your implementations to Recognition of the base Cat/Dogs/Breads data from the pre-project
-* [ ] Extend all your implementation to Recognition of the data from this project (flowers).
+* [ ] Extend all your implementation to Recognition of the data from this project [flowers](https://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html).
 
 ## Part 1 - Development Notebook
 
