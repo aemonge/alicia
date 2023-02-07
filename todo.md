@@ -1,8 +1,29 @@
+# Recent Re-todo, after graduation
+
+1.  [ ] Implement the following actions:
+        - download
+        - train (same arguments as the udacity project)
+        - test (--with sanity check, console or visual)
+        - predict (same arguments as the udacity project)
+        - compare (compare validation-accuracy, test-accuracy and time between archs)
+        - all ( a simple wrap of above commands)
+2.  [ ] Refactor classes, dummy and basic to be abstract and follow the conventions.
+3.  [ ] Unit test, with performance testings.
+4.  [ ] Simplify the files structure.
+5.  [ ] Deploy the project to pypy and include the basic documentation.
+6.  [ ] Continue with the other models, on a TDD methodology.
+7.  [ ] The abstract class should let you choose between architectures by name.
+8.  [ ] Reach the VGG model, and start applying to companies.
+9.  [ ] Complete AlicIA with all the models
+10. [ ] Pay tech debt.
+
 # 🐛 Tech debt
 
 * [ ] Make pylint understand venv paths rightfully.
 * [ ] Make pylint and pyright to understand the callback method class, or create a abstract class
 * [ ] Change `--verbose` for `--log-level [error, info, verbose]` and display none, less, all information.
+* [ ] Move both, the criterion and optimizer away from the model, and generate a split model for them.
+      - While `alicia train` I should specify the learning-rate.
 
 # External documentation
 
@@ -65,6 +86,7 @@ Re-do previous steps but now with a custom and extended real AI algorithms.
 04. [ ] Crazy
 05. [ ] Optimum
 06. [ ] VGG (AlexNet is fast; like how you would expect it)
+------- At this step you can start applying to companies
 07. [ ] Inception
 08. [ ] SqueezeNet
 09. [ ] DenseNet
@@ -111,4 +133,5 @@ Re-do previous steps but now with a custom and extended real AI algorithms.
 > (https://deepai.org/datasets)
 
 * [ ] Choose three data set form deep-ai.org and test with new data
+* [ ] Use the flower to test even more the classifiers.
 * [ ] Create a image classifier for your dads works, and classify all his images of architecture

@@ -23,7 +23,7 @@ dependencies:
       - pylint
       - pyscaffold
       - termcolor
+      - tox
       - torch
       - torchvision
-      - tox
-prefix: /opt/homebrew/Caskroom/miniconda/base/envs/deep-image
+      - torchaudio
