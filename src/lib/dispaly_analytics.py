@@ -1,6 +1,34 @@
 import plotext as plt
 import os
+import time
 from termcolor import colored
+
+
+def print_step(epoch, epochs, start_time, time_count,
+               tr_loss, vd_loss, vd_correct,
+               validate_loader_count, train_loader_count):
+
+  training_loss = tr_loss / train_loader_count
+  validate_loss = vd_loss / validate_loader_count
+
+  time_now = time.time()
+  time_count += time_now - start_time
+  time_f = time.strftime("%H:%M:%S", time.gmtime(time_now - start_time))
+
+  print(f"   Epoch: {epoch + 1}/{epochs}\n",
+        f"     Losses [ training: {training_loss:.6f}, validate: {validate_loss:.6f} ]{' ':>20}\n",
+        f"     Accuracy: {(vd_correct * 100 / validate_loader_count):.2f}%, Time: {time_f}{' ':>30}",
+  )
+
+  return time_now
+
+def print_total(correct, count, start_time):
+  time_f = time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time))
+  acc = (correct * 100 / count) #:.2f
+  accuracy_f = colored(f"{acc:.3f}%", ('blue' if acc > 90 else ('green' if acc > 70 else 'red')))
+
+  print('\033[F\033[K', end='\r') # back prev line and clear
+  print(f" Accuracy: {accuracy_f}, Time: {time_f}")
 
 class DispalyAnalytics:
   """
