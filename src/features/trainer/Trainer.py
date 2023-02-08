@@ -41,8 +41,7 @@ class Trainer:
     self.optimizer.zero_grad()
     next(s)
 
-    # TODO: use model()
-    output = self.model.forward(images)
+    output = self.model(images)
     next(s)
 
     loss = self.criterion(output, labels)
@@ -98,7 +97,7 @@ class Trainer:
     return vd_loss, vd_correct
 
   def train(self, data_dir: str, labels: dict,
-            batch_size: int = 64, epochs: int = 1, freeze_parameters: bool = True) -> None:
+            batch_size: int = 64, epochs: int = 1, freeze_parameters: bool = False) -> None:
     """
       help:
       ----------
@@ -122,10 +121,8 @@ class Trainer:
     validate_loader_count = len(valid_ldr.dataset)
 
     if freeze_parameters:
-      # TODO: Use self.model
       for param in self.model.parameters():
         param.requires_grad = False
-
 
     print(f" Epochs: {epochs}, Learning rate: {self.learning_rate}, Momentum: {self.momentum},",
           f" Items: [training: \"{train_loader_count:,}\" , validation: \"{validate_loader_count:,}\"]\n")

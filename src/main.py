@@ -13,7 +13,6 @@ __license__ = "MIT"
 __name__ = "aeimg_classifier"
 __version__ = "0.0.1"
 
-
 @click.group()
 @click.pass_context
 @click.option("-v", "--verbose", default=False, is_flag=True, type=click.BOOL)

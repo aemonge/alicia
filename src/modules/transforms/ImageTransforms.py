@@ -33,8 +33,8 @@ transforms = {
     Transforms.Resize(28),
     Transforms.CenterCrop(28),
     Transforms.ToTensor(),
-    Transforms.Normalize((0.5,), (0.5,)),
-    # ReshapeTransform((-1, )),
+    # Transforms.Normalize((0.5,), (0.5,)),
+    ReshapeTransform((-1, )),
     # Transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
   ]),
   "display": Transforms.Compose([
@@ -50,7 +50,7 @@ transforms = {
     Transforms.CenterCrop(28),
     Transforms.ToTensor(),
     Transforms.Normalize((0.5,), (0.5,)),
-    # ReshapeTransform((-1, )),
+    ReshapeTransform((-1, )),
     # Transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
   ]),
   "train": Transforms.Compose([
@@ -59,7 +59,7 @@ transforms = {
     Transforms.CenterCrop(28),
     Transforms.ToTensor(),
     Transforms.Normalize((0.5,), (0.5,)),
-    # ReshapeTransform((-1, )),
+    ReshapeTransform((-1, )),
     # Transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
   ])
 }

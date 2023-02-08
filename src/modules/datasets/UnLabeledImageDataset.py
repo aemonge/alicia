@@ -83,4 +83,5 @@ class UnLabeledImageDataset(Dataset):
 
     class_name = self.__labels[file.name]
     class_id = self.__labels_ids[class_name]
+
     return image, (torch.tensor(class_id), file.name)

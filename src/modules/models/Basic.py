@@ -1,3 +1,6 @@
+from collections.abc import Iterator
+from torch.nn.parameter import Parameter
+
 import random
 import torch
 import torch.nn as nn
@@ -9,6 +12,9 @@ class Basic(AbsModule):
   KERNEL_SIZE = (3, 3)
   STRIDE = (1, 1)
   PADDING = (1, 1)
+
+  def __call__(self, x: torch.Tensor) -> torch.Tensor:
+    return self.forward(x)
 
   def __repr__(self):
     return 'Basic()'
@@ -52,10 +58,10 @@ class Basic(AbsModule):
     # TODO: Remove code bellowReset to a hard-coded features to test
     last_size = 10
     self.features = torch.nn.Sequential(
-      torch.nn.Linear(self.input_size, 784),
+      torch.nn.Linear(self.input_size, 128),
       torch.nn.ReLU(),
-      torch.nn.Linear(784, 128),
-      torch.nn.ReLU(),
+      # torch.nn.Linear(784, 128),
+      # torch.nn.ReLU(),
       torch.nn.Linear(128, 64),
       torch.nn.ReLU(),
       torch.nn.Linear(64, last_size),
@@ -82,9 +88,6 @@ class Basic(AbsModule):
     self.classifier = data['classifier']
     self.load_state_dict(data['state_dict'])
 
-  def __call__(self, x: torch.Tensor) -> torch.Tensor:
-    return self.forward(x)
-
   # TODO: Do you really need to re-implement this? I would guess not bro
   # def train(self) -> None:
   #   self.features.train();
@@ -92,7 +95,7 @@ class Basic(AbsModule):
   # def eval(self) -> None:
   #   self.features.eval();
 
-  def parameters(self) -> list:
+  def parameters(self) -> Iterator[Parameter]:
     return self.features.parameters()
 
   def save(self, path: str) -> None:
