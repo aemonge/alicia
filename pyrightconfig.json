@@ -1,4 +1,5 @@
 {
   "venv": "alicia",
-  "venvPath": "~/.anaconda3/envs/udacity"
+  "venvPath": "~/.anaconda3/envs/udacity",
+  "reportUnboundVariable": false
 }

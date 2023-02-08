@@ -30,3 +30,6 @@ rm -rf data/mnist; mkdir -p data/mnist/train data/mnist/test; alicia -v download
 alicia -v train basic data/mnist -s data/mnist.basic.pth -e 15
 alicia classify -n 4 data/mnist.basic.pth out
 rm -rf data/fashion ; mkdir data/fashion; alicia -v download FashionMNIST data/fashion
+alicia create basic data/mnist-fashion/labels.csv data/basic.pth -u 7
+alicia create basic data/mnist-fashion/labels.csv data/basic.pth && alicia info data/basic.pth
+alicia train data/basic.pth data/mnist-fashion-small -b 4 -e 3 -l 0.003 -p
