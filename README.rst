@@ -78,10 +78,11 @@ TODO My list of pending and implemented features
 * [ ] Make pylint and pyright to understand the callback method class, or create a abstract class
 * [ ] Change `--verbose` for `--log-level [error, info, verbose]` and display none, less, all information.
 * [ ] Make the creator dynamic, not hard-coded.
-* [ ] Define well structured architecture. Transforms (and anti-transforms) are bounded to the data.
+* [ ] Define well structure architecture. Transforms (and anti-transforms) are bounded to the data.
       - As the classifiers
 * [ ] Move both, the criterion and optimizer away from the model, and generate a split model for them.
       - While `alicia train` I should specify the learning-rate.
+* [ ] Trim all the `tox` stuff that you aren't using.
 
 References
 ================================================

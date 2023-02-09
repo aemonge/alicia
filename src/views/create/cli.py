@@ -36,5 +36,5 @@ def create(ctx, architecture: str, categories_file: str, save_file: str,
     case 'basic':
       model = Basic(sorted_labels)
 
-  model.create(input_size=initial_input_size, hidden_units=hidden_units, dropout=dropout)
+  model.create(input_size=initial_input_size, dropout=dropout)
   model.save(save_file)
