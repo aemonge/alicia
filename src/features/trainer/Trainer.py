@@ -124,8 +124,8 @@ class Trainer:
       for param in self.model.parameters():
         param.requires_grad = False
 
-    print(f" Epochs: {epochs}, Learning rate: {self.learning_rate}, Momentum: {self.momentum},",
-          f" Items: [training: \"{train_loader_count:,}\" , validation: \"{validate_loader_count:,}\"]\n")
+    print(f" Epochs: {epochs},\tLearning rate: {self.learning_rate},\tMomentum: {self.momentum},\n",
+          f"Items: [training: \"{train_loader_count:,}\" ,\tvalidation: \"{validate_loader_count:,}\"]\n")
 
     time_count = 0
     vd_correct = 0

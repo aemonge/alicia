@@ -1,6 +1,6 @@
 import click
 
-from features.torchvision_downloader import TorchvisionDownloader
+from features.torchvision_downloader.TorchvisionDownloader import TorchvisionDownloader
 
 DATASETS=['MNIST', 'FashionMNIST']
 
@@ -8,14 +8,13 @@ DATASETS=['MNIST', 'FashionMNIST']
 @click.pass_context
 @click.argument("dataset", default='MNIST', type=click.Choice(DATASETS))
 @click.argument("data_dir", type=click.Path(exists=True, dir_okay=True, readable=True), required=1)
-@click.option("-s", "--split-percentage", default=70, type=click.INT)
+@click.option("-s", "--split-percentage", default=(0.65, 0.25, 0.1), type=(float, float, float),
+  help='The split percentage triplet "-s 0.65 0.25 0.1"'
+)
 def download(ctx, dataset, data_dir, split_percentage):
   """
-    Download a MNIST dataset with PyTorch and split it into `/test` `/train` directories.
+    Download a MNIST dataset with PyTorch and split it into `./train`, `./valid`, and `./test` directories.
 
-    The downloaded files will be process out to leave the raw JPGs images in the both directories
-      with a `labels.csv` file on them.
+    The download process will also generate the `./labels.csv` file containing the labels of all sets.
   """
-  TorchvisionDownloader(
-    dir = data_dir, dataset = dataset, split_percentage = split_percentage
-  ).call()
+  TorchvisionDownloader(data_dir, dataset, split_percentage).call()

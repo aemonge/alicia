@@ -1,6 +1,7 @@
 import click
 import csv
 import torch
+from termcolor import colored
 
 from modules.models.Basic import Basic
 from modules.models.AbsModule import AbsModule
@@ -14,7 +15,7 @@ from features.trainer.Trainer import Trainer
 @click.argument("categories-file", type=click.Path(file_okay=True, writable=True), required=1)
 @click.option("-b", "--batch-size", type=int, default=16, help="Image loader batch size")
 @click.option("-e", "--epochs", default=3, type=click.INT)
-@click.option("-l", "--learning-rate", default=1/137, type=click.FLOAT)
+@click.option("-l", "--learning-rate", default=round(1/137, 6), type=click.FLOAT)
 @click.option("-m", "--momentum", default=0.9, type=click.FLOAT)
 @click.option("-p", "--pretend", default=False, type=click.BOOL, is_flag=True)
 def train(ctx, model_file, data_dir, categories_file, batch_size, epochs, learning_rate, momentum, pretend):
@@ -38,6 +39,8 @@ def train(ctx, model_file, data_dir, categories_file, batch_size, epochs, learni
       raise ValueError(f'Unknown model: {data["name"]}')
 
   model.load(model_file)
+  if pretend:
+    print(colored(' Results of the training will not saved, since we are just pretending', 'red'))
   trainer = Trainer(model, transforms, learning_rate = learning_rate, momentum = momentum)
   trainer.train(data_dir, labels, batch_size, epochs)
 

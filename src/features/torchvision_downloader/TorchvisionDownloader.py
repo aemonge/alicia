@@ -1,10 +1,9 @@
-# pylint: disable=missing-module-docstring
-# pylint: disable=multiple-imports
 import glob, os, os.path, contextlib, io
 import pathlib as Pathlib
 from termcolor import colored
+from torch.utils.data import Dataset
+from PIL.Image import Image
 import torchvision
-# pylint: enable=missing-module-docstring
 
 class TorchvisionDownloader():
   """
@@ -14,12 +13,10 @@ class TorchvisionDownloader():
     ----------
       dataset_name : str
         The name of the dataset to download.
-      train_dir : str
+      dir : str
         The directory to download the training data to.
-      test_dir : str
-        The directory to download the test data to.
-      split_percentage : integer
-        The percentage of the dataset to download.
+      split_percentage : tuple[float, float, float]
+        The percentages of how to split the data set into three parts.
 
     Methods
     -------
@@ -27,7 +24,7 @@ class TorchvisionDownloader():
         Downloads the dataset.
 
   """
-  def __init__(self, dir = 'data', dataset = 'MNIST', split_percentage = 70):
+  def __init__(self, dir: str, dataset: str, split_percentage: tuple[float, float, float] = (0.65, 0.25, 0.1)):
     """
       Constructor
 
@@ -44,23 +41,29 @@ class TorchvisionDownloader():
       -------
         None
     """
-    self.__dataset = None
+    self.__dataset : Dataset[list[Image]]
     self.__tmp_path = "tmp"
     self.dataset_name = dataset
     self.split_percentage = split_percentage
-    self.__train_labels = []
-    self.__test_labels = []
+    self.__labels = []
 
-    self.train_dir = Pathlib.Path(dir, 'train')
-    self.test_dir = Pathlib.Path(dir, 'test')
+    self.__root_dir = dir
+    self.__train_dir = Pathlib.Path(dir, 'train')
+    self.__valid_dir = Pathlib.Path(dir, 'valid')
+    self.__test_dir = Pathlib.Path(dir, 'test')
 
-    if not self.train_dir.exists():
-      os.mkdir(self.train_dir)
+    if not self.__train_dir.exists():
+      os.mkdir(self.__train_dir)
     else:
       raise Exception("Train directory already exists!")
 
-    if not self.test_dir.exists():
-      os.mkdir(self.test_dir)
+    if not self.__valid_dir.exists():
+      os.mkdir(self.__valid_dir)
+    else:
+      raise Exception("Train directory already exists!")
+
+    if not self.__test_dir.exists():
+      os.mkdir(self.__test_dir)
     else:
       raise Exception("Test directory already exists!")
 
@@ -84,12 +87,14 @@ class TorchvisionDownloader():
     else:
       self.__dataset = torchvision.datasets.MNIST(self.__tmp_path)
 
-    print(end='\x1b[2K')
+    # print(end='\x1b[2K')
+    print('\r', end='\r')
     print(colored(' Processing ...  🌕 ', 'yellow', attrs=['bold']), end='\r')
     self.__iterate_dataset(self.__write_images)
     self.__write_labels()
     self.__clear_tmp()
-    print(end='\x1b[2K')
+    # print(end='\x1b[2K')
+    print('\r', end='\r')
     print(colored(' Ready           💚', 'green', attrs=['bold']))
 
   def __download_dataset(self):
@@ -163,17 +168,21 @@ class TorchvisionDownloader():
         None
     """
     idx = 0
-    max_train_idx = int(len(self.__dataset) * self.split_percentage / 100)
+    total = len(self.__dataset) # pyright: reportGeneralTypeIssues=false
+    max_train_idx = int(total * self.split_percentage[0])
+    max_valid_idx = int(total * (self.split_percentage[0] + self.split_percentage[1]))
 
     for img, label in self.__dataset:
       label = self.__custom_label_mapping(label)
 
       if idx < max_train_idx:
-        cb_fn(img, idx, self.train_dir)
-        self.__train_labels.append(f"{self.__idx_to_img(idx)},{label}")
+        cb_fn(img, idx, self.__train_dir)
+      elif idx < max_valid_idx:
+        cb_fn(img, idx, self.__valid_dir)
       else:
-        cb_fn(img, idx, self.test_dir)
-        self.__test_labels.append(f"{self.__idx_to_img(idx)},{label}")
+        cb_fn(img, idx, self.__test_dir)
+
+      self.__labels.append(f"{self.__idx_to_img(idx)},{label}")
 
       idx+=1
 
@@ -231,17 +240,9 @@ class TorchvisionDownloader():
       -------
         None
     """
-    train_file = Pathlib.Path(self.train_dir, 'labels.csv')
-    test_file = Pathlib.Path(self.test_dir, 'labels.csv')
-
-    with train_file.open(mode = 'w', encoding='utf-8') as file:
-      for label in self.__train_labels:
-        file.write(label)
-        file.write('\n')
-    file.close()
-
-    with test_file.open(mode = 'w', encoding='utf-8') as file:
-      for label in self.__test_labels:
+    path = Pathlib.Path(self.__root_dir, 'labels.csv')
+    with path.open(mode = 'w', encoding='utf-8') as file:
+      for label in self.__labels:
         file.write(label)
         file.write('\n')
     file.close()

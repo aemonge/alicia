@@ -45,7 +45,6 @@ TODO My list of pending and implemented features
         - test (--with sanity check, console or visual)
         - predict (same arguments as the udacity project)
         - compare (compare validation-accuracy, test-accuracy and time between archs)
-        - all ( a simple wrap of above commands)
 2.  [ ] Unit test, with performance testings, use fashion-mnist small data.
 3.  [x] Simplify the files structure.
 4.  [ ] Implement a behaviour to change hidden units on all models.

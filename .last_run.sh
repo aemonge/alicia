@@ -37,3 +37,5 @@ alicia create basic data/mnist-fashion-small/labels.csv data/basic.pth -i 784 &&
 alicia create basic data/mnist-fashion-small/labels.csv data/basic.pth -i 784 && alicia info data/basic.pth && alicia train data/basic.pth data/mnist-fashion-small data/mnist-fashion-small/labels.csv -b 4 -e 7 -l 0.0003 -m 0.85 -p
 alicia create basic data/mnist-fashion-small/labels.csv data/basic.pth -i 784 && alicia info data/basic.pth && alicia train data/basic.pth data/mnist-fashion-small data/mnist-fashion-small/labels.csv -b 4 -e 7 -l 0.0003 -m 0.85 -p
 alicia create basic data/mnist-fashion-small/labels.csv data/basic.pth -i 784 && alicia info data/basic.pth && alicia train data/basic.pth data/mnist-fashion-small data/mnist-fashion-small/labels.csv -b 4 -e 37 -l 0.003 -m 0.85 && alicia test data/basic.pth data/mnist-fashion-small data/mnist-fashion-small/labels.csv -b 4 -h -n 9
+rm -r data/mnist-fashion/[tv]* && alicia download FashionMNIST data/mnist-fashion
+rm -r data/mnist-fashion/[tv]* && alicia download FashionMNIST data/mnist-fashion
