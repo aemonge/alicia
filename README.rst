@@ -35,6 +35,9 @@ Load tags into your editor::
 
     ctags -R
 
+Use the test with pytest::
+
+    pytest
 
 TODO My list of pending and implemented features
 ================================================

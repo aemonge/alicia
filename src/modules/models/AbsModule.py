@@ -1,8 +1,11 @@
 import torch
-from abc import abstractmethod, ABCMeta
+from abc import abstractmethod
+from better_abc import abstract_attribute, ABCMeta
 
 class AbsModule(torch.nn.Module, metaclass=ABCMeta):
-  # labels : list # TODO: Define this property as required in the class look the docs for ABC
+  @abstract_attribute
+  def labels(self) -> list|None:
+    pass
 
   @abstractmethod
   def create(self):

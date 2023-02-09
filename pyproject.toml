@@ -15,8 +15,6 @@ indent-string='  '
 [tool.pylint.typecheck]
 generated-members="numpy.*, torch.*, torchvision.*"
 
-# [tool.pylint.master]
-# init-hooks = 'import sys; sys.path.append("")'
-# /opt/homebrew/Caskroom/miniconda/base/envs/deep-image/lib/python3.10/site-packages
-# init-hook="from pylint.config import find_pylintrc; import os, sys; sys.path.append(os.path.dirname(find_pylintrc()))"
-# disable=missing-module-docstring
+[tool.pytest.ini_options]
+pythonpath = [ '.', 'src' ]
+testpaths = [ "tests" ]

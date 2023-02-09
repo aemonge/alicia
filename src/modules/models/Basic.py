@@ -24,7 +24,7 @@ class Basic(AbsModule):
       f"  (classifier): {classifier_str}\n" + \
     f")"
 
-  def __init__(self, labels: list) -> None:
+  def __init__(self, labels) -> None:
     super().__init__()
     self.labels = labels
     self.num_classes = len(labels)
