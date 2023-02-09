@@ -29,7 +29,7 @@ from features.trainer.Trainer import Trainer
 @click.option("-b", "--batch-size", type=int, default=16, help="Image loader batch size")
 @click.option('-c', '--console-plot', default=False, type=click.BOOL, is_flag=False)
 @click.option('-h', '--h-title', default=False, type=click.BOOL, is_flag=True, help="Show the title horizontally")
-@click.option("-n", "--n-images-test", default=1, type=click.INT,
+@click.option("-n", "--n-images-test", default=0, type=click.INT,
   help="Increment the number of images to display with the class bar chart and images preview"
 )
 def test(ctx, model_file, data_dir, categories_file, batch_size, console_plot, h_title, n_images_test):
@@ -55,4 +55,5 @@ def test(ctx, model_file, data_dir, categories_file, batch_size, console_plot, h
   model.load(model_file)
   trainer = Trainer(model, transforms)
   trainer.test(data_dir, labels, batch_size)
-  trainer.show_test_results(data_dir, labels, n_images_test, h_title)
+  if n_images_test > 0:
+    trainer.show_test_results(data_dir, labels, n_images_test, h_title)

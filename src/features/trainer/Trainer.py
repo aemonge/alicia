@@ -194,7 +194,7 @@ class Trainer:
           bar_length=self.BAR_LENGTH, show_percentage=True, icon=colored('⠿', 'yellow')
         )
       else:
-        print('\033[F\033[K', end='') # back prev line and clear
+        print('\r', end='\r')
         print_t_step(start_time, t_correct, test_loader_count)
 
   def show_test_results(self, path: str, labels: dict, count: int, tilted: bool = False):
@@ -202,7 +202,10 @@ class Trainer:
       file for file in glob.glob(f"{path}/**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)
     ]
 
-    fig, ax = plt.subplots(count, 2, width_ratios=[4,1])
+    _, ax = plt.subplots(count, 2, width_ratios=[4,1])
+    if count == 1:
+      ax = [ax]
+
     if tilted:
       plt.subplots_adjust(left=0.22, bottom=0.08, top=0.98, hspace=0.6, wspace=0)
     else:
@@ -226,7 +229,6 @@ class Trainer:
       print_pbs(class_labels, probs, ax=ax[c_idx][0])
       imshow(self.transforms['display'](image), title=labels[file_name], ax=ax[c_idx][1], tilted=tilted)
 
-    fig.align_ylabels(ax[:, 1])
     plt.show()
 
   def predict(self, image, topk=5):
