@@ -55,6 +55,7 @@ MANIFEST
 .python-version
 .env
 data
+!tests/fixtures/data
 .jukit
 tmp
 temp
