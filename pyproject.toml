@@ -16,7 +16,7 @@ indent-string='  ' # Two spaces, i dislike the 4 spaces convention
 generated-members="numpy.*, torch.*, torchvision.*"
 
 [tool.pytest.ini_options]
-pythonpath = [ '.', 'src' ]
+pythonpath = [ '.', 'src', 'tests' ]
 testpaths = [ "tests" ]
 addopts = """
   --cov=src/features --cov=src/libs --cov=src/modules

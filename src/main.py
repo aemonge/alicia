@@ -1,11 +1,5 @@
-import click
-
-from views.download.cli import download
-from views.create.cli import create
-from views.train.cli import train
-from views.test.cli import test
-from views.info.cli import info
-from views.predict.cli import predict
+from dependencies.core import click
+from commands import download, create, train, test, info, predict
 
 __author__ = "aemonge"
 __copyright__ = "aemonge"
