@@ -69,7 +69,7 @@ class UnLabeledImageDataset(Dataset):
     if self.transform:
       image = self.transform(image)
     else:
-      image = Transforms.Compose([Transforms.ToTensor()])(image)
+      image = transforms.Compose([transforms.ToTensor()])(image)
 
     if self.__labels is None:
       return image, (torch.tensor([]), file.name)

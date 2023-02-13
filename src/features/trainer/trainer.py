@@ -83,7 +83,7 @@ class Trainer(PrettyInfo):
         labels['25.jpg'] # -> Str
         category_labels_ids[labels['25.jpg']] # -> Int
     """
-    if self.transforms is None or self.transforms['train'] is None  or self.transforms['valid'] is None:
+    if 'train' not in self.transforms.keys() or 'valid' not in self.transforms.keys():
       raise ValueError('Transforms must be defined and set')
 
     category_labels_ids = { v:k for k,v in enumerate(self.model.labels)}
@@ -137,7 +137,7 @@ class Trainer(PrettyInfo):
       self._print_total(vd_correct, validate_loader_count, total_time)
 
   def test(self, data_dir: str, labels: dict, batch_size: int = 64, freeze_parameters: bool = False):
-    if self.transforms is None or self.transforms['test'] is None:
+    if 'test' not in self.transforms.keys():
       raise ValueError('Test or valid transforms must be defined and set')
 
     t_correct = 0
@@ -148,6 +148,7 @@ class Trainer(PrettyInfo):
       f"{data_dir}/test", labels, category_labels_ids, transform = self.transforms['valid']
       ), batch_size = batch_size, shuffle=True
     )
+
     test_loader_count = len(test_ldr.dataset)
     self._print_test_header(batch_size, test_loader_count)
 
