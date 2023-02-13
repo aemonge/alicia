@@ -10,7 +10,7 @@ version_scheme = "no-guess-dev"
 
 [tool.pylint.format]
 max-line-length=120
-indent-string='  '
+indent-string='  ' # Two spaces, i dislike the 4 spaces convention
 
 [tool.pylint.typecheck]
 generated-members="numpy.*, torch.*, torchvision.*"
@@ -18,3 +18,8 @@ generated-members="numpy.*, torch.*, torchvision.*"
 [tool.pytest.ini_options]
 pythonpath = [ '.', 'src' ]
 testpaths = [ "tests" ]
+addopts = """
+  --cov=src/features --cov=src/libs --cov=src/modules
+  --cov-report=term --cov-report=html
+  --cov-fail-under=90
+"""

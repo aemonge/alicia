@@ -86,6 +86,7 @@ TODO My list of pending and implemented features
 * [ ] Move both, the criterion and optimizer away from the model, and generate a split model for them.
       - While `alicia train` I should specify the learning-rate.
 * [ ] Trim all the `tox` stuff that you aren't using.
+* [x] On the tests, make the lablel.csv smaller, only containing the actual labels
 
 References
 ================================================

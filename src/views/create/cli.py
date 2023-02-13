@@ -31,7 +31,6 @@ def create(ctx, architecture: str, categories_file: str, save_file: str,
     for _, label in reader:
       labels.add(label)
   sorted_labels = sorted(list(labels))
-
   match architecture.lower():
     case 'basic':
       model = Basic(sorted_labels)

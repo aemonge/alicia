@@ -70,6 +70,16 @@ class Basic(AbsModule):
     return torch.flatten(x, 1)
 
   def load(self, path: str) -> None:
+    """
+      Parameters:
+      -----------
+        path: str
+          path to load model
+
+      Returns:
+      --------
+        None
+    """
     data = torch.load(path)
     self.labels = data['labels']
     self.features = data['features']
@@ -80,6 +90,16 @@ class Basic(AbsModule):
     return self.features.parameters()
 
   def save(self, path: str) -> None:
+    """
+      Parameters:
+      -----------
+        path: str
+          path to save model
+
+      Returns:
+      --------
+        None
+    """
     torch.save({
       'name': 'Basic',
       'labels': self.labels,
@@ -88,7 +108,7 @@ class Basic(AbsModule):
       'state_dict': self.state_dict(),
     }, path)
 
-  def create(self, input_size: int = 784, dropout: float = 0.5) -> None:
+  def create(self, input_size: int = 28, dropout: float = 0.5) -> None:
     self.input_size = input_size
     last_size = self.__create_features__(dropout)
     self.__create_classifier__(last_size)

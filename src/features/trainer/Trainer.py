@@ -30,7 +30,7 @@ class Trainer(PrettyInfo):
       self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
     self.transforms = transforms
 
-  def train_step(self, tr_loss: float, images: torch.Tensor, labels: torch.Tensor) -> float:
+  def train_step(self, images: torch.Tensor, labels: torch.Tensor, loss_count: float) -> float:
     self._spin()
 
     self.optimizer.zero_grad()
@@ -48,10 +48,10 @@ class Trainer(PrettyInfo):
     self.optimizer.step()
     self._spin()
 
-    tr_loss += loss.item()
+    loss_count += loss.item()
     self._spin()
 
-    return tr_loss
+    return loss_count
 
   def validation_step(self, dataloaders: DataLoader, batch_size: int) -> tuple[float, int]:
     ix = 0
@@ -131,7 +131,7 @@ class Trainer(PrettyInfo):
       self._print_step_header(epochs, epoch)
       for (images, (labels, _)) in iter(train_ldr):
         ix += batch_size * 1
-        tr_loss = self.train_step(tr_loss, images, labels)
+        tr_loss = self.train_step(images, labels, tr_loss)
         self._loading(ix, train_loader_count)
         if math.isnan(tr_loss):
           raise Exception('Loss has been lost, check parameters')
