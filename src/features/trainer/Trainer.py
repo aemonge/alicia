@@ -1,4 +1,5 @@
 # Global deps
+import math
 import torch
 import time
 from PIL import Image
@@ -8,58 +9,51 @@ from wcmatch import glob
 import os
 
 # Local deps
-from views.shared.DispalyAnalytics import print_t_step, print_step, print_total
-from views.shared.PyplotHelper import imshow, print_pbs
+from libs.Pretty_Info import PrettyInfo
 from modules.datasets.UnLabeledImageDataset import UnLabeledImageDataset
 
 # Types
 from modules.models.AbsModule import AbsModule
 from torch.utils.data import DataLoader
 
-# Fancy
-from loading_display import spinner
-from loading_display import loading_bar
-from termcolor import colored
-
-class Trainer:
-  BAR_LENGTH = 55
-  LOADING_ICONS = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏']
-
-  def __init__(self, model: AbsModule, transforms, learning_rate: float = 1/137,  momentum: float = 0.85) -> None:
+class Trainer(PrettyInfo):
+  def __init__(self, model: AbsModule, transforms, learning_rate: float = 1/137,  momentum: float|None = None) -> None:
+    super().__init__()
     self.model = model
     self.learning_rate = learning_rate
-    self.momentum = momentum
 
     self.criterion = torch.nn.CrossEntropyLoss()
-    self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate, momentum=self.momentum)
+    if momentum is not None:
+      self.momentum = momentum
+      self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate, momentum=self.momentum)
+    else:
+      self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
     self.transforms = transforms
 
   def train_step(self, tr_loss: float, images: torch.Tensor, labels: torch.Tensor) -> float:
-    s = spinner(icons=[' ' + colored(i, 'blue') for i in self.LOADING_ICONS])
-    next(s)
+    self._spin()
 
     self.optimizer.zero_grad()
-    next(s)
+    self._spin()
 
     output = self.model(images)
-    next(s)
+    self._spin()
 
     loss = self.criterion(output, labels)
-    next(s)
+    self._spin()
 
     loss.backward()
-    next(s)
+    self._spin()
 
     self.optimizer.step()
-    next(s)
+    self._spin()
 
     tr_loss += loss.item()
-    next(s)
+    self._spin()
 
     return tr_loss
 
-  def validation_step(self, dataloaders: DataLoader, batch_size: int):
-    s = spinner(icons=[' ' + colored(i, 'green') for i in self.LOADING_ICONS])
+  def validation_step(self, dataloaders: DataLoader, batch_size: int) -> tuple[float, int]:
     ix = 0
     vd_loss = 0.0
     vd_correct = 0
@@ -67,42 +61,40 @@ class Trainer:
 
     with torch.no_grad():
       self.model.eval()
-      next(s)
+      self._spin(step='valid')
+
       for (images, (labels, _)) in iter(dataloaders):
         ix += batch_size * 1
-        next(s)
+        self._spin(step='valid')
 
         output = self.model.forward(images)
-        next(s)
+        self._spin(step='valid')
 
         loss = self.criterion(output, labels)
-        next(s)
+        self._spin(step='valid')
 
         vd_loss += loss.item()
-        next(s)
+        self._spin(step='valid')
 
         ps = torch.exp(output)
         _, top_class = ps.topk(1, dim=1)
         equals = top_class == labels.view(*top_class.shape)
         vd_correct += equals.sum().item()
-        next(s)
+        self._spin(step='valid')
 
-        loading_bar(
-          ix, total=validate_loader_count,
-          bar_length=self.BAR_LENGTH, show_percentage=True, icon=colored('⠿', 'green')
-        )
+        self._loading(ix, validate_loader_count, step = 'valid')
 
-    next(s)
+    self._spin(step='valid')
     self.model.train()
     return vd_loss, vd_correct
 
-  def train(self, data_dir: str, labels: dict,
-            batch_size: int = 64, epochs: int = 1, freeze_parameters: bool = False) -> None:
+  def train(self, data_dir: str, labels: dict, batch_size: int = 64, epochs: int = 1,
+            freeze_parameters: bool = False) -> None:
     """
       help:
       ----------
-        print(labels['25.jpg']) # -> Str
-        print(category_labels_ids[labels['25.jpg']]) # -> Int
+        labels['25.jpg'] # -> Str
+        category_labels_ids[labels['25.jpg']] # -> Int
     """
     if self.transforms is None or self.transforms['train'] is None  or self.transforms['valid'] is None:
       raise ValueError('Transforms must be defined and set')
@@ -120,49 +112,47 @@ class Trainer:
     train_loader_count = len(train_ldr.dataset)
     validate_loader_count = len(valid_ldr.dataset)
 
-    if freeze_parameters:
-      for param in self.model.parameters():
-        param.requires_grad = False
-
-    print(f" Epochs: {epochs},\tLearning rate: {self.learning_rate},\tMomentum: {self.momentum},\n",
-          f"Items: [training: \"{train_loader_count:,}\" ,\tvalidation: \"{validate_loader_count:,}\"]\n")
+    self._print_train_header(epochs, batch_size, train_loader_count, validate_loader_count)
 
     time_count = 0
     vd_correct = 0
     total_time = time.time()
     start_time = total_time
 
+    # Freeze parameters
+    if (freeze_parameters):
+      for param in self.model.features.parameters():
+          param.requires_grad = False
+
     for epoch in range(epochs):
       tr_loss = 0.0
       ix = 0
 
-      print(f"   Epoch: {epoch + 1}/{epochs} ({colored('traning', 'blue')} and {colored('validating', 'green')})")
+      self._print_step_header(epochs, epoch)
       for (images, (labels, _)) in iter(train_ldr):
         ix += batch_size * 1
         tr_loss = self.train_step(tr_loss, images, labels)
-        loading_bar(
-          ix, total=train_loader_count,
-          bar_length=self.BAR_LENGTH, show_percentage=True, icon=colored('⠿', 'blue')
-        )
+        self._loading(ix, train_loader_count)
+        if math.isnan(tr_loss):
+          raise Exception('Loss has been lost, check parameters')
+
       else:
         vd_loss, vd_correct = self.validation_step(valid_ldr, batch_size)
 
-        print('\033[F\033[K', end='') # back prev line and clear
-        time_now = print_step(
+        self.__backspace__(hard=True)
+        time_now = self._print_step(
           epoch, epochs, start_time, time_count,
           tr_loss, vd_loss, vd_correct,
           validate_loader_count, train_loader_count
         )
         start_time = time_now
     else:
-      print()
-      print_total(vd_correct, validate_loader_count, total_time)
+      self._print_total(vd_correct, validate_loader_count, total_time)
 
-  def test(self, data_dir: str, labels: dict, batch_size: int = 64):
+  def test(self, data_dir: str, labels: dict, batch_size: int = 64, freeze_parameters: bool = False):
     if self.transforms is None or self.transforms['test'] is None:
       raise ValueError('Test or valid transforms must be defined and set')
 
-    s = spinner(icons=[colored(i, 'yellow') for i in self.LOADING_ICONS])
     t_correct = 0
     ix = 0
     start_time = time.time()
@@ -172,30 +162,32 @@ class Trainer:
       ), batch_size = batch_size, shuffle=True
     )
     test_loader_count = len(test_ldr.dataset)
+    self._print_test_header(batch_size, test_loader_count)
+
+    if freeze_parameters: # TODO: I think isn't needed with torch.no_grad(), investigate
+      for param in self.model.parameters():
+        param.requires_grad = False
 
     with torch.no_grad():
       self.model.eval()
-      next(s)
+      self._spin(step='test')
+
       for (images, (labels, _)) in iter(test_ldr):
         ix += batch_size * 1
-        next(s)
+        self._spin(step='test')
 
         output = self.model(images)
-        next(s)
+        self._spin(step='test')
 
         ps = torch.exp(output)
         _, top_class = ps.topk(1, dim=1)
         equals = top_class == labels.view(*top_class.shape)
         t_correct += equals.sum().item()
-        next(s)
+        self._spin(step='test')
 
-        loading_bar(
-          ix, total=test_loader_count,
-          bar_length=self.BAR_LENGTH, show_percentage=True, icon=colored('⠿', 'yellow')
-        )
+        self._loading( ix, test_loader_count, step = 'test')
       else:
-        print('\r', end='\r')
-        print_t_step(start_time, t_correct, test_loader_count)
+        self._print_t_step(start_time, t_correct, test_loader_count)
 
   def show_test_results(self, path: str, labels: dict, count: int, tilted: bool = False):
     all_imgs = [
@@ -226,8 +218,8 @@ class Trainer:
       probs, idxs = self.predict(image, topk=3)
       class_labels = [ self.model.labels[i] for i in idxs]
 
-      print_pbs(class_labels, probs, ax=ax[c_idx][0])
-      imshow(self.transforms['display'](image), title=labels[file_name], ax=ax[c_idx][1], tilted=tilted)
+      self._print_pbs(class_labels, probs, ax=ax[c_idx][0])
+      self._imshow(self.transforms['display'](image), title=labels[file_name], ax=ax[c_idx][1], tilted=tilted)
 
     plt.show()
 

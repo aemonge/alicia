@@ -16,7 +16,7 @@ from features.trainer.Trainer import Trainer
 @click.option("-b", "--batch-size", type=int, default=16, help="Image loader batch size")
 @click.option("-e", "--epochs", default=3, type=click.INT)
 @click.option("-l", "--learning-rate", default=round(1/137, 6), type=click.FLOAT)
-@click.option("-m", "--momentum", default=0.9, type=click.FLOAT)
+@click.option("-m", "--momentum", type=click.FLOAT)
 @click.option("-p", "--pretend", default=False, type=click.BOOL, is_flag=True)
 def train(ctx, model_file, data_dir, categories_file, batch_size, epochs, learning_rate, momentum, pretend):
   """
@@ -40,8 +40,13 @@ def train(ctx, model_file, data_dir, categories_file, batch_size, epochs, learni
 
   model.load(model_file)
   if pretend:
-    print(colored(' Results of the training will not saved, since we are just pretending', 'red'))
-  trainer = Trainer(model, transforms, learning_rate = learning_rate, momentum = momentum)
+    print(colored(' Results of the training will not saved, since we are just pretending\n', 'yellow'))
+
+  if momentum is not None:
+    trainer = Trainer(model, transforms, learning_rate = learning_rate, momentum = momentum)
+  else:
+    trainer = Trainer(model, transforms, learning_rate = learning_rate)
+
   trainer.train(data_dir, labels, batch_size, epochs)
 
   if not pretend:
