@@ -1,10 +1,51 @@
 from dependencies.core import *
 from dependencies.datatypes import *
-from libs import PrettyInfo
-from modules.datasets import UnLabeledImageDataset
+from libs import PrettyInfo, UnLabeledImageDataset
 
 class Trainer(PrettyInfo):
-  def __init__(self, model: AbsModule, transforms, learning_rate: float = 1/137,  momentum: float|None = None) -> None:
+  """
+    Base class for all training
+
+    Attributes
+    ----------
+      model: AbsModule
+        The model to train.
+      Transforms: Transforms
+        The transformations to apply to the data.
+      learning_rate: float
+        The learning rate to use.
+      momentum: float
+        The momentum to use.
+
+    Methods
+    -------
+      train_step(images: torch.Tensor, labels: torch.Tensor, loss_count: float) -> float
+      validation_step(dataloaders: DataLoader, batch_size: int) -> tuple[float, int]
+      train(self, data_dir: str, labels: dict, batch_size: int = 64, epochs: int = 1,
+            freeze_parameters: bool = False) -> None
+      test(self, data_dir: str, labels: dict, batch_size: int = 64, freeze_parameters: bool = False)
+      predict(self, image: Pil.Image, topk:int=5)
+  """
+
+  def __init__(
+    self, model: AbsModule, transforms, learning_rate: float = 1/137,  momentum: float|None = None
+  ) -> None:
+    """
+      Parameters
+      ----------
+        model: AbsModule
+          The model to train.
+        transforms: Transforms
+          The transformations to apply to the data.
+        learning_rate: float
+          The learning rate to use.
+        momentum: float
+          The momentum to use.
+
+      Returns
+      -------
+        None
+    """
     super().__init__()
     self.model = model
     self.learning_rate = learning_rate
@@ -18,6 +59,23 @@ class Trainer(PrettyInfo):
     self.transforms = transforms
 
   def train_step(self, images: torch.Tensor, labels: torch.Tensor, loss_count: float) -> float:
+    """
+      Performs a single training step.
+
+      Parameters
+      ----------
+        images: torch.Tensor
+          The images to train on.
+        labels: torch.Tensor
+          The labels to train with.
+        loss_count: float
+          The loss count to increment.
+
+      Returns
+      -------
+        : float
+          The loss count.
+    """
     self._spin()
 
     self.optimizer.zero_grad()
@@ -41,6 +99,21 @@ class Trainer(PrettyInfo):
     return loss_count
 
   def validation_step(self, dataloaders: DataLoader, batch_size: int) -> tuple[float, int]:
+    """
+      Performs a single validation step.
+
+      Parameters
+      ----------
+        dataloaders: DataLoader
+          The dataloaders to use.
+        batch_size: int
+          The batch size to use.
+
+      Returns
+      -------
+        : tuple[float, int]
+          The loss count and the number of correct predictions.
+    """
     ix = 0
     vd_loss = 0.0
     vd_correct = 0
@@ -78,7 +151,26 @@ class Trainer(PrettyInfo):
   def train(self, data_dir: str, labels: dict, batch_size: int = 64, epochs: int = 1,
             freeze_parameters: bool = False) -> None:
     """
-      help:
+      Trains the model.
+
+      Parameters
+      ----------
+        data_dir: str
+          The path to the data directory.
+        labels: dict
+          The labels to train with.
+        batch_size: int
+          The batch size to use.
+        epochs: int
+          The number of epochs to train for.
+        freeze_parameters: bool
+          Whether to freeze the parameters.
+
+      Returns
+      -------
+        None
+
+      Help:
       ----------
         labels['25.jpg'] # -> Str
         category_labels_ids[labels['25.jpg']] # -> Int
@@ -137,6 +229,24 @@ class Trainer(PrettyInfo):
       self._print_total(vd_correct, validate_loader_count, total_time)
 
   def test(self, data_dir: str, labels: dict, batch_size: int = 64, freeze_parameters: bool = False):
+    """
+      Tests the model.
+
+      Parameters
+      ----------
+        data_dir: str
+          The path to the data directory.
+        labels: dict
+          The labels to test with.
+        batch_size: int
+          The batch size to use.
+        freeze_parameters: bool
+          Whether to freeze the parameters.
+
+      Returns
+      -------
+        None
+      """
     if 'test' not in self.transforms.keys():
       raise ValueError('Test or valid transforms must be defined and set')
 
@@ -177,7 +287,22 @@ class Trainer(PrettyInfo):
       else:
         self._print_t_step(start_time, t_correct, test_loader_count)
 
-  def predict(self, image, topk=5):
+  def predict(self, image:ImageDT, topk:int = 5):
+    """
+      Predicts the class of an image.
+
+      Parameters
+      ----------
+        image: Pil.Image
+          The image to predict the class of.
+        topk: int
+          The number of predictions to return.
+
+      Returns
+      -------
+        : tuple[np.array, np.array]
+          The top-k predictions and the indices of the top-k predictions.
+    """
     with torch.no_grad():
       self.model.eval()
       tensor_img = self.transforms['test'](image)

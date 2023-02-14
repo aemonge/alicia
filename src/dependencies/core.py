@@ -6,6 +6,9 @@ import os
 import time
 import torch
 import pathlib
+import torchvision
+import tempfile
+import random
 
 from PIL import Image
 from random import randrange

@@ -8,6 +8,12 @@ build-backend = "setuptools.build_meta"
 # check out https://github.com/pypa/setuptools_scm
 version_scheme = "no-guess-dev"
 
+[tool.pylint.master]
+load-plugins="pylint_mccabe"
+
+[tool.pylint.design]
+max-complexity=10
+
 [tool.pylint.format]
 max-line-length=120
 indent-string='  ' # Two spaces, i dislike the 4 spaces convention
@@ -18,8 +24,7 @@ generated-members="numpy.*, torch.*, torchvision.*"
 [tool.pytest.ini_options]
 pythonpath = [ '.', 'src', 'tests' ]
 testpaths = [ "tests" ]
-omit = ["src/libs/pretty_info.py"]
 addopts = """
-  --cov=src/features --cov=src/libs --cov=src/modules
-  --cov-report=term --cov-report=html
+  --cov=src/features --cov=src/libs
+  --cov-report=html
 """

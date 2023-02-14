@@ -1,11 +1,6 @@
-from collections.abc import Iterator
-from torch.nn.parameter import Parameter
-
-import random
-import torch
-import torch.nn as nn
-
-from modules.models import AbsModule
+from dependencies.core import torch
+from dependencies.datatypes import Parameter, Iterator
+from .abs_module import AbsModule
 
 class Basic(AbsModule):
   def __call__(self, x: torch.Tensor) -> torch.Tensor:
@@ -30,9 +25,9 @@ class Basic(AbsModule):
     self.num_classes = len(labels)
 
   def __create_classifier__(self, last_size: int) -> None:
-    self.classifier = nn.Sequential(
-      nn.Linear(last_size, self.num_classes),
-      nn.LogSoftmax(dim=1)
+    self.classifier = torch.nn.Sequential(
+      torch.nn.Linear(last_size, self.num_classes),
+      torch.nn.LogSoftmax(dim=1)
     )
 
   def __create_features__(self, dropout: float) -> int:

@@ -1,6 +1,7 @@
 from dependencies.core import csv, click, torch
 from dependencies.fancy import colored
-from modules.models import Basic, AbsModule
+from dependencies.datatypes import AbsModule
+from modules.models import *
 from modules.transforms import ImageTransforms
 from features import Trainer
 

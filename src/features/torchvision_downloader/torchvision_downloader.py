@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 from PIL.Image import Image
 import torchvision
 
-class TorchvisionDownloader():
+class TorchvisionDownloader:
   """
     Downloads a dataset from torchvision.
 
@@ -24,7 +24,10 @@ class TorchvisionDownloader():
         Downloads the dataset.
 
   """
-  def __init__(self, dir: str, dataset: str, split_percentage: tuple[float, float, float] = (0.65, 0.25, 0.1)):
+  def __init__(self, dir: str, dataset: str,
+               split_percentage: tuple[float, float, float] = (0.65, 0.25, 0.1),
+               **dataset_kwargs
+               ):
     """
       Constructor
 
@@ -44,6 +47,9 @@ class TorchvisionDownloader():
     self.__dataset : Dataset[list[Image]]
     self.__tmp_path = "tmp"
     self.dataset_name = dataset
+    self.dataset_kwargs = dataset_kwargs
+    self.dataset_kwargs["root"] = self.__tmp_path
+    self.dataset_kwargs["download"] = True
     self.split_percentage = split_percentage
     self.__labels = []
 
@@ -69,7 +75,7 @@ class TorchvisionDownloader():
 
   def call(self):
     """
-      Downloads the dataset from torchvision.
+      Downloads the dataset from torch-vision.
 
       Parameters
       ----------
@@ -80,45 +86,19 @@ class TorchvisionDownloader():
         None
     """
     print(colored(' Downloading ... 🌑 ', 'blue', attrs=['bold']), end='\r')
-    self.__download_dataset()
 
-    if self.dataset_name == 'FashionMNIST':
-      self.__dataset = torchvision.datasets.FashionMNIST(self.__tmp_path)
-    else:
-      self.__dataset = torchvision.datasets.MNIST(self.__tmp_path)
+    try:
+      self.__dataset = getattr(torchvision.datasets, self.dataset_name)(**self.dataset_kwargs)
+    except Exception:
+      raise Exception("Target dataset cannot be downloaded!, please try another one.")
 
-    # print(end='\x1b[2K')
     print('\r', end='\r')
     print(colored(' Processing ...  🌕 ', 'yellow', attrs=['bold']), end='\r')
     self.__iterate_dataset(self.__write_images)
     self.__write_labels()
     self.__clear_tmp()
-    # print(end='\x1b[2K')
     print('\r', end='\r')
     print(colored(' Ready           💚', 'green', attrs=['bold']))
-
-  def __download_dataset(self):
-    """
-      Downloads the dataset from the internet and saves it in the tmp folder.
-
-      Parameters
-      ----------
-        None
-
-      Returns
-      -------
-        None
-    """
-    # TODO: Check if the data has been already downloaded with the dataset, not by file path
-    if not os.path.exists(self.__tmp_path):
-      os.mkdir(self.__tmp_path)
-
-    with contextlib.redirect_stdout(io.StringIO()):
-      with contextlib.redirect_stderr(io.StringIO()):
-        if self.dataset_name == 'MNIST':
-          self.__dataset = torchvision.datasets.MNIST(self.__tmp_path, download=True)
-        elif self.dataset_name == 'FashionMNIST':
-          self.__dataset = torchvision.datasets.FashionMNIST(self.__tmp_path, download=True)
 
   def __clear_tmp(self):
     """
@@ -220,13 +200,8 @@ class TorchvisionDownloader():
         int
           The integer that represents the mapping.
     """
-    if self.dataset_name == 'FashionMNIST':
-      return [
-        'Top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-        'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot'
-      ][label]
-    # else:
-    return label
+    ds = self.__dataset
+    return ds.classes[ds.targets[label]]
 
   def __write_labels(self):
     """

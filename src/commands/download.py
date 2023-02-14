@@ -1,8 +1,8 @@
-import click
 
+from dependencies.core import click, torchvision
 from features import TorchvisionDownloader
 
-DATASETS=['MNIST', 'FashionMNIST']
+DATASETS=torchvision.datasets.__all__
 
 @click.command()
 @click.pass_context

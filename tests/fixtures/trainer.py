@@ -1,7 +1,7 @@
 import pytest; from unittest.mock import MagicMock # , ANY
 from modules.models import Basic
 from features import Trainer
-from dependencies.core import csv, pathlib, transforms, Image
+from dependencies.core import csv, pathlib, torchvision, Image
 
 def mock_all_prints(t):
   t.__get_step_color__ = MagicMock()
@@ -57,7 +57,7 @@ def model_fixture(labels_fixture):
 
 @pytest.fixture
 def transforms_fixture():
-  t = transforms.Compose([ transforms.ToTensor() ])
+  t = torchvision.transforms.Compose([ torchvision.transforms.ToTensor() ])
   return { "valid": t, "display": t, "test": t, "train": t }
 
 @pytest.fixture

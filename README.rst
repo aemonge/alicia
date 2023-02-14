@@ -19,6 +19,7 @@
                    AlicIA
 ================================================
 
+.. image:: ./DallE-Alicia-logo.png
 
     A set of different neural network models to classify images, and measure their respective performance.
 
@@ -48,7 +49,7 @@ TODO My list of pending and implemented features
         - test (--with sanity check, console or visual)
         - predict (same arguments as the udacity project)
         - compare (compare validation-accuracy, test-accuracy and time between archs)
-2.  [ ] Unit test, with performance testings, use fashion-mnist small data.
+2.  [x] Unit test, with performance testings, use fashion-mnist small data.
 3.  [x] Simplify the files structure.
 4.  [ ] Implement a behaviour to change hidden units on all models.
 5.  [ ] Check with all of the following data:
@@ -56,6 +57,7 @@ TODO My list of pending and implemented features
         - MNIST Fashion
         - Udacity Flowers
         - Cats and Dogs images
+        - Cifar, EMNIST, CelebA, KMNIST, Omniglot, PhotoTour, Places265, SBU, STL10, USPS, VOC
 6.  [ ] Deploy the project to pypy and include the basic documentation.
 7.  [ ] Continue with the other models, on a TDD methodology.
         - [ ] Dummy (with random sleep timers, used for testing)

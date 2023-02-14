@@ -1,4 +1,4 @@
-from dependencies.core import torch, transforms
+from dependencies.core import torch, torchvision
 
 class UnShapetransform(object):
   def __init__(self, shape):
@@ -27,38 +27,38 @@ class Reshapetransform(object):
     # return image.view(image.shape[0], -1)
 
 ImageTransforms = {
-  "valid": transforms.Compose([
-    transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
-    transforms.Resize(28),
-    transforms.CenterCrop(28),
-    transforms.ToTensor(),
-    # transforms.Normalize((0.5,), (0.5,)),
+  "valid": torchvision.transforms.Compose([
+    torchvision.transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
+    torchvision.transforms.Resize(28),
+    torchvision.transforms.CenterCrop(28),
+    torchvision.transforms.ToTensor(),
+    # torchvision.transforms.Normalize((0.5,), (0.5,)),
     Reshapetransform((-1, )),
-    # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    # torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
   ]),
-  "display": transforms.Compose([
-    transforms.Grayscale(),
-    transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,)),
+  "display": torchvision.transforms.Compose([
+    torchvision.transforms.Grayscale(),
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize((0.5,), (0.5,)),
     UnShapetransform((-1, )),
     ImageToMatPlotLib(-1, ),
   ]),
-  "test": transforms.Compose([
-    transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
-    transforms.Resize(28),
-    transforms.CenterCrop(28),
-    transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,)),
+  "test": torchvision.transforms.Compose([
+    torchvision.transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
+    torchvision.transforms.Resize(28),
+    torchvision.transforms.CenterCrop(28),
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize((0.5,), (0.5,)),
     Reshapetransform((-1, )),
-    # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    # torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
   ]),
-  "train": transforms.Compose([
-    transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
-    transforms.Resize(28),
-    transforms.CenterCrop(28),
-    transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,)),
+  "train": torchvision.transforms.Compose([
+    torchvision.transforms.Grayscale(), # Changes the size to [1, 1, 28, 28] [batch, channels, width, height]
+    torchvision.transforms.Resize(28),
+    torchvision.transforms.CenterCrop(28),
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize((0.5,), (0.5,)),
     Reshapetransform((-1, )),
-    # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    # torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
   ])
 }

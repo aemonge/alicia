@@ -1,5 +1,5 @@
 import pytest; from unittest.mock import MagicMock # , ANY
-from dependencies.core import torch, transforms
+from dependencies.core import torch, torchvision
 from features import Trainer
 from modules.models import Basic
 from tests.fixtures.trainer import *
@@ -17,9 +17,9 @@ class TestTrainer:
     assert isinstance(trainer_fixture.model, Basic)
     assert isinstance(trainer_fixture.learning_rate, float)
     assert isinstance(trainer_fixture.transforms, dict)
-    assert isinstance(trainer_fixture.transforms["valid"], transforms.transforms.Compose)
-    assert isinstance(trainer_fixture.transforms["train"], transforms.transforms.Compose)
-    assert isinstance(trainer_fixture.transforms["test"], transforms.transforms.Compose)
+    assert isinstance(trainer_fixture.transforms["valid"], torchvision.transforms.transforms.Compose)
+    assert isinstance(trainer_fixture.transforms["train"], torchvision.transforms.transforms.Compose)
+    assert isinstance(trainer_fixture.transforms["test"], torchvision.transforms.transforms.Compose)
     assert isinstance(trainer_fixture.criterion, torch.nn.modules.loss._Loss)
     assert isinstance(trainer_fixture.optimizer, torch.optim.Optimizer)
 
@@ -72,7 +72,7 @@ class TestTrainer:
     t.train(data_tmp_dir_fixture, labels_dict_fixture)
     t._print_total.assert_called_once()
 
-  @pytest.mark.skip(reason="Known issue, waiting for other models to do a better test on this")
+  @pytest.mark.xfail(reason="Known issue, waiting for other models to do a better test on this")
   def test_train_loss_should_get_lower(
       self, trainer_fixture, labels_dict_fixture, data_tmp_dir_fixture
   ):
@@ -89,18 +89,18 @@ class TestTrainer:
       last_loss = current_loss
 
   def test_raising_exepction_on_bad_transformers_by_training(self, trainer_with_bad_transforms_fixture):
-    with pytest.raises(ValueError) as _:
+    with pytest.raises(ValueError):
       t = trainer_with_bad_transforms_fixture
       t.train_step = MagicMock(return_value=0.105)
       t.train(data_tmp_dir_fixture, labels_dict_fixture, BATCH_SIZE, 1)
 
   def test_raising_exepction_on_bad_transformers_by_testing(self, trainer_with_bad_transforms_fixture):
-    with pytest.raises(ValueError) as _:
+    with pytest.raises(ValueError):
       t = trainer_with_bad_transforms_fixture
       t.test(data_tmp_dir_fixture, labels_dict_fixture, BATCH_SIZE, 1)
 
   def test_raising_exepction_on_big_momentum(self, trainer_with_big_momentum_fixture):
-    with pytest.raises(Exception) as _:
+    with pytest.raises(Exception):
       t = trainer_with_big_momentum_fixture
       t.train(data_tmp_dir_fixture, labels_dict_fixture, BATCH_SIZE, 1)
 
@@ -141,7 +141,7 @@ class TestTrainer:
     assert len(ps_val) == 5
     assert len(ps_id) == 5
 
-  @pytest.mark.fails(reason="TODO: I must return an ID, not an numpy.int64")
+  @pytest.mark.xfail(reason="TODO: I must return an ID, not an numpy.int64")
   def test_predict_should_return_some_prediction(
       self, trainer_fixture, data_shirt_image_fixture
   ):

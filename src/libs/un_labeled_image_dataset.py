@@ -1,4 +1,4 @@
-from dependencies.core import glob, pathlib, torch, transforms, Image
+from dependencies.core import glob, pathlib, torch, torchvision, Image
 from dependencies.datatypes import Dataset
 
 BATCH_SIZE = 4
@@ -11,22 +11,29 @@ class UnLabeledImageDataset(Dataset):
     ----------
       main_dir : str
         Path to the folder containing the images
-      class_map : dict
-        The Clases fetch from the labels files, which the images will be tested to match {'cat': 0, 'dog': 1}
-      transform : callable
+      transform: torchvision.transforms.Compose
         Transform to be applied to the images
-      label_transform : callable
-        Transform to be applied to the labels
 
     Methods
     -------
   """
 
-  def __init__(self, main_dir, labels: dict|None = None, labels_ids: dict|None = None, transform = None):
+  def __init__( self, main_dir, labels: dict, labels_ids: dict, *, transform: torchvision.transforms.Compose):
     """
-
       Parameters
       ----------
+        main_dir: str
+          Path to the folder containing the images
+        labels: dict
+          The Clases fetch from the labels files, which the images will be tested to match {'cat': 0, 'dog': 1}
+        labels_ids: dict
+          The ids of the labels, which the images will be tested to match {'cat': 0, 'dog': 1}
+        transform: torchvision.transforms.Compose
+          Transform to be applied to the images
+
+      Returns
+      -------
+        None
     """
     self.__imgs = [file for file in glob.glob(f"{main_dir}**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)]
     self.main_dir = main_dir
@@ -66,14 +73,7 @@ class UnLabeledImageDataset(Dataset):
     file = pathlib.Path(self.__imgs[idx])
     image = Image.open(file.as_posix()).convert("RGB")
 
-    if self.transform:
-      image = self.transform(image)
-    else:
-      image = transforms.Compose([transforms.ToTensor()])(image)
-
-    if self.__labels is None:
-      return image, (torch.tensor([]), file.name)
-
+    image = self.transform(image)
     class_name = self.__labels[file.name]
     class_id = self.__labels_ids[class_name]
 
