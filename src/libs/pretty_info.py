@@ -383,11 +383,8 @@ class PrettyInfo:
       image = Image.open(img_path)
       file_name = os.path.basename(img_path)
 
-      # tensor_img = self.transforms['test'](image)
-      probs, idxs = self.predict(image, topk=3)
-      class_labels = [ self.model.labels[i] for i in idxs]
-
-      self._print_pbs(class_labels, probs, ax=ax[c_idx][0])
+      probs, classes = self.predict(image, topk=3)
+      self._print_pbs(classes, probs, ax=ax[c_idx][0])
       self._imshow(self.transforms['display'](image), title=labels[file_name], ax=ax[c_idx][1], tilted=tilted)
 
     plt.show()

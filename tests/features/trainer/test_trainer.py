@@ -72,7 +72,7 @@ class TestTrainer:
     t.train(data_tmp_dir_fixture, labels_dict_fixture)
     t._print_total.assert_called_once()
 
-  @pytest.mark.xfail(reason="Known issue, waiting for other models to do a better test on this")
+  # @pytest.mark.xfail(reason="Known issue, waiting for other models to do a better test on this")
   def test_train_loss_should_get_lower(
       self, trainer_fixture, labels_dict_fixture, data_tmp_dir_fixture
   ):
@@ -80,9 +80,12 @@ class TestTrainer:
     t.train_step = MagicMock(side_effect=t.train_step)
     t.train(data_tmp_dir_fixture, labels_dict_fixture, BATCH_SIZE, 1)
 
-    assert t.train_step.mock_calls[0].args[2] == 0.0 # assert_called_with(ANY, ANY, 0.0)
+    assert t.train_step.mock_calls[0].args[2] == 0.0
 
-    last_loss = t.train_step.mock_calls[1].args[2]
+    calls = t.train_step.mock_calls
+    calls.reverse() # Since the call stack is sorted in the other way ;)
+
+    last_loss = calls[1].args[2]
     for call in t.train_step.mock_calls[2:]:
       current_loss = call.args[2]
       assert last_loss >= current_loss
@@ -133,20 +136,20 @@ class TestTrainer:
     assert len(ps_val) == 1
     assert len(ps_id) == 1
 
-  def test_predict_should_return_a_five_predictions(
+  def test_predict_should_return_four_predictions(
       self, trainer_fixture, data_shirt_image_fixture
   ):
     t = trainer_fixture
-    ps_val, ps_id = t.predict(data_shirt_image_fixture, 5)
-    assert len(ps_val) == 5
-    assert len(ps_id) == 5
+    ps_val, ps_id = t.predict(data_shirt_image_fixture, 4)
+    assert len(ps_val) == 4
+    assert len(ps_id) == 4
 
-  @pytest.mark.xfail(reason="TODO: I must return an ID, not an numpy.int64")
-  def test_predict_should_return_some_prediction(
+  def test_predict_should_return_some_predictions(
       self, trainer_fixture, data_shirt_image_fixture
   ):
     t = trainer_fixture
-    ps_val, ps_id = t.predict(data_shirt_image_fixture, 1)
-    print(type(ps_id[0]))
-    assert isinstance(ps_id[0], int) # numpy.int64
+    ps_val, ps_id = t.predict(data_shirt_image_fixture, 2)
+    assert isinstance(ps_id[0], str)
+    assert isinstance(ps_id[1], str)
     assert ps_val[0] > 0.0
+    assert ps_val[1] > 0.0

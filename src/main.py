@@ -14,7 +14,9 @@ __version__ = "0.0.1"
 @click.version_option(version=__version__, package_name=__name__)
 def call(ctx, verbose, gpu):
   """
-    A CLI to download, train and test an image classifier.
+    A CLI to download, train, test, predict and compare an image classifiers.
+
+    Supporting mostly all torch-vision neural networks and datasets.
 
     This will also identify cute 🐱 or a fierce 🐶, also flowers
     or what type of 🏘️ you should be.
@@ -27,7 +29,7 @@ call.add_command(download)
 call.add_command(create)
 call.add_command(train)
 call.add_command(test)
-# call.add_command(predict)
+call.add_command(predict)
 call.add_command(info)
 
 if __name__ == '__main__':

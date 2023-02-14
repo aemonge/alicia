@@ -287,28 +287,49 @@ class Trainer(PrettyInfo):
       else:
         self._print_t_step(start_time, t_correct, test_loader_count)
 
-  def predict(self, image:ImageDT, topk:int = 5):
+  def predict_image(self, image: str, *args, **kwargs) -> tuple[np.array, list[str]]:
     """
-      Predicts the class of an image.
+      Calls the predict method, by transforming the given image path to a Pil.Image
 
       Parameters
       ----------
-        image: Pil.Image
-          The image to predict the class of.
+        image: str
+          The path to the image to predict.
         topk: int
           The number of predictions to return.
 
       Returns
       -------
-        : tuple[np.array, np.array]
-          The top-k predictions and the indices of the top-k predictions.
+        : tuple[np.array, list[str]]
+          The top-k probabilities and the top-k class labels.
+
+    """
+    return self.predict(Image.open(image), *args, **kwargs)
+
+  def predict(self, image:ImageDT, topk:int = 5) -> tuple[np.array, list[str]]:
+    """
+      Predicts the class of an given image.
+
+      Parameters
+      ----------
+        image: Pil.Image
+          The image to predict.
+        topk: int
+          The number of predictions to return.
+
+      Returns
+      -------
+        : tuple[np.array, list[str]]
+          The top-k probabilities and the top-k class labels.
     """
     with torch.no_grad():
       self.model.eval()
       tensor_img = self.transforms['test'](image)
-      # TODO: use self.model()
       logps = self.model(tensor_img.unsqueeze(0)) # from 3d to 4d [ introducing a batch dimension ]
       ps = logps[0] # Return to 3D [ no batches again ]
       ps_val, ps_idx = ps.topk(topk)
 
-      return ps_val.numpy(), ps_idx.numpy()
+      label_predictions = [self.model.labels[x] for x in ps_idx.numpy()]
+      probabilities = [ 100 * (1 / (1 + math.exp(-x))) for x in ps_val]
+
+      return probabilities, label_predictions

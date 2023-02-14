@@ -21,7 +21,12 @@
 
 .. image:: ./DallE-Alicia-logo.png
 
-    A set of different neural network models to classify images, and measure their respective performance.
+    A CLI to download, train, test, predict and compare an image classifiers.
+
+    Supporting mostly all torch-vision neural networks and datasets.
+
+    This will also identify cute 🐱 or a fierce 🐶, also flowers
+    or what type of 🏘️ you should be.
 
 
 To build locally and develop locally
@@ -43,12 +48,14 @@ Use the test with pytest::
 TODO My list of pending and implemented features
 ================================================
 
-1.  [ ] Implement the following cli views:
-        - download
-        - train (same arguments as the udacity project)
-        - test (--with sanity check, console or visual)
-        - predict (same arguments as the udacity project)
-        - compare (compare validation-accuracy, test-accuracy and time between archs)
+! [ ] Bug 🐛: Fix the label tagging for the images, seams to be the root of evil.
+
+1.  [ ] Implement the following CLI views:
+        - [x] download
+        - [x] train (same arguments as the udacity project)
+        - [x] test (--with sanity check, console or visual)
+        - [x] predict (same arguments as the udacity project)
+        - [ ] compare (compare validation-accuracy, test-accuracy and time between archs)
 2.  [x] Unit test, with performance testings, use fashion-mnist small data.
 3.  [x] Simplify the files structure.
 4.  [ ] Implement a behaviour to change hidden units on all models.
@@ -60,13 +67,13 @@ TODO My list of pending and implemented features
         - Cifar, EMNIST, CelebA, KMNIST, Omniglot, PhotoTour, Places265, SBU, STL10, USPS, VOC
 6.  [ ] Deploy the project to pypy and include the basic documentation.
 7.  [ ] Continue with the other models, on a TDD methodology.
-        - [ ] Dummy (with random sleep timers, used for testing)
+        - [x] Dummy (with random sleep timers, used for testing)
         - [x] Basic (Simple nn.Sequential)
         - [ ] Raw (Create it with nn.Sequential, and implement the math fn)
         - [ ] Crazy (A really complex nn.Sequential)
         - [ ] SqueezeNet
 8.  [ ] The abstract class should let you choose between architectures by name.
-9.  [ ] Reach the VGG model, and start applying to companies.
+9.  [ ] Implement the AlexNet network, and start applying to companies.
 10.  [ ] Complete AlicIA with all the models
         - [ ] VGG (AlexNet is fast; like how you would expect it)
         - [ ] Choose from deep-ai.org
@@ -88,7 +95,9 @@ TODO My list of pending and implemented features
 * [ ] Move both, the criterion and optimizer away from the model, and generate a split model for them.
       - While `alicia train` I should specify the learning-rate.
 * [ ] Trim all the `tox` stuff that you aren't using.
+* [ ] Re-enable the console pure view (`plottext`)
 * [x] On the tests, make the lablel.csv smaller, only containing the actual labels
+* [ ] Choose a default width, and adjust all output to such a width
 
 References
 ================================================
