@@ -1,1 +1,1 @@
-ARCHITECTURES = ['demo', 'dummy', 'basic', 'cat']
+ARCHITECTURES = ['dummy', 'basic']

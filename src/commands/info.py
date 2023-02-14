@@ -1,12 +1,13 @@
 import click
 import torch
 
+from dependencies.datatypes import AbsModule
 from modules.models import Basic
 
 @click.command()
 @click.pass_context
 @click.argument("model_file", type=click.Path(file_okay=True, exists=True, readable=True), required=1)
-def info(ctx, model_file):
+def info(_, model_file):
   """
     Display information about a model architecture.
     Hidden layers, the trained time, out put, and features.

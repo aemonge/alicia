@@ -7,10 +7,6 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
   def labels(self) -> list|None:
     pass
 
-  # @abstract_attribute
-  # def features(self):
-  #   pass
-
   @abstractmethod
   def create(self):
     pass

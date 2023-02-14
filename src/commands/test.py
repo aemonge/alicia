@@ -1,4 +1,5 @@
 from dependencies.core import csv, click, torch
+from dependencies.datatypes import AbsModule
 from modules.transforms import ImageTransforms
 from modules.models import Basic
 from features import Trainer
@@ -14,7 +15,7 @@ from features import Trainer
 @click.option("-n", "--n-images-test", default=0, type=click.INT,
   help="Increment the number of images to display with the class bar chart and images preview"
 )
-def test(ctx, model_file, data_dir, categories_file, batch_size, console_plot, h_title, n_images_test):
+def test(_, model_file, data_dir, categories_file, batch_size, console_plot, h_title, n_images_test):
   """
     Test a pre trained model. It will look for the `./test` folder inside the data directory.
     A file named `./labels.csv` should exist in the root directory of the data folder.

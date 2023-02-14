@@ -15,7 +15,7 @@ from features import Trainer
 @click.option("-l", "--learning-rate", default=round(1/137, 6), type=click.FLOAT)
 @click.option("-m", "--momentum", type=click.FLOAT)
 @click.option("-p", "--pretend", default=False, type=click.BOOL, is_flag=True)
-def train(ctx, model_file, data_dir, categories_file, batch_size, epochs, learning_rate, momentum, pretend):
+def train(_, model_file, data_dir, categories_file, batch_size, epochs, learning_rate, momentum, pretend):
   """
     Train a given architecture with a data directory containing a '/validate' and '/train' subfolder
     each with the images files and a `labels.csv` file.

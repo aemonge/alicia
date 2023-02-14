@@ -4,25 +4,25 @@ from dependencies.core import tempfile, os
 
 @pytest.fixture
 def bad_train_directory_fixture():
-  f = tempfile.mkdtemp(prefix='bad')
+  f = tempfile.mkdtemp(prefix='alicia-test-bad-')
   os.mkdir(f"{f}/train")
   return f
 
 @pytest.fixture
 def bad_test_directory_fixture():
-  f = tempfile.mkdtemp(prefix='bad')
+  f = tempfile.mkdtemp(prefix='alicia-test-bad-')
   os.mkdir(f"{f}/test")
   return f
 
 @pytest.fixture
 def bad_valid_directory_fixture():
-  f = tempfile.mkdtemp(prefix='bad')
+  f = tempfile.mkdtemp(prefix='alicia-test-bad-')
   os.mkdir(f"{f}/valid")
   return f
 
 @pytest.fixture
 def tmp_directory_fixture():
-  return tempfile.mkdtemp()
+  return tempfile.mkdtemp(prefix="alicia-test")
 
 @pytest.fixture
 def torchvision_downloader_fixture(tmp_directory_fixture):

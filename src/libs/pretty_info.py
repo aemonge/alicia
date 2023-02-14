@@ -1,12 +1,35 @@
 # Fancy,
 from dependencies.core import time, glob, randrange, Image, os, np
 from dependencies.fancy import spinner, loading_bar, colored, plt
+from dependencies.datatypes import Axes, ImageDT
 
 class PrettyInfo:
+  """
+    A parent class that prints the trainer data and analytics
+      nicely and colored.
+
+    Attributes
+    ----------
+      spinners_ : dict
+        A dictionary of spinners, with different colors.
+
+    Methods
+    -------
+      _loading(ix, total, step: str = 'train')
+        Prints a loading bar.
+      _spin(step: str)
+        Prints a spinner.
+      _print_train_header(self, epochs, batch_size, train_loader_count, validate_loader_count)
+        Prints the training header.
+
+  """
   BAR_LENGTH = 55
   LOADING_ICONS = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏']
 
   def __init__(self):
+    """
+      Constructor. This is meant to be a parent Class
+    """
     self._spinners_ = {
       'train': spinner(icons=[' ' + colored(i, 'blue') for i in self.LOADING_ICONS]),
       'test':  spinner(icons=[' ' + colored(i, 'yellow') for i in self.LOADING_ICONS]),
@@ -14,6 +37,19 @@ class PrettyInfo:
     }
 
   def __get_step_color__(self, step: str = 'train') -> str:
+    """
+      Gets the color of a step.
+
+      Parameters
+      ----------
+        step : str
+          The step to get the color of.
+
+      Returns
+      -------
+        color : str
+          The color of the step.
+    """
     color = ""
     match step:
       case 'train':
@@ -24,22 +60,82 @@ class PrettyInfo:
         color = 'yellow'
     return color
 
-  def _loading(self, ix, total, step: str = 'train') -> None:
+  def _loading(self, ix: int, total: int, step: str = 'train') -> None:
+    """
+      Prints the loading bar.
+
+      Parameters
+      ----------
+        ix: int
+          The index of the loading bar.
+        total: int
+          The total number of items.
+        step: str
+          The step(color) of the loading bar.
+
+      Returns:
+      --------
+        None
+    """
     color = self.__get_step_color__(step)
     loading_bar(
       ix, total=total, bar_length=self.BAR_LENGTH, show_percentage=True, icon=colored('⠿', color)
     )
 
   def _spin(self, step: str = 'train') -> None:
+    """
+      Prints a spinner.
+
+      Parameters:
+      -----------
+        step: str
+          The step(color) of the spinner.
+
+      Returns:
+      --------
+        None
+    """
     next(self._spinners_[step])
 
   def __backspace__(self, hard: bool = False):
+    """
+      Prints a backspace character.
+
+      Parameters:
+      -----------
+        hard: bool
+          Whether to print a hard or soft backspace character.
+
+      Returns:
+      --------
+        None
+    """
     if hard:
       print('\033[F\033[K', end='') # back prev line and clear
     else:
       print('\r', end='\r')
 
-  def _print_train_header(self, epochs, batch_size, train_loader_count, validate_loader_count) -> None:
+  def _print_train_header(self, epochs:int, batch_size:int,
+                          train_loader_count:int, validate_loader_count:int) -> None:
+    """
+      Prints the header of the training.
+
+      Parameters:
+      -----------
+        epochs:int
+          The number of epochs.
+        batch_size:int
+          The batch size.
+        train_loader_count:int
+          The number of train loader.
+        validate_loader_count:int
+          The number of validate loader.
+
+      Returns:
+      --------
+        None
+
+    """
     momentum_str = ""
     if hasattr(self, 'momentum') and self.momentum is not None:
       momentum_str = f",\tMomentum: {self.momentum}"
@@ -47,15 +143,73 @@ class PrettyInfo:
     print(f" Epochs: {epochs},\tBatch Size: {batch_size},\tLearning rate: {self.learning_rate}{momentum_str}\n",
           f"Items: [training: \"{train_loader_count:,}\" ,\tvalidation: \"{validate_loader_count:,}\"]\n")
 
-  def _print_test_header(self, batch_size, count) -> None:
+  def _print_test_header(self, batch_size:int, count:int) -> None:
+    """
+      Prints the header of the testing.
+
+      Parameters:
+      -----------
+        batch_size:int
+          The batch size.
+        count:int
+          The total number of items.
+
+      Returns:
+      --------
+        None
+
+    """
     print(f" Batch Size: {batch_size},\tItems : {count}\n")
 
-  def _print_step_header(self, epochs, epoch) -> None:
+  def _print_step_header(self, epochs:int, epoch:int) -> None:
+    """
+      Prints the header of a step.
+
+      Parameters:
+      -----------
+        epochs:int
+          The number of epochs.
+        epoch:int
+          The epoch number.
+
+      Returns:
+      --------
+        None
+    """
     print(f"   Epoch: {epoch + 1}/{epochs} ({colored('traning', 'blue')} and {colored('validating', 'green')})")
 
-  def _print_step(self, epoch, epochs, start_time, time_count,
-                 tr_loss, vd_loss, vd_correct,
-                 validate_loader_count, train_loader_count) -> float:
+  def _print_step(self, epoch:int, epochs:int, start_time:int, time_count:int,
+                  tr_loss:float, vd_loss:float, vd_correct:int,
+                  validate_loader_count:int, train_loader_count:int) -> float:
+    """
+      Prints a step.
+
+      Parameters:
+      -----------
+        epoch : int
+          The epoch number.
+        epochs: int
+          The number of epochs.
+        start_time: int
+          The start time.
+        time_count: int
+          The time count.
+        tr_loss: float
+          The training loss.
+        vd_loss: float
+          The validation loss.
+        vd_correct: int
+          The validation accuracy.
+        validate_loader_count:int
+          The number of validate loader.
+        train_loader_count:int
+          The number of train loader.
+
+      Returns:
+      --------
+        : float
+          The time passed from last step, used to track time
+    """
 
     training_loss = tr_loss / train_loader_count
     validate_loss = vd_loss / validate_loader_count
@@ -73,7 +227,24 @@ class PrettyInfo:
 
     return time_now
 
-  def _print_total(self, correct, count, start_time):
+  def _print_total(self, correct, count, start_time) -> None:
+    """
+      Prints the total.
+
+
+      Parameters:
+      -----------
+        correct: int
+          The number of correct items
+        count: int
+          The total number of items.
+        start_time: int
+          The start time.
+
+      Returns:
+      --------
+        None
+    """
     time_f = time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time))
     acc = (correct * 100 / count) #:.2f
     accuracy_f = colored(f"{acc:.3f}%", ('blue' if acc > 90 else ('green' if acc > 70 else 'red')))
@@ -84,6 +255,23 @@ class PrettyInfo:
 
 
   def _print_t_step(self, start_time, t_correct, test_loader_count) -> None:
+    """
+      Prints a test step.
+
+
+      Parameters:
+      -----------
+        start_time: int
+          The start time.
+        t_correct: int
+          The number of correct items.
+        test_loader_count: int
+          The number of test loader.
+
+      Returns:
+      --------
+        None
+    """
     time_f = time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time))
     acc = (t_correct * 100 / test_loader_count)
     accuracy_f = colored(f"{acc:.3f}%", ('blue' if acc > 90 else ('green' if acc > 70 else 'red')))
@@ -91,35 +279,86 @@ class PrettyInfo:
     self.__backspace__()
     print(f" Accuracy: {accuracy_f}, Time: {time_f}{' ':>40}")
 
-  def _print_pbs(self, labels, probs, ax=None):
-      probs = np.round(probs, 2)
+  def _print_pbs(self, labels:dict, probs, ax:Axes) -> None:
+    """
+      Print the probability distribution.
 
-      if ax is None:
-          plt.subplot(1, 1)
-          plt.barh(labels, probs)
+      Parameters:
+      -----------
+        labels: dict
+          The labels.
+        probs:
+          The probability distribution.
+        ax: matplotlib.axes.Axes
+          The axis to plot.
+
+      Returns:
+      --------
+        None
+    """
+    probs = np.round(probs, 2)
+
+    if ax is None:
+      plt.subplot(1, 1)
+      plt.barh(labels, probs)
+    else:
+      ax.barh(labels, probs)
+
+  def _imshow(self, image:ImageDT, *, ax:Axes, title:str, tilted:bool =False)-> Axes:
+    """
+      Plot the image.
+
+      Parameters:
+      -----------
+        image: Image
+          The image to plot
+        ax: matplotlib.axes.Axes
+          The axis to plot.
+        title: str
+          The title of the Image.
+        tilted: bool
+          Whether the image title should be vertical.
+
+      Returns:
+      --------
+        None
+    """
+    if ax is None:
+      _, ax = plt.subplots()
+
+    if title is not None:
+      if tilted:
+        ax.set_ylabel(title.replace(' ', '\n'), fontsize=10)
+        ax.yaxis.set_label_position("right")
+        ax.tick_params(axis='y')
+        ax.set_xticks([])
+        ax.set_yticks([])
       else:
-          ax.barh(labels, probs)
+        ax.set_title(title)
+        ax.axis("off")
 
-  def _imshow(self, image, ax=None, title=None, tilted=False):
-      """Imshow for Tensor."""
-      if ax is None:
-          _, ax = plt.subplots()
+    ax.imshow(image, interpolation='nearest')
+    return ax
 
-      if title is not None:
-        if tilted:
-          ax.set_ylabel(title.replace(' ', '\n'), fontsize=10)
-          ax.yaxis.set_label_position("right")
-          ax.tick_params(axis='y')
-          ax.set_xticks([])
-          ax.set_yticks([])
-        else:
-          ax.set_title(title)
-          ax.axis("off")
+  def show_test_results(self, path: str, labels: dict, count: int, tilted: bool = False) -> None:
+    """
+      Show the test results.
 
-      ax.imshow(image, interpolation='nearest')
-      return ax
+      Parameters:
+      -----------
+        path: str
+          The path to the test images.
+        labels: dict
+          The class labels.
+        count: int
+          The total number of items do show.
+        tilted: bool
+          Whether the image title should be vertical.
 
-  def show_test_results(self, path: str, labels: dict, count: int, tilted: bool = False):
+      Returns:
+      --------
+        None
+    """
     all_imgs = [
       file for file in glob.glob(f"{path}/**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)
     ]

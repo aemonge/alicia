@@ -11,7 +11,7 @@ DATASETS=torchvision.datasets.__all__
 @click.option("-s", "--split-percentage", default=(0.65, 0.25, 0.1), type=(float, float, float),
   help='The split percentage triplet "-s 0.65 0.25 0.1"'
 )
-def download(ctx, dataset, data_dir, split_percentage):
+def download(_, dataset, data_dir, split_percentage):
   """
     Download a MNIST dataset with PyTorch and split it into `./train`, `./valid`, and `./test` directories.
 

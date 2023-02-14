@@ -117,7 +117,7 @@ class Trainer(PrettyInfo):
     ix = 0
     vd_loss = 0.0
     vd_correct = 0
-    validate_loader_count = len(dataloaders.dataset)
+    validate_loader_count = len(dataloaders.dataset) # pyright: reportGeneralTypeIssues=false
 
     with torch.no_grad():
       self.model.eval()
