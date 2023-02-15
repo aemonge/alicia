@@ -1,5 +1,5 @@
 from dependencies.core import click
-from commands import download, create, train, test, info, predict
+from commands import download, create, train, test, info, predict, compare
 
 __author__ = "aemonge"
 __copyright__ = "aemonge"
@@ -31,6 +31,7 @@ call.add_command(train)
 call.add_command(test)
 call.add_command(predict)
 call.add_command(info)
+call.add_command(compare)
 
 if __name__ == '__main__':
   # ^  This is a guard statement that will prevent the following code from

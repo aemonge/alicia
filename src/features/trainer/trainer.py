@@ -1,8 +1,8 @@
 from dependencies.core import *
 from dependencies.datatypes import *
-from libs import PrettyInfo, UnLabeledImageDataset
+from libs import PrettyTrain, UnLabeledImageDataset
 
-class Trainer(PrettyInfo):
+class Trainer(PrettyTrain):
   """
     Base class for all training
 
@@ -227,6 +227,11 @@ class Trainer(PrettyInfo):
         start_time = time_now
     else:
       self._print_total(vd_correct, validate_loader_count, total_time)
+
+    self.model.training_history.append((
+      ('epochs', epochs), ('batch size', batch_size), ('items', train_loader_count, validate_loader_count),
+      ('time', time.time() - total_time), ('accuracy', (vd_correct * 100 / validate_loader_count))
+    ))
 
   def test(self, data_dir: str, labels: dict, batch_size: int = 64, freeze_parameters: bool = False):
     """

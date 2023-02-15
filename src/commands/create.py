@@ -11,7 +11,7 @@ from modules.models import Basic
 @click.argument("categories-file", type=click.Path(file_okay=True, writable=True), required=1)
 @click.argument("save-file", type=click.Path(file_okay=True, writable=True), required=1)
 @click.option('-u', '--hidden-units', type=click.INT, default=8)
-@click.option('-d', '--dropout', type=click.FLOAT, default=0.01)
+@click.option('-d', '--dropout', type=click.FLOAT, default=0.0)
 @click.option('-i', '--initial-input-size', type=click.INT, default=28)
 
 def create(_, architecture: str, categories_file: str, save_file: str,

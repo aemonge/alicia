@@ -3,7 +3,7 @@ from dependencies.core import time, glob, randrange, Image, os, np
 from dependencies.fancy import spinner, loading_bar, colored, plt
 from dependencies.datatypes import Axes, ImageDT
 
-class PrettyInfo:
+class PrettyTrain:
   """
     A parent class that prints the trainer data and analytics
       nicely and colored.
@@ -30,11 +30,13 @@ class PrettyInfo:
     """
       Constructor. This is meant to be a parent Class
     """
-    self._spinners_ = {
-      'train': spinner(icons=[' ' + colored(i, 'blue') for i in self.LOADING_ICONS]),
-      'test':  spinner(icons=[' ' + colored(i, 'yellow') for i in self.LOADING_ICONS]),
-      'valid': spinner(icons=[' ' + colored(i, 'green') for i in self.LOADING_ICONS])
-    }
+    self.__enable_spinners = False # Loading bar seams enough
+    if self.__enable_spinners:
+      self._spinners_ = {
+        'train': spinner(icons=[colored(i, 'blue') for i in self.LOADING_ICONS]),
+        'test':  spinner(icons=[colored(i, 'yellow') for i in self.LOADING_ICONS]),
+        'valid': spinner(icons=[colored(i, 'green') for i in self.LOADING_ICONS])
+      }
 
   def __get_step_color__(self, step: str = 'train') -> str:
     """
@@ -79,7 +81,7 @@ class PrettyInfo:
     """
     color = self.__get_step_color__(step)
     loading_bar(
-      ix, total=total, bar_length=self.BAR_LENGTH, show_percentage=True, icon=colored('⠿', color)
+      ix, total=total, label='  ', bar_length=self.BAR_LENGTH, show_percentage=True, icon=colored('⠿', color)
     )
 
   def _spin(self, step: str = 'train') -> None:
@@ -95,7 +97,8 @@ class PrettyInfo:
       --------
         None
     """
-    next(self._spinners_[step])
+    if self.__enable_spinners:
+      next(self._spinners_[step])
 
   def __backspace__(self, hard: bool = False):
     """
@@ -249,10 +252,7 @@ class PrettyInfo:
     acc = (correct * 100 / count) #:.2f
     accuracy_f = colored(f"{acc:.3f}%", ('blue' if acc > 90 else ('green' if acc > 70 else 'red')))
 
-    print()
-    self.__backspace__(hard=True)
     print(f" Accuracy: {accuracy_f}, Time: {time_f}")
-
 
   def _print_t_step(self, start_time, t_correct, test_loader_count) -> None:
     """

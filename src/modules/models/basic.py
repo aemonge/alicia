@@ -1,5 +1,6 @@
-from dependencies.core import torch
+from dependencies.core import torch, textwrap
 from dependencies.datatypes import Parameter, Iterator
+# from libs.sizeof_formated import sizeof_fmt
 from .abs_module import AbsModule
 
 class Basic(AbsModule):
@@ -58,24 +59,6 @@ class Basic(AbsModule):
     """
     return 'Basic()'
 
-  def __str__(self):
-    """
-      A verbose string representation of the neural network.
-
-      Returns:
-      --------
-        : str
-          labels, features, classifier
-    """
-    features_str = "\n  ".join(str(self.features).split("\n"))
-    classifier_str = "\n  ".join(str(self.classifier).split("\n"))
-
-    return "Basic(\n" + \
-      f"  (labels): \n    {self.labels}\n" + \
-      f"  (features): {features_str}\n" + \
-      f"  (classifier): {classifier_str}\n" + \
-    f")"
-
   def __init__(self, labels) -> None:
     """
       Constructor of the neural network.
@@ -88,6 +71,7 @@ class Basic(AbsModule):
     super().__init__()
     self.labels = labels
     self.num_classes = len(labels)
+    self.training_history = []
 
   def __create_classifier__(self, last_size: int) -> None:
     """
@@ -103,14 +87,9 @@ class Basic(AbsModule):
       torch.nn.LogSoftmax(dim=1)
     )
 
-  def __create_features__(self, dropout: float) -> int:
+  def __create_features__(self) -> int:
     """
       Creates the features.
-
-      Parameters:
-      -----------
-        dropout: float
-          The dropout probability.
 
       Returns:
       --------
@@ -118,26 +97,44 @@ class Basic(AbsModule):
           The size of the last features, to pipe it to the classifier.
     """
     last_size = 10
-    self.features = torch.nn.Sequential(
-      torch.nn.Linear(self.input_size, 128),
-      torch.nn.ReLU(),
-      torch.nn.Linear(128, 42),
-      torch.nn.ReLU(),
-      torch.nn.Dropout(dropout),
-      torch.nn.Linear(42, 28),
-      torch.nn.ReLU(),
-      torch.nn.Dropout(dropout),
-      torch.nn.Linear(28, 512),
-      torch.nn.ReLU(),
-      torch.nn.Dropout(dropout),
-      torch.nn.Linear(512, 128),
-      torch.nn.ReLU(),
-      torch.nn.Dropout(dropout),
-      torch.nn.Linear(128, 64),
-      torch.nn.ReLU(),
-      torch.nn.Linear(64, last_size),
-      torch.nn.LogSoftmax(dim=1)
-    )
+    if self.dropout > 0.0:
+      self.features = torch.nn.Sequential(
+        torch.nn.Linear(self.input_size, 128),
+        torch.nn.ReLU(),
+        torch.nn.Linear(128, 42),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(self.dropout),
+        torch.nn.Linear(42, 28),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(self.dropout),
+        torch.nn.Linear(28, 512),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(self.dropout),
+        torch.nn.Linear(512, 128),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(self.dropout),
+        torch.nn.Linear(128, 64),
+        torch.nn.ReLU(),
+        torch.nn.Linear(64, last_size),
+        torch.nn.LogSoftmax(dim=1)
+      )
+    else:
+      self.features = torch.nn.Sequential(
+        torch.nn.Linear(self.input_size, 128),
+        torch.nn.ReLU(),
+        torch.nn.Linear(128, 42),
+        torch.nn.ReLU(),
+        torch.nn.Linear(42, 28),
+        torch.nn.ReLU(),
+        torch.nn.Linear(28, 512),
+        torch.nn.ReLU(),
+        torch.nn.Linear(512, 128),
+        torch.nn.ReLU(),
+        torch.nn.Linear(128, 64),
+        torch.nn.ReLU(),
+        torch.nn.Linear(64, last_size),
+        torch.nn.LogSoftmax(dim=1)
+      )
     return last_size
 
   def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -161,23 +158,6 @@ class Basic(AbsModule):
     x = self.classifier(x)
     return torch.flatten(x, 1)
 
-  def load(self, path: str) -> None:
-    """
-      Parameters:
-      -----------
-        path: str
-          path to load model
-
-      Returns:
-      --------
-        None
-    """
-    data = torch.load(path)
-    self.labels = data['labels']
-    self.features = data['features']
-    self.classifier = data['classifier']
-    self.load_state_dict(data['state_dict'])
-
   def parameters(self) -> Iterator[Parameter]:
     """
       Get the parameters of the neural network.
@@ -188,28 +168,7 @@ class Basic(AbsModule):
     """
     return self.features.parameters()
 
-  def save(self, path: str) -> None:
-    """
-      Save the neural network.
-
-      Parameters:
-      -----------
-        path: str
-          path to save model
-
-      Returns:
-      --------
-        None
-    """
-    torch.save({
-      'name': 'Basic',
-      'labels': self.labels,
-      'features': self.features,
-      'classifier': self.classifier,
-      'state_dict': self.state_dict(),
-    }, path)
-
-  def create(self, input_size: int = 28, dropout: float = 0.5) -> None:
+  def create(self, input_size: int = 28, dropout: float = 0.0) -> None:
     """
       Re creates the neural network.
 
@@ -221,5 +180,6 @@ class Basic(AbsModule):
           The dropout probability.
     """
     self.input_size = input_size
-    last_size = self.__create_features__(dropout)
+    self.dropout = dropout
+    last_size = self.__create_features__()
     self.__create_classifier__(last_size)

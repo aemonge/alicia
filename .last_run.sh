@@ -40,3 +40,7 @@ alicia create basic data/mnist-fashion-small/labels.csv data/basic.pth -i 784 &&
 rm -r data/mnist-fashion/[tv]* && alicia download FashionMNIST data/mnist-fashion
 rm -r data/mnist-fashion/[tv]* && alicia download FashionMNIST data/mnist-fashion
 alicia create basic data/mnist-fashion/labels.csv data/basic-2.pth -i 784 -d 0.5 && alicia info data/basic-2.pth && alicia train data/basic-2.pth data/mnist-fashion data/mnist-fashion/labels.csv -l 0.00005 -m 0.1 -e 50 -b 32 && alicia test data/basic-2.pth data/mnist-fashion data/mnist-fashion/labels.csv
+rm -rf data/mnist2 && mkdir data/mnist2 && alicia download MNIST data/mnist2 -s .8 .15 .05
+alicia compare accuracy data/mnist data/mnist/labels.csv data/models/basic-mnist.pth data/models/basic-mnist2.pth data/models/basic-mnist-no-dropout.pth data/models/basic-mnist-no-dropout.pth
+alicia compare accuracy data/mnist data/mnist/labels.csv data/models/basic-mnist.pth data/models/basic-mnist2.pth data/models/basic-mnist-no-dropout.pth data/models/basic-mnist-no-dropout.pth
+alicia compare step-speed -m 0.5 -b 512 -l 0.003 data/models/basic-mnist.pth data/models/basic-mnist2.pth data/models/basic-mnist-no-dropout.pth data/models/basic-mnist-no-dropout.pth -d data/mnist -c data/mnist/labels.csv

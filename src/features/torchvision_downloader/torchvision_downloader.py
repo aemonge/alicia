@@ -1,9 +1,6 @@
-import glob, os, os.path, contextlib, io
-import pathlib as Pathlib
-from termcolor import colored
-from torch.utils.data import Dataset
-from PIL.Image import Image
-import torchvision
+from dependencies.core import glob, os, pathlib, torchvision
+from dependencies.fancy import colored
+from dependencies.datatypes import *
 
 class TorchvisionDownloader:
   """
@@ -44,7 +41,7 @@ class TorchvisionDownloader:
       -------
         None
     """
-    self.__dataset : Dataset[list[Image]]
+    self.__dataset : Dataset[list[ImageDT]]
     self.__tmp_path = "tmp"
     self.dataset_name = dataset
     self.dataset_kwargs = dataset_kwargs
@@ -54,9 +51,9 @@ class TorchvisionDownloader:
     self.__labels = []
 
     self.__root_dir = dir
-    self.__train_dir = Pathlib.Path(dir, 'train')
-    self.__valid_dir = Pathlib.Path(dir, 'valid')
-    self.__test_dir = Pathlib.Path(dir, 'test')
+    self.__train_dir = pathlib.Path(dir, 'train')
+    self.__valid_dir = pathlib.Path(dir, 'valid')
+    self.__test_dir = pathlib.Path(dir, 'test')
 
     if not self.__train_dir.exists():
       os.mkdir(self.__train_dir)
@@ -89,6 +86,7 @@ class TorchvisionDownloader:
 
     try:
       self.__dataset = getattr(torchvision.datasets, self.dataset_name)(**self.dataset_kwargs)
+      self.__dataset.idx_to_class = {val:key for key, val in self.__dataset.class_to_idx.items()}
     except Exception:
       raise Exception("Target dataset cannot be downloaded!, please try another one.")
 
@@ -163,7 +161,6 @@ class TorchvisionDownloader:
         cb_fn(img, idx, self.__test_dir)
 
       self.__labels.append(f"{self.__idx_to_img(idx)},{label}")
-
       idx+=1
 
   def __write_images(self, img, idx, path):
@@ -183,7 +180,7 @@ class TorchvisionDownloader:
       -------
         None
     """
-    file = Pathlib.Path(path, self.__idx_to_img(idx))
+    file = pathlib.Path(path, self.__idx_to_img(idx))
     img.save(file.as_posix())
 
   def __custom_label_mapping(self, label):
@@ -200,8 +197,7 @@ class TorchvisionDownloader:
         int
           The integer that represents the mapping.
     """
-    ds = self.__dataset
-    return ds.classes[ds.targets[label]]
+    return self.__dataset.idx_to_class[label]
 
   def __write_labels(self):
     """
@@ -215,7 +211,7 @@ class TorchvisionDownloader:
       -------
         None
     """
-    path = Pathlib.Path(self.__root_dir, 'labels.csv')
+    path = pathlib.Path(self.__root_dir, 'labels.csv')
     with path.open(mode = 'w', encoding='utf-8') as file:
       for label in self.__labels:
         file.write(label)
