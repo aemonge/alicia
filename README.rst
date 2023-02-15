@@ -15,12 +15,11 @@
     :alt: Project generated with PyScaffold
     :target: https://pyscaffold.org/
 
+
 ================================================
                    AlicIA
 ================================================
 
-.. image:: ./DallE-Alicia-logo.png
-    :alt:DallE-Alicia-logo
 
     A CLI to download, train, test, predict and compare an image classifiers.
 
@@ -29,6 +28,9 @@
     This will also identify cute 🐱 or a fierce 🐶, also flowers
     or what type of 🏘️ you should be.
 
+
+.. image:: ./DallE-Alicia-logo.png
+    :alt: DallE-Alicia-logo
 
 To build locally and develop locally
 ================================================

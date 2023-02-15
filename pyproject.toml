@@ -21,7 +21,12 @@ indent-string='  ' # Two spaces, i dislike the 4 spaces convention
 [tool.pylint.typecheck]
 generated-members="numpy.*, torch.*, torchvision.*"
 
+[tool.pytest.ini]
+
 [tool.pytest.ini_options]
+markers = [
+"download: marks test as a download, therefore slow and internet dependent (deselect with '-m \"not download\"')",
+]
 pythonpath = [ '.', 'src', 'tests' ]
 testpaths = [ "tests" ]
 addopts = """
