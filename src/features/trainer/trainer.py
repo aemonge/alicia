@@ -292,7 +292,7 @@ class Trainer(PrettyTrain):
       else:
         self._print_t_step(start_time, t_correct, test_loader_count)
 
-  def predict_image(self, image: str, *args, **kwargs) -> tuple[np.array, list[str]]:
+  def predict_image(self, image: str, **kwargs) -> tuple[np.array, list[str]]:
     """
       Calls the predict method, by transforming the given image path to a Pil.Image
 
@@ -309,7 +309,7 @@ class Trainer(PrettyTrain):
           The top-k probabilities and the top-k class labels.
 
     """
-    return self.predict(Image.open(image), *args, **kwargs)
+    return self.predict(Image.open(image), **kwargs)
 
   def predict(self, image:ImageDT, topk:int = 5) -> tuple[np.array, list[str]]:
     """

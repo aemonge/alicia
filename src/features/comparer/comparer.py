@@ -1,6 +1,6 @@
 from modules.transforms import ImageTransforms
 from dependencies.core import contextlib, io
-from dependencies.datatypes import AbsModule
+from dependencies.datatypes import AbsModule, Type
 from libs import PrettifyComparer
 from features import Trainer
 
@@ -14,21 +14,24 @@ class Comparer(PrettifyComparer):
 
   """
 
-  def __init__(self, models: list[AbsModule], *, names: list[str]):
+  def __init__(self, Trainer: Type[Trainer], models: list[AbsModule], *, names: list[str]):
     """
       Initialize
 
       Parameters
       ----------
-      models : list[AbsModule]
-        List of neural networks to compare.
-      names : list[str]
-        Names of the models to compare.
+        Trainer : Type[Trainer]
+          Class of the trainer to use.
+        models : list[AbsModule]
+          List of neural networks to compare.
+        names : list[str]
+          Names of the models to compare.
 
       Returns:
       --------
         None
     """
+    self.Trainer = Trainer
     self.models = models
     self.names = names
 
@@ -51,7 +54,7 @@ class Comparer(PrettifyComparer):
 
     results = []
     for model in self.models:
-      t = Trainer(model, ImageTransforms)
+      t = self.Trainer(model, ImageTransforms)
       with contextlib.redirect_stdout(io.StringIO()) as f:
         t.test(*args, **kwargs)
         results.append(f.getvalue())
@@ -82,9 +85,9 @@ class Comparer(PrettifyComparer):
     results = []
     try:
       for model in self.models:
-        t = Trainer(model, ImageTransforms, **kwargs)
+        t = self.Trainer(model, ImageTransforms)
         with contextlib.redirect_stdout(io.StringIO()) as f:
-          t.train(data_dir, labels, batch_size, 1)
+          t.train(data_dir, labels, batch_size, 1, **kwargs)
           results.append(f.getvalue())
     except Exception as e:
       self._terminate_loading()

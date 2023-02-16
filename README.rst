@@ -104,6 +104,7 @@ TODO My list of pending and implemented features
 * [x] On the tests, make the lablel.csv smaller, only containing the actual labels
 * [ ] Choose a default width, and adjust all output to such a width
 * [ ] Move the pretty methods to their own library from the Comparer
+* [ ] `Tear_down`, `reset()` or `request.getfixturevalue()` fixture to avoid setting a manual order on pytest
 
 References
 ================================================

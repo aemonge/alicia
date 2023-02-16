@@ -1,8 +1,7 @@
-import pytest; from unittest.mock import MagicMock # , ANY
 from dependencies.core import torch, torchvision
 from features import Trainer
-from modules.models import Basic
-from tests.fixtures.comparer import *
+from modules.models import Elemental
+from tests.fixtures.trainer import *
 
 # Constants
 BATCH_SIZE = 4
@@ -10,11 +9,10 @@ TRAIN_COUNT = 24
 TEST_BATCH = 2
 TEST_COUNT = 4
 
-class TestComparer:
-  @pytest.fixture(autouse=True)
+class TestTrainer:
   def test_init(self, trainer_fixture):
     assert isinstance(trainer_fixture, Trainer)
-    assert isinstance(trainer_fixture.model, Basic)
+    assert isinstance(trainer_fixture.model, Elemental)
     assert isinstance(trainer_fixture.learning_rate, float)
     assert isinstance(trainer_fixture.transforms, dict)
     assert isinstance(trainer_fixture.transforms["valid"], torchvision.transforms.transforms.Compose)
@@ -107,6 +105,12 @@ class TestComparer:
       t = trainer_with_big_momentum_fixture
       t.train(data_tmp_dir_fixture, labels_dict_fixture, BATCH_SIZE, 1)
 
+  def test_raising_exepction_on_when_loss_is_nan(self, trainer_fixture):
+    with pytest.raises(Exception):
+      t = trainer_fixture
+      t.train_step = MagicMock(return_value=math.nan)
+      t.train(data_tmp_dir_fixture, labels_dict_fixture, BATCH_SIZE, 1)
+
   def test_should_call_the_model_batch_times(self, trainer_fixture, labels_dict_fixture, data_tmp_dir_fixture):
     call_count = round(TEST_COUNT / TEST_BATCH)
     t = trainer_fixture
@@ -153,3 +157,19 @@ class TestComparer:
     assert isinstance(ps_id[1], str)
     assert ps_val[0] > 0.0
     assert ps_val[1] > 0.0
+
+  def test_predict_image_sholud_call_predict(
+      self, trainer_fixture, path_shirt_image_fixture
+  ):
+    t = trainer_fixture
+    t.predict = MagicMock()
+    t.predict_image(path_shirt_image_fixture)
+    t.predict.assert_called()
+
+  def test_predict_image_sholud_call_predict_with_args_and_kwargs(
+      self, trainer_fixture, data_shirt_image_fixture, path_shirt_image_fixture
+  ):
+    t = trainer_fixture
+    t.predict = MagicMock()
+    t.predict_image(path_shirt_image_fixture, topk=2)
+    t.predict.assert_called_with(data_shirt_image_fixture, topk=2)

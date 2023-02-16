@@ -93,7 +93,7 @@ class Elemental(AbsModule):
     """
     return self.features.parameters()
 
-  def create(self, *, input_size: int, dropout: float) -> None: # pyright: ignore
+  def create(self, *, input_size: int = 28, dropout: float|None = None) -> None: # pyright: ignore
     """
       Re creates the neural network.
 

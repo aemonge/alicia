@@ -1,7 +1,7 @@
 from dependencies.core import click, torch, os
 from .shared import labels_reader
 from modules import models as Models
-from features import Comparer
+from features import Comparer, Trainer
 
 @click.command()
 @click.pass_context
@@ -24,7 +24,7 @@ def step_speed(_, data_dir, categories_file, batch_size, learning_rate, momentum
     model.load(model_file)
     models.append(model)
 
-  c = Comparer(models, names=[ os.path.basename(n) for n in models_files])
+  c = Comparer(Trainer, models, names=[ os.path.basename(n) for n in models_files])
   if momentum is not None:
     c.training(data_dir, labels, batch_size, learning_rate = learning_rate, momentum = momentum)
   else:

@@ -167,7 +167,7 @@ class Basic(AbsModule):
     """
     return self.features.parameters()
 
-  def create(self, *, input_size: int = 28, dropout: float = 0.0) -> None:
+  def create(self, *, input_size: int = 784, dropout: float = 0.0) -> None:
     """
       Re creates the neural network.
 
