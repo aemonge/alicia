@@ -1,9 +1,9 @@
-from dependencies.core import csv, click, torch
+from dependencies.core import click, torch
 from dependencies.fancy import colored
-from dependencies.datatypes import AbsModule
-from modules.models import *
-from modules.transforms import ImageTransforms
+from .shared import labels_reader
+from modules import models
 from features import Trainer
+from modules.transforms import ImageTransforms
 
 @click.command()
 @click.pass_context
@@ -20,22 +20,12 @@ def train(_, model_file, data_dir, categories_file, batch_size, epochs, learning
     Train a given architecture with a data directory containing a '/validate' and '/train' subfolder
     each with the images files and a `labels.csv` file.
   """
+  labels: dict = labels_reader(categories_file, _sorted=False) # pyright: ignore [reportGeneralTypeIssues]
+
   data = torch.load(model_file)
-
-  labels = {}
-  with open(categories_file, "r", encoding="utf-8") as f:
-    reader = csv.reader(f)
-    for filename, label in reader:
-      labels[filename] = label
-
-  model: AbsModule
-  match data['name'].lower():
-    case 'basic':
-      model = Basic(data)
-    case _:
-      raise ValueError(f'Unknown model: {data["name"]}')
-
+  model = getattr(models, data['name'])(data)
   model.load(model_file)
+
   if pretend:
     print(colored(' Results of the training will not saved, since we are just pretending\n', 'yellow'))
 

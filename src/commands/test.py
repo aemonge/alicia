@@ -1,8 +1,8 @@
-from dependencies.core import csv, click, torch
-from dependencies.datatypes import AbsModule
-from modules.transforms import ImageTransforms
-from modules.models import Basic
+from dependencies.core import click, torch
+from .shared import labels_reader
+from modules import models
 from features import Trainer
+from modules.transforms import ImageTransforms
 
 @click.command()
 @click.pass_context
@@ -20,22 +20,12 @@ def test(_, model_file, data_dir, categories_file, batch_size, console_plot, h_t
     Test a pre trained model. It will look for the `./test` folder inside the data directory.
     A file named `./labels.csv` should exist in the root directory of the data folder.
   """
-  labels = {}
-  with open(categories_file, "r", encoding="utf-8") as f:
-    reader = csv.reader(f)
-    for filename, label in reader:
-      labels[filename] = label
+  labels: dict = labels_reader(categories_file, _sorted=False) # pyright: ignore [reportGeneralTypeIssues]
 
-  model: AbsModule
   data = torch.load(model_file)
-
-  match data['name'].lower():
-    case 'basic':
-      model = Basic(data)
-    case _:
-      raise ValueError(f'Unknown model: {data["name"]}')
-
+  model = getattr(models, data['name'])(data)
   model.load(model_file)
+
   trainer = Trainer(model, ImageTransforms)
   trainer.test(data_dir, labels, batch_size)
   if n_images_test > 0:

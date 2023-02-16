@@ -1,6 +1,6 @@
-from dependencies.core import csv, click, torch, os
-from dependencies.datatypes import AbsModule
-from modules.models import Basic
+from dependencies.core import click, torch, os
+from .shared import labels_reader
+from modules import models as Models
 from features import Comparer
 
 @click.command()
@@ -16,24 +16,11 @@ def step_speed(_, data_dir, categories_file, batch_size, learning_rate, momentum
     Compares two models performance by doing a single epoch of training.
     Like running `alicia train -p -e 1` twice with a nice diff.
   """
-  labels = {}
-  with open(categories_file, "r", encoding="utf-8") as f:
-    reader = csv.reader(f)
-    for filename, label in reader:
-      labels[filename] = label
-
-  models: list[AbsModule] = []
-  data = []
-
+  labels: dict = labels_reader(categories_file, _sorted=False) # pyright: ignore [reportGeneralTypeIssues]
+  models = []
   for model_file in models_files:
     data = torch.load(model_file)
-
-    match data['name'].lower():
-      case 'basic':
-        model = Basic(data)
-      case _:
-        raise ValueError(f'Unknown model: {data["name"]}')
-
+    model = getattr(Models, data['name'])(data)
     model.load(model_file)
     models.append(model)
 

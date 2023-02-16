@@ -1,8 +1,5 @@
-import click
-import torch
-
-from dependencies.datatypes import AbsModule
-from modules.models import Basic
+from dependencies.core import click, torch
+from modules import models
 
 @click.command()
 @click.pass_context
@@ -13,13 +10,7 @@ def info(_, model_file):
     Hidden layers, the trained time, out put, and features.
   """
   data = torch.load(model_file)
-
-  model: AbsModule
-  match data['name'].lower():
-    case 'basic':
-      model = Basic(data)
-    case _:
-      raise ValueError(f'Unknown model: {data["name"]}')
-
+  model = getattr(models, data['name'])(data)
   model.load(model_file)
+
   print(model)

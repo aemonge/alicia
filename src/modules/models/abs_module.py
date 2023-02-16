@@ -28,6 +28,21 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
   def labels(self) -> list|None:
     pass
 
+  def __call__(self, x: torch.Tensor) -> torch.Tensor:
+    """
+      A forward pass of the neural network.
+
+      Parameters:
+      -----------
+        x: torch.Tensor
+          A batch of input features.
+
+      Returns:
+      --------
+        torch.Tensor
+    """
+    return self.forward(x)
+
   def __str__(self):
     """
       A verbose string representation of the neural network.
@@ -38,36 +53,39 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
           labels, features, classifier
     """
     features_str = "\n  ".join(str(self.features).split("\n"))
-    classifier_str = "\n  ".join(str(self.classifier).split("\n"))
     labels_str = textwrap.fill(str(self.labels)[1:-1], width=80)
     labels_str = labels_str.replace('\n', '\n' + ' '*4)
     formated_size = sizeof_formated(sys.getsizeof(self))
-    meta_str = f"size: {formated_size},\tdropout: {self.dropout},\tinput size:{self.input_size}"
 
-    training_history_str = ""
+    if hasattr(self, "classifier"):
+      classifier_str = "\n  ".join(str(self.classifier).split("\n"))
+
+    if hasattr(self, 'dropout'):
+      meta_str = f"size: {formated_size},\tdropout: {self.dropout},\tinput size:{self.input_size}"
+    else:
+      meta_str = f"size: {formated_size},\tinput size:{self.input_size}"
+
+    training_history_str = ""*4
     for line in self.training_history:
       training_history_str += f"Epochs: {line[0][1]}, "
       training_history_str += f"Batch: {line[1][1]}, "
       training_history_str += f"Items: ({line[2][1]}, {line[2][2]})\n"
 
       time_f = time.strftime("%H:%M:%S", time.gmtime(line[3][1]))
-      training_history_str += ' '*4 + f"Time: {time_f}, "
-      training_history_str += f"Accuracy: {line[4][1]:.2f}%\n"
+      training_history_str += ' '*6 + f"Accuracy: {line[4][1]:.2f}%, "
+      training_history_str += f"Time: {time_f}\n" + " "*4
+    training_history_str = training_history_str[:-(4-1)] # 4 will be a constant
 
     return f"{self.__repr__()} (\n" + \
       f"  (meta): \n    {meta_str}\n" + \
       f"  (labels): \n    {labels_str}\n" + \
       f"  (features): {features_str}\n" + \
-      f"  (classifier): {classifier_str}\n" + \
-      f"  (training history): \n    {training_history_str[:-1]}\n" + \
+      (f"  (classifier): {classifier_str}\n" if hasattr(self, 'classifier') else '') + \
+      (f"  (training history): \n    {training_history_str[:-1]}" if len(self.training_history) > 0 else '') + \
     f")"
 
   @abstractmethod
-  def create(self):
-    pass
-
-  @abstractmethod
-  def __call__(self, x: torch.Tensor) -> torch.Tensor:
+  def create(self, *, input_size: int, dropout: float) -> None:
     pass
 
   @abstractmethod
@@ -87,16 +105,22 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       --------
         None
     """
-    torch.save({
-      'name': 'Basic',
-      'dropout': self.dropout,
+    obj = {
+      'name': self.__repr__()[:-2], # Trim the () ex. Basic()/Basic
       'input_size': self.input_size,
       'labels': self.labels,
       'features': self.features,
-      'classifier': self.classifier,
       'state_dict': self.state_dict(),
-      'training_history': self.training_history,
-    }, path)
+    }
+
+    if hasattr(self, 'training_history') and len(self.training_history) > 0:
+      obj['training_history'] = self.training_history
+    if hasattr(self, 'dropout'):
+      obj['dropout'] = self.dropout
+    if hasattr(self, 'classifier'):
+      obj['classifier'] = self.classifier
+
+    torch.save(obj, path)
 
   def load(self, path: str) -> None:
     """
@@ -110,10 +134,14 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
         None
     """
     data = torch.load(path)
-    self.dropout = data['dropout']
     self.input_size = data['input_size']
     self.labels = data['labels']
     self.features = data['features']
-    self.classifier = data['classifier']
     self.load_state_dict(data['state_dict'])
-    self.training_history = data['training_history']
+
+    if 'training_history' in data:
+      self.training_history = data['training_history']
+    if 'dropout' in data:
+      self.dropout = data['dropout']
+    if 'classifier' in data:
+      self.classifier = data['classifier']

@@ -1,6 +1,6 @@
 from dependencies.core import click, torch, os
-from dependencies.datatypes import AbsModule
-from modules.models import Basic
+from .shared import labels_reader
+from modules import models as Models
 from features import Comparer
 
 @click.command()
@@ -11,18 +11,10 @@ def diff_info(_, models_files):
   """
     Compares the models described in the given files.
   """
-  models: list[AbsModule] = []
-  data = []
-
+  models = []
   for model_file in models_files:
     data = torch.load(model_file)
-
-    match data['name'].lower():
-      case 'basic':
-        model = Basic(data)
-      case _:
-        raise ValueError(f'Unknown model: {data["name"]}')
-
+    model = getattr(Models, data['name'])(data)
     model.load(model_file)
     models.append(model)
 

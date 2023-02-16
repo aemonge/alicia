@@ -2,8 +2,7 @@ import pytest; from unittest.mock import MagicMock # , ANY
 from dependencies.core import torch, torchvision
 from features import Trainer
 from modules.models import Basic
-from tests.fixtures.models import *
-from tests.fixtures.trainer import *
+from tests.fixtures.comparer import *
 
 # Constants
 BATCH_SIZE = 4
@@ -11,7 +10,7 @@ TRAIN_COUNT = 24
 TEST_BATCH = 2
 TEST_COUNT = 4
 
-class TestTrainer:
+class TestComparer:
   @pytest.fixture(autouse=True)
   def test_init(self, trainer_fixture):
     assert isinstance(trainer_fixture, Trainer)

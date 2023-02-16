@@ -50,7 +50,6 @@ Use the test with pytest::
 
 TODO My list of pending and implemented features
 ================================================
-
 1.  [x] Implement the following CLI views:
         - [x] download
         - [x] train (same arguments as the udacity project)
@@ -90,6 +89,7 @@ TODO My list of pending and implemented features
 🐛 Tech debt (Know Issues)
 ================================================
 
+* [ ] Hide Elemental on production from `src/modules/models/__init__.py` import rule.
 * [ ] Make a helper for the commands, with shared functions such as labels open and model selector.
 * [ ] Make pylint understand venv paths rightfully.
 * [ ] Make pylint and pyright to understand the callback method class, or create a abstract class
