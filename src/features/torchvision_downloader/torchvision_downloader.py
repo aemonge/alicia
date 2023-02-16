@@ -1,4 +1,4 @@
-from dependencies.core import glob, os, pathlib, torchvision
+from dependencies.core import glob, os, pathlib, torchvision, tempfile
 from dependencies.fancy import colored
 from dependencies.datatypes import *
 
@@ -42,7 +42,7 @@ class TorchvisionDownloader:
         None
     """
     self.__dataset : Dataset[list[ImageDT]]
-    self.__tmp_path = "tmp"
+    self.__tmp_path = tempfile.gettempdir()
     self.dataset_name = dataset
     self.dataset_kwargs = dataset_kwargs
     self.dataset_kwargs["root"] = self.__tmp_path
@@ -55,28 +55,28 @@ class TorchvisionDownloader:
     self.__valid_dir = pathlib.Path(dir, 'valid')
     self.__test_dir = pathlib.Path(dir, 'test')
 
-    if not self.__train_dir.exists():
+    if not pathlib.Path(self.__root_dir).exists():
+      os.mkdir(self.__root_dir)
       os.mkdir(self.__train_dir)
-    else:
-      raise Exception("Train directory already exists!")
-
-    if not self.__valid_dir.exists():
       os.mkdir(self.__valid_dir)
-    else:
-      raise Exception("Train directory already exists!")
-
-    if not self.__test_dir.exists():
       os.mkdir(self.__test_dir)
     else:
-      raise Exception("Test directory already exists!")
+      if self.__train_dir.exists() or self.__valid_dir.exists() or self.__test_dir.exists():
+        self.__clear_tmp()
+        raise Exception(f"{self.__root_dir} directory is not empty.")
+      else:
+        os.mkdir(self.__train_dir)
+        os.mkdir(self.__valid_dir)
+        os.mkdir(self.__test_dir)
 
-  def call(self):
+  def call(self, forced: bool = False) -> None:
     """
       Downloads the dataset from torch-vision.
 
       Parameters
       ----------
-        None
+        forced : bool, optional
+          Force the download of the dataset. The default is False.
 
       Returns
       -------
@@ -88,7 +88,8 @@ class TorchvisionDownloader:
       self.__dataset = getattr(torchvision.datasets, self.dataset_name)(**self.dataset_kwargs)
       self.__dataset.idx_to_class = {val:key for key, val in self.__dataset.class_to_idx.items()}
     except Exception:
-      raise Exception("Target dataset cannot be downloaded!, please try another one.")
+      if not forced:
+        raise Exception("Target dataset cannot be downloaded!, please try another one.")
 
     print('\r', end='\r')
     print(colored(' Processing ...  🌕 ', 'yellow', attrs=['bold']), end='\r')
@@ -185,7 +186,7 @@ class TorchvisionDownloader:
 
   def __custom_label_mapping(self, label):
     """
-      Custom label mapping for the dataset, specifically map the FashionMNIST words to an index.
+      Custom label mapping for the dataset words to an index.
 
       Parameters
       ----------
@@ -197,7 +198,9 @@ class TorchvisionDownloader:
         int
           The integer that represents the mapping.
     """
-    return self.__dataset.idx_to_class[label]
+    if hasattr(self.__dataset, 'idx_to_class'):
+      return self.__dataset.idx_to_class[label]
+    return None
 
   def __write_labels(self):
     """

@@ -1,6 +1,0 @@
-[FORMAT]
-indent-string='  '
-max-line-length=120
-
-[MASTER]
-disable=missing-module-docstring

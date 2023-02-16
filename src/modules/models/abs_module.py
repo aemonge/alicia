@@ -137,11 +137,11 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
     self.input_size = data['input_size']
     self.labels = data['labels']
     self.features = data['features']
-    self.load_state_dict(data['state_dict'])
-
     if 'training_history' in data:
       self.training_history = data['training_history']
     if 'dropout' in data:
       self.dropout = data['dropout']
     if 'classifier' in data:
       self.classifier = data['classifier']
+    if 'state_dict' in data:
+      self.load_state_dict(data['state_dict'])
