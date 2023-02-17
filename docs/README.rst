@@ -1,15 +1,15 @@
 
-.. image:: https://img.shields.io/pypi/v/aeimg-classifier.svg
+.. image:: https://img.shields.io/pypi/v/alicia.svg
     :alt: PyPI-Server
-    :target: https://pypi.org/project/aeimg-classifier/
+    :target: https://pypi.org/project/alicia/
 
-.. image:: https://img.shields.io/conda/vn/conda-forge/aeimg-classifier.svg
+.. image:: https://img.shields.io/conda/vn/conda-forge/alicia.svg
     :alt: Conda-Forge
-    :target: https://anaconda.org/conda-forge/aeimg-classifier
+    :target: https://anaconda.org/conda-forge/alicia
 
-.. image:: https://pepy.tech/badge/aeimg-classifier/month
+.. image:: https://pepy.tech/badge/alicia/month
     :alt: Monthly Downloads
-    :target: https://pepy.tech/project/aeimg-classifier
+    :target: https://pepy.tech/project/alicia
 
 .. image:: https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold
     :alt: Project generated with PyScaffold

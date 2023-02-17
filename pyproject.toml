@@ -1,12 +1,75 @@
-[build-system]
-# AVOID CHANGING REQUIRES: IT WILL BE UPDATED BY PYSCAFFOLD!
-requires = ["setuptools>=46.1.0", "setuptools_scm[toml]>=5"]
-build-backend = "setuptools.build_meta"
+[project]
+name = "alicia"
+authors = [
+  { name = "aemonge", email = "andres@aemonge.com" }
+]
+requires-python = ">=3.10"
+readme = "docs/README.rst"
+license = { file = "docs/LICENSE.txt" }
+keywords = [
+  "neural-network",
+  "classifiers",
+  "image",
+  "machine-learning",
+  "performance",
+  "diff",
+  "compare",
+  "ai",
+  "torch",
+  "torchvision"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.10",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+dynamic = ["version", "description"] # from src/main.py -> __version__ and doc-string
 
-[tool.setuptools_scm]
-# For smarter version schemes and other configuration options,
-# check out https://github.com/pypa/setuptools_scm
-version_scheme = "no-guess-dev"
+[project.urls]
+Documentation = "https://github.com/aemonge/alicia"
+Source = "https://github.com/aemonge/alicia"
+
+[project.scripts]
+alicia = "main:call"
+
+[project.optional-dependencies]
+dev = [
+  "pylint ~=2.15.0",
+  "pyright ~=1.1.291",
+  "toml ~=0.10.2",
+]
+test = [
+  "pytest-cov ~=3.0.0",
+  "pytest-mccabe~=2.0"
+]
+
+[tool.flit.module]
+name = "main"
+
+[build-system]
+requires = [
+  "flit_core >=3.2,<4",
+  "better-abc>=0.0.3",
+  "click>=8.1.3",
+  "coverage>=7.1.0",
+  "loading-display>=0.2.0",
+  "matplotlib>=3.6.3",
+  "numpy>=1.24.1",
+  "pillow>=9.4.0",
+  "plotext>=5.2.8",
+  "setuptools-scm>=7.1.0",
+  "setuptools>=46.1.0",
+  "termcolor>=2.2.0",
+  "torch>=1.13.1",
+  "torchvision>=0.14.1",
+  "wcmatch>=8.4.1"
+]
+build-backend = "flit_core.buildapi"
 
 [tool.pylint.master]
 load-plugins="pylint_mccabe"
@@ -21,8 +84,6 @@ indent-string='  ' # Two spaces, i dislike the 4 spaces convention
 [tool.pylint.typecheck]
 generated-members="numpy.*, torch.*, torchvision.*"
 
-[tool.pytest.ini]
-
 [tool.pytest.ini_options]
 markers = [
 "download: marks test as a download, therefore slow and internet dependent (deselect with '-m \"not download\"')",
@@ -33,3 +94,36 @@ addopts = """
   --cov=src/features --cov=src/libs
   --cov-report=html
 """
+
+[tool.coverage.run]
+branch = true
+omit = [
+  # Pretty and colorized libraries, are pure front-end. Which would be testing with the stdout ouput
+  # and changing constantly, as a personal rule of thumb I don't unit-test screens or pretty libs
+  "src/libs/pretty*.py",
+  "src/libs/colorized*.py",
+  "src/libs/*_transforms.py",
+  "**/__init__.py"
+]
+
+[tool.coverage.report]
+fail_under = 95
+exclude_lines = [
+  # Have to re-enable the standard pragma
+  "pragma: no cover",
+
+  # Don't complain about missing debug-only code:
+  "def __repr__",
+  "if self\\.debug",
+
+  # Don't complain if tests don't hit defensive assertion code:
+  "except Exception",
+  "raise AssertionError",
+  "raise Exception",
+  "raise ValueError",
+  "raise NotImplementedError",
+
+  # Don't complain if non-runnable code isn't run:
+  "if 0:",
+  "if __name__ == .__main__.:"
+]

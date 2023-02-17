@@ -1,11 +1,20 @@
+"""
+  A CLI to download, train, test, predict and compare an image classifiers.
+
+  Supporting mostly all torch-vision neural networks and datasets.
+
+  This will also identify cute 🐱 or a fierce 🐶, also flowers
+  or what type of 🏘️ you should be.
+"""
+
 from dependencies.core import click
 from commands import download, create, train, test, info, predict, compare
 
 __author__ = "aemonge"
 __copyright__ = "aemonge"
 __license__ = "MIT"
-__name__ = "aeimg_classifier"
-__version__ = "0.0.1"
+__name__ = "alicia"
+__version__ = "0.0.5"
 
 @click.group()
 @click.pass_context
