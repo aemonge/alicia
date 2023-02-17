@@ -3,17 +3,9 @@
     :alt: PyPI-Server
     :target: https://pypi.org/project/alicia/
 
-.. image:: https://img.shields.io/conda/vn/conda-forge/alicia.svg
-    :alt: Conda-Forge
-    :target: https://anaconda.org/conda-forge/alicia
-
 .. image:: https://pepy.tech/badge/alicia/month
     :alt: Monthly Downloads
     :target: https://pepy.tech/project/alicia
-
-.. image:: https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold
-    :alt: Project generated with PyScaffold
-    :target: https://pyscaffold.org/
 
 
 ================================================
@@ -46,7 +38,7 @@
     train     Train a given architecture with a data directory containing a...
 
 
-.. image:: ./DallE-Alicia-logo.png
+.. image:: ./docs/DallE-Alicia-logo.png
     :alt: DallE-Alicia-logo
 
 Install and usage

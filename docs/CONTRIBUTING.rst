@@ -79,11 +79,13 @@ Clone this copy to your local disk::
  git clone git@github.com:aemonge/alicia.git
  cd alicia
 
-You should run::
+Install my chosen build tool::
 
-    pip install -U pip setuptools -e .
+    pip install flit
 
-   to be able to import the package under development in the Python REPL.
+Then, you should run to test locally::
+
+   flit install -s
 
 Implement your changes
 ----------------------
