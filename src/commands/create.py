@@ -9,7 +9,7 @@ MODELS_NAMES = [ name for name, _ in inspect.getmembers(models, predicate=inspec
 @click.argument("categories-file", type=click.Path(file_okay=True, writable=True), required=1)
 @click.argument("save-file", type=click.Path(file_okay=True, writable=True), required=1)
 @click.option('-d', '--dropout', type=click.FLOAT, default=0.0)
-@click.option('-i', '--input-size', type=click.INT, default=784)
+@click.option('-i', '--input-size', type=click.INT, default=28)
 def create(_, architecture: str, categories_file: str, save_file: str, input_size: int, dropout: float) -> None:
   """
     Creates a new model for a given architecture.

@@ -2,7 +2,7 @@ from dependencies.core import torch, torchvision
 from dependencies.datatypes import Parameter, Iterator
 from .abs_module import AbsModule
 
-class Squeezenet(AbsModule, torchvision.models.SqueezeNet):
+class Alexnet(AbsModule, torchvision.models.AlexNet):
   """
     A basic neural network module. With randomly selected features.
 
@@ -86,7 +86,7 @@ class Squeezenet(AbsModule, torchvision.models.SqueezeNet):
           The dropout probability.
     """
     if data is None:
-      super().__init__(version="1_1", num_classes=len(labels), dropout=dropout)
+      super().__init__(num_classes=len(labels), dropout=dropout)
       self.input_size = input_size
       self.labels = labels
       self.training_history = []
@@ -95,7 +95,7 @@ class Squeezenet(AbsModule, torchvision.models.SqueezeNet):
       if 'dropout' in data:
         self.dropout = data['dropout']
       self.labels = data['labels']
-      super().__init__(version="1_1", num_classes=len(self.labels), dropout=dropout)
+      super().__init__(num_classes=len(self.labels), dropout=dropout)
 
       self.input_size = data['input_size']
       self.features = data['features']

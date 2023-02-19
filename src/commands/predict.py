@@ -13,8 +13,7 @@ def predict(_, model_file, image, top_k):
     Predict images using a pre trained model, for a given folder and with a categories file.
   """
   data = torch.load(model_file)
-  model = getattr(models, data['name'])(data)
-  model.load(model_file)
+  model = getattr(models, data['name'])(**{"data": data})
 
   trainer = Trainer(model, ImageTransforms)
   probs, labels = trainer.predict_image(image, topk= top_k)

@@ -23,8 +23,7 @@ def test(_, model_file, data_dir, categories_file, batch_size, console_plot, h_t
   labels: dict = labels_reader(categories_file, _sorted=False) # pyright: ignore [reportGeneralTypeIssues]
 
   data = torch.load(model_file)
-  model = getattr(models, data['name'])(data)
-  model.load(model_file)
+  model = getattr(models, data['name'])(**{"data": data})
 
   trainer = Trainer(model, ImageTransforms)
   trainer.test(data_dir, labels, batch_size)

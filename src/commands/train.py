@@ -23,8 +23,7 @@ def train(_, model_file, data_dir, categories_file, batch_size, epochs, learning
   labels: dict = labels_reader(categories_file, _sorted=False) # pyright: ignore [reportGeneralTypeIssues]
 
   data = torch.load(model_file)
-  model = getattr(models, data['name'])(data)
-  model.load(model_file)
+  model = getattr(models, data['name'])(**{"data": data})
 
   if pretend:
     print(colored(' Results of the training will not saved, since we are just pretending\n', 'yellow'))

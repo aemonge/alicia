@@ -20,8 +20,7 @@ def step_speed(_, data_dir, categories_file, batch_size, learning_rate, momentum
   models = []
   for model_file in models_files:
     data = torch.load(model_file)
-    model = getattr(Models, data['name'])(data)
-    model.load(model_file)
+    model = getattr(Models, data['name'])(**{"data": data})
     models.append(model)
 
   c = Comparer(Trainer, models, names=[ os.path.basename(n) for n in models_files])
