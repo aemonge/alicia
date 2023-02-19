@@ -48,6 +48,9 @@ Install and usage
     pip install alicia
     alicia --help
 
+
+If you just want to see a quick showcase of the tool, download and run `../showcase.sh`
+
 Features
 -----------------------------------------------
 
