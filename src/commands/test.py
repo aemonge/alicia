@@ -22,9 +22,6 @@ def test(_, model_file, data_dir, categories_file, batch_size, console_plot, h_t
   """
   labels: dict = labels_reader(categories_file, _sorted=False) # pyright: ignore [reportGeneralTypeIssues]
 
-  if console_plot:
-    raise NotImplementedError("Console plot is not implemented yet, due to a bug 🐜")
-
   data = torch.load(model_file)
   model = getattr(models, data['name'])(data)
   model.load(model_file)
@@ -32,4 +29,7 @@ def test(_, model_file, data_dir, categories_file, batch_size, console_plot, h_t
   trainer = Trainer(model, ImageTransforms)
   trainer.test(data_dir, labels, batch_size)
   if n_images_test > 0:
-    trainer.show_test_results(data_dir, labels, n_images_test, h_title)
+    if console_plot:
+      trainer.show_test_results_in_console(data_dir, labels, n_images_test)
+    else:
+      trainer.show_test_results(data_dir, labels, n_images_test, h_title)

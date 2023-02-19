@@ -17,7 +17,7 @@ def predict(_, model_file, image, top_k):
   model.load(model_file)
 
   trainer = Trainer(model, ImageTransforms)
-  probs, labels = trainer.predict_image(image, top_k)
+  probs, labels = trainer.predict_image(image, topk= top_k)
 
   if top_k == 1:
     print(f"  \"{labels[0]}\"")

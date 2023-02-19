@@ -1,6 +1,6 @@
 # Fancy,
 from dependencies.core import time, glob, randrange, Image, os, np
-from dependencies.fancy import spinner, loading_bar, colored, plt
+from dependencies.fancy import spinner, loading_bar, colored, plt, plotext
 from PIL.Image import Image as ImageDT
 from matplotlib.axes import Axes
 
@@ -280,6 +280,50 @@ class PrettyTrain:
     self.__backspace__()
     print(f" Accuracy: {accuracy_f}, Time: {time_f}{' ':>40}")
 
+  def _print_pbs_in_console(self, labels:dict, probs, subplot_idx) -> None:
+    """
+      Print the probability distribution in console.
+
+      Parameters:
+      -----------
+        labels: dict
+          The labels.
+        probs:
+          The probability distribution.
+        ax: matplotlib.axes.Axes
+          The axis to plot.
+
+      Returns:
+      --------
+        None
+    """
+    probs = np.round(probs, 2)
+    plotext.subplot(subplot_idx + 1, 1)
+    plotext.bar(labels, probs, orientation = "h", width = 0.1)
+
+  def _imshow_in_console(self, image:ImageDT, subplot_idx:int, *, title:str, tilted:bool =False)-> None:
+    """
+      Plot the image.
+
+      Parameters:
+      -----------
+        image: Image
+          The image to plot
+        ax: matplotlib.axes.Axes
+          The axis to plot.
+        title: str
+          The title of the Image.
+        tilted: bool
+          Whether the image title should be vertical.
+
+      Returns:
+      --------
+        None
+    """
+    plotext.subplot(subplot_idx + 1, 2)
+    plotext.image_plot(image)
+    plotext.xlabel(title, xside=1)
+
   def _print_pbs(self, labels:dict, probs, ax:Axes) -> None:
     """
       Print the probability distribution.
@@ -377,10 +421,6 @@ class PrettyTrain:
       ix = randrange(len(all_imgs))
       img_path = all_imgs[ix]
 
-      real_class = [
-        'Ankle boot', 'Bag', 'Coat', 'Dress', 'Pullover', 'Sandal', 'Shirt',
-        'Sneaker', 'Top', 'Trouser'
-      ]
       image = Image.open(img_path)
       file_name = os.path.basename(img_path)
 
@@ -389,3 +429,43 @@ class PrettyTrain:
       self._imshow(self.transforms['display'](image), title=labels[file_name], ax=ax[c_idx][1], tilted=tilted)
 
     plt.show()
+
+  def show_test_results_in_console(self, path: str, labels: dict, count: int) -> None:
+    """
+      Show the test results in console.
+
+      Parameters:
+      -----------
+        path: str
+          The path to the test images.
+        labels: dict
+          The class labels.
+        count: int
+          The total number of items do show.
+        tilted: bool
+          Whether the image title should be vertical.
+
+      Returns:
+      --------
+        None
+    """
+    all_imgs = [
+      file for file in glob.glob(f"{path}/**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)
+    ]
+
+    plotext.subplots(count, 2)
+    plotext.plot_size(80, 15*count)
+
+    for c_idx in range(count):
+      ix = randrange(len(all_imgs))
+      img_path = all_imgs[ix]
+
+      image = Image.open(img_path)
+      file_name = os.path.basename(img_path)
+
+      probs, classes = self.predict(image, topk=3)
+      self._print_pbs_in_console(classes, probs, c_idx)
+      self._imshow_in_console(img_path, c_idx, title=labels[file_name])
+
+    plotext.show()
+    plotext.clf()

@@ -65,8 +65,10 @@ environment`_ to avoid any problems with your installed Python packages.
 
 anaconda_::
 
-    conda create -n alicia -f environment.yml
+    conda create -n alicia
     conda activate alicia
+    pip install poetry
+    poetry install
 
 Clone the repository
 --------------------
@@ -81,11 +83,11 @@ Clone this copy to your local disk::
 
 Install my chosen build tool::
 
-    pip install flit
+    pip install poetry
 
 Then, you should run to test locally::
 
-   flit install -s
+   poetry install
 
 Implement your changes
 ----------------------
