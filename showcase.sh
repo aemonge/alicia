@@ -15,15 +15,15 @@ echo "== alicia create $MODEL mnist-data/labels.csv model-dropless.pth"
 echo "== alicia create $MODEL mnist-data/labels.csv model.pth -d 0.8"
 echo "== ================================================================================================="
 alicia create $MODEL mnist-data/labels.csv model-dropless.pth
-alicia create $MODEL mnist-data/labels.csv model.pth -d 0.8
+alicia create $MODEL mnist-data/labels.csv model.pth -d 0.5
 
 echo "== ================================================================================================="
 echo "== # Info"
 echo "== alicia info model-dropless.pth"
 echo "== alicia info model.pth"
 echo "== ================================================================================================="
-alicia info model.pth
 alicia info model-dropless.pth
+alicia info model.pth
 
 echo "== ================================================================================================="
 echo "== # Compare Info"
@@ -33,10 +33,10 @@ alicia compare diff-info model*
 
 echo "== ================================================================================================="
 echo "== # Train"
-echo "== alicia train model-dropless.pth mnist-data mnist-data/labels.csv -e 5"
+echo "== alicia train model-dropless.pth mnist-data mnist-data/labels.csv -e 5 -m 0.9"
 echo "== alicia train model.pth mnist-data mnist-data/labels.csv -e 5"
 echo "== ================================================================================================="
-alicia train model-dropless.pth mnist-data mnist-data/labels.csv -e 5
+alicia train model-dropless.pth mnist-data mnist-data/labels.csv -e 5 -m 0.9
 alicia train model.pth mnist-data mnist-data/labels.csv -e 5
 
 echo "== ================================================================================================="
@@ -50,5 +50,5 @@ echo "== # Test and visualize"
 echo "== alicia test -n 4 -c model.pth mnist-data mnist-data/labels.csv"
 echo "== alicia test -n 4 model-dropless.pth mnist-data mnist-data/labels.csv"
 echo "== ================================================================================================="
-alicia test -n 4 -c model.pth mnist-data mnist-data/labels.csv
-alicia test -n 4 model-dropless.pth mnist-data mnist-data/labels.csv
+alicia test -n 3 -c model.pth mnist-data mnist-data/labels.csv
+alicia test -n 3 model-dropless.pth mnist-data mnist-data/labels.csv

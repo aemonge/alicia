@@ -7,10 +7,13 @@
     :alt: Monthly Downloads
     :target: https://pepy.tech/project/alicia
 
-
 ================================================
                    AlicIA
 ================================================
+
+.. image:: https://github.com/aemonge/alicia/raw/main/docs/DallE-Alicia-logo.png
+    :alt: DallE-Alicia-logo
+
 ::
 
   Usage: alicia [OPTIONS] COMMAND [ARGS]...
@@ -38,9 +41,6 @@
     train     Train a given architecture with a data directory containing a...
 
 
-.. image:: https://github.com/aemonge/alicia/raw/main/docs/DallE-Alicia-logo.png
-    :alt: DallE-Alicia-logo
-
 Install and usage
 ================================================
 ::
@@ -49,7 +49,7 @@ Install and usage
     alicia --help
 
 
-If you just want to see a quick showcase of the tool, download and run [showcase.sh](./showcase.sh)
+If you just want to see a quick showcase of the tool, download and run `./showcase.sh` https://github.com/aemonge/alicia/raw/main/showcase.sh
 
 Features
 -----------------------------------------------
@@ -68,7 +68,7 @@ References
 
 Useful links found and used while developing this
 
-* (https://medium.com/analytics-vidhya/creating-a-custom-dataset-and-dataloader-in-pytorch-76f210a1df5d)
-* (https://stackoverflow.com/questions/51911749/what-is-the-difference-between-torch-tensor-and-torch-tensor)
-* (https://deepai.org/dataset/mnist)
-* (https://medium.com/fenwicks/tutorial-1-mnist-the-hello-world-of-deep-learning-abd252c47709)
+* https://medium.com/analytics-vidhya/creating-a-custom-dataset-and-dataloader-in-pytorch-76f210a1df5d
+* https://stackoverflow.com/questions/51911749/what-is-the-difference-between-torch-tensor-and-torch-tensor
+* https://deepai.org/dataset/mnist
+* https://medium.com/fenwicks/tutorial-1-mnist-the-hello-world-of-deep-learning-abd252c47709
