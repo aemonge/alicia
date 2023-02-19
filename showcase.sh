@@ -41,8 +41,7 @@ alicia train model.pth mnist-data mnist-data/labels.csv -e 5
 
 echo "== ================================================================================================="
 echo "== # Compare accuracy"
-echo "== alicia train model-dropless.pth mnist-data mnist-data/labels.csv -e 5"
-echo "== alicia train model.pth mnist-data mnist-data/labels.csv -e 5"
+echo "== alicia compare accuracy -d mnist-data -c mnist-data/labels.csv model*"
 echo "== ================================================================================================="
 alicia compare accuracy -d mnist-data -c mnist-data/labels.csv model*
 

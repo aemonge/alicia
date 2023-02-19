@@ -38,7 +38,7 @@
     train     Train a given architecture with a data directory containing a...
 
 
-.. image:: ./docs/DallE-Alicia-logo.png
+.. image:: https://github.com/aemonge/alicia/raw/main/docs/DallE-Alicia-logo.png
     :alt: DallE-Alicia-logo
 
 Install and usage
@@ -49,7 +49,7 @@ Install and usage
     alicia --help
 
 
-If you just want to see a quick showcase of the tool, download and run `../showcase.sh`
+If you just want to see a quick showcase of the tool, download and run [showcase.sh](./showcase.sh)
 
 Features
 -----------------------------------------------
