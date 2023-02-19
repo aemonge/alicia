@@ -85,9 +85,9 @@ class Comparer(PrettifyComparer):
     results = []
     try:
       for model in self.models:
-        t = self.Trainer(model, ImageTransforms)
+        t = self.Trainer(model, ImageTransforms, **kwargs)
         with contextlib.redirect_stdout(io.StringIO()) as f:
-          t.train(data_dir, labels, batch_size, 1, **kwargs)
+          t.train(data_dir, labels, batch_size, 1)
           results.append(f.getvalue())
     except Exception as e:
       self._terminate_loading()

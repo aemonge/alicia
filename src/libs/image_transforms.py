@@ -1,4 +1,4 @@
-from dependencies.datatypes import Tensor
+from torch import Tensor
 
 class ImageToMatPlotLib(object):
   """

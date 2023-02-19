@@ -1,7 +1,8 @@
 # Fancy,
 from dependencies.core import time, glob, randrange, Image, os, np
 from dependencies.fancy import spinner, loading_bar, colored, plt
-from dependencies.datatypes import Axes, ImageDT
+from PIL.Image import Image as ImageDT
+from matplotlib.axes import Axes
 
 class PrettyTrain:
   """

@@ -14,7 +14,7 @@ __author__ = "aemonge"
 __copyright__ = "aemonge"
 __license__ = "MIT"
 __name__ = "alicia"
-__version__ = "0.0.7"
+__version__ = "0.0.9"
 
 @click.group()
 @click.pass_context

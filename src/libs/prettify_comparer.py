@@ -1,6 +1,5 @@
 from dependencies.fancy import colored, spinner
 from dependencies.core import multiprocessing, time, abstractmethod, ABCMeta
-from dependencies.datatypes import AbsModule
 from libs import colorize_diff
 
 class PrettifyComparer(metaclass=ABCMeta):
@@ -17,7 +16,7 @@ class PrettifyComparer(metaclass=ABCMeta):
       Implementing this __init__ **only** for typing purposes. The child class, shall
       not call this method directly.
     """
-    self.models: list[AbsModule]
+    self.models: list
     self.names: list[str]
 
   def __str__(self) -> str:

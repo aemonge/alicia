@@ -1,6 +1,6 @@
 from dependencies.core import torch, torchvision
 from features import Trainer
-from modules.models import Elemental
+from modules import Elemental
 from tests.fixtures.trainer import *
 
 # Constants

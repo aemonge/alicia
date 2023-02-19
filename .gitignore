@@ -58,3 +58,4 @@ tmp
 temp
 out
 htmlcov
+.last_run.sh

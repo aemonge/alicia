@@ -1,5 +1,6 @@
-from dependencies.core import torch
-from dependencies.datatypes import Tensor
+import torch
+from torch import Tensor
+
 
 class UnShapetransform(object):
   """
