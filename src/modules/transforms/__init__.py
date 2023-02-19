@@ -1,1 +1,1 @@
-from .image_transforms import ImageTransforms
+import transforms.image_transforms as transforms

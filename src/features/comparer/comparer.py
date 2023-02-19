@@ -1,4 +1,4 @@
-from modules.transforms import ImageTransforms
+from modules.transforms.image_transforms import ImageTransforms
 from dependencies.core import contextlib, io
 from dependencies.datatypes import AbsModule, Type
 from libs import PrettifyComparer

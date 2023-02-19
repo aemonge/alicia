@@ -2,7 +2,7 @@ from dependencies.core import click, torch
 from .shared import labels_reader
 from modules import models
 from features import Trainer
-from modules.transforms import ImageTransforms
+from modules.transforms.image_transforms import ImageTransforms
 
 @click.command()
 @click.pass_context

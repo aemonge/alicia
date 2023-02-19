@@ -58,19 +58,45 @@ class Basic(AbsModule):
     """
     return 'Basic()'
 
-  def __init__(self, labels) -> None:
+  def __init__(self, *, data: dict|None = None, labels = [],
+               input_size: int = 784, dropout: float = 0.0) -> None:
     """
       Constructor of the neural network.
 
       Parameters:
       -----------
+        data: dict
+          A dictionary containing the data, to load the network though the pth file.
         labels: list
           A list of labels.
+        input_size: int
+          The input size.
+        dropout: float
+          The dropout probability.
     """
     super().__init__()
-    self.labels = labels
-    self.num_classes = len(labels)
-    self.training_history = []
+    if data is None:
+      self.labels = labels
+      self.num_classes = len(labels)
+      self.training_history = []
+
+      self.input_size = input_size
+      self.dropout = dropout
+      last_size = self.__create_features__()
+      self.__create_classifier__(last_size)
+    else:
+      if 'dropout' in data:
+        self.dropout = data['dropout']
+      self.labels = data['labels']
+      self.num_classes = len(self.labels)
+      self.input_size = data['input_size']
+      self.features = data['features']
+      if 'training_history' in data:
+        self.training_history = data['training_history']
+      if 'dropout' in data:
+        self.dropout = data['dropout']
+      if 'classifier' in data:
+        self.classifier = data['classifier']
 
   def __create_classifier__(self, last_size: int) -> None:
     """
@@ -166,19 +192,3 @@ class Basic(AbsModule):
         Iterator[Parameter]
     """
     return self.features.parameters()
-
-  def create(self, *, input_size: int = 784, dropout: float = 0.0) -> None:
-    """
-      Re creates the neural network.
-
-      Parameters:
-      -----------
-        input_size: int
-          The input size.
-        dropout: float
-          The dropout probability.
-    """
-    self.input_size = input_size
-    self.dropout = dropout
-    last_size = self.__create_features__()
-    self.__create_classifier__(last_size)

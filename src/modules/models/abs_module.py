@@ -61,9 +61,11 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       classifier_str = "\n  ".join(str(self.classifier).split("\n"))
 
     if hasattr(self, 'dropout'):
-      meta_str = f"size: {formated_size},\tdropout: {self.dropout},\tinput size:{self.input_size}"
+      meta_str = f"size: {formated_size},\tdropout: {self.dropout},\tinput size:{self.input_size}" + \
+        f"\t label count (output): {self.num_classes}"
     else:
-      meta_str = f"size: {formated_size},\tinput size:{self.input_size}"
+      meta_str = f"size: {formated_size},\tinput size:{self.input_size}," + \
+        f"\t label count (output): {self.num_classes}"
 
     training_history_str = ""*4
     for line in self.training_history:
@@ -83,10 +85,6 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       (f"  (classifier): {classifier_str}\n" if hasattr(self, 'classifier') else '') + \
       (f"  (training history): \n    {training_history_str[:-1]}" if len(self.training_history) > 0 else '') + \
     f")"
-
-  @abstractmethod
-  def create(self, *, input_size: int, dropout: float) -> None:
-    pass
 
   @abstractmethod
   def parameters(self) -> list:
@@ -113,7 +111,7 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       'state_dict': self.state_dict(),
     }
 
-    if hasattr(self, 'training_history') and len(self.training_history) > 0:
+    if hasattr(self, 'training_history'):
       obj['training_history'] = self.training_history
     if hasattr(self, 'dropout'):
       obj['dropout'] = self.dropout
@@ -122,7 +120,7 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
 
     torch.save(obj, path)
 
-  def load(self, path: str) -> None:
+  def load(self, state_dict: dict) -> None:
     """
       Parameters:
       -----------
@@ -133,15 +131,4 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       --------
         None
     """
-    data = torch.load(path)
-    self.input_size = data['input_size']
-    self.labels = data['labels']
-    self.features = data['features']
-    if 'training_history' in data:
-      self.training_history = data['training_history']
-    if 'dropout' in data:
-      self.dropout = data['dropout']
-    if 'classifier' in data:
-      self.classifier = data['classifier']
-    if 'state_dict' in data:
-      self.load_state_dict(data['state_dict'])
+    self.load_state_dict(state_dict)

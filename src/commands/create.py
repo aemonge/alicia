@@ -16,8 +16,9 @@ def create(_, architecture: str, categories_file: str, save_file: str, input_siz
     This will generate a .pth file to use later to train, test, and evaluate the model.
   """
   sorted_labels = labels_reader(categories_file)
-  model = getattr(models, architecture)(sorted_labels)
-  model.create(input_size=input_size, dropout=dropout)
-  model.save(save_file)
+  model = getattr(models, architecture)(**{
+    "labels": sorted_labels, "input_size": input_size, "dropout": dropout
+  })
 
+  model.save(save_file)
   print('💚')

@@ -58,6 +58,7 @@ To see the full list of features, and option please refer to `alicia --help`
 * Get information about each model.
 * Compare models training speed, accuracy, and meta information.
 * Tested with MNIST and FashionMNIST.
+* View results in the console, or with matplotlib
 
 References
 -----------------------------------------------

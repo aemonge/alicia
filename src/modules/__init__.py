@@ -1,2 +1,2 @@
 import modules.models
-import modules.transforms
+import modules.transforms.image_transforms

@@ -23,6 +23,5 @@
 * [ ] Make pylint understand venv paths rightfully.
 * [ ] Make pylint and pyright to understand the callback method class, or create a abstract class
 * [ ] Change `--verbose` and display none, less, all information.
-* [ ] Re-enable the console pure view (`plottext`)
 * [ ] Choose a default width, and adjust all output to such a width
 * [ ] `Tear_down`, `reset()` or `request.getfixturevalue()` fixture to avoid setting a manual order on pytest

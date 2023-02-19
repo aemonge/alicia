@@ -1,10 +1,12 @@
-from dependencies.core import torch
+from dependencies.core import torch, torchvision
 from dependencies.datatypes import Parameter, Iterator
-from modules.models.abs_module import AbsModule
+from .abs_module import AbsModule
 
-class Elemental(AbsModule):
+# class Squeezenet(torchvision.models.SqueezeNet, AbsModule):
+class Squeezenet(AbsModule, torchvision.models.SqueezeNet):
+# class Squeezenet(torchvision.models.SqueezeNet):
   """
-    A elemental neural network module, only for testing purposes.
+    A basic neural network module. With randomly selected features.
 
     Attributes:
     -----------
@@ -12,10 +14,14 @@ class Elemental(AbsModule):
         A list of labels.
       features: list
         A list of features.
+      classifier: torch.nn.Module
+        A classifier.
       input_size: int
         The input size.
       num_classes: int
         The number of classes.
+      dropout: float
+        The dropout probability.
 
     Methods:
     --------
@@ -25,9 +31,24 @@ class Elemental(AbsModule):
         A load of the neural network.
       save(self, path: str) -> str
         A save of the neural network.
-      create(self, input_size: int, num_classes: int) -> None
+      create(self, input_size: int, num_classes: int, dropout: float) -> None
         Re creates the neural network.
   """
+
+  def __call__(self, x: torch.Tensor) -> torch.Tensor:
+    """
+      A forward pass of the neural network.
+
+      Parameters:
+      -----------
+        x: torch.Tensor
+          A batch of input features.
+
+      Returns:
+      --------
+        torch.Tensor
+    """
+    return self.forward(x)
 
   def __repr__(self):
     """
@@ -38,7 +59,17 @@ class Elemental(AbsModule):
         : str
           A string representation 'Basic()'.
     """
-    return 'Elemental()'
+    return 'Squeezenet()'
+
+  def parameters(self) -> Iterator[Parameter]:
+    """
+      Get the parameters of the neural network.
+
+      Returns:
+      --------
+        Iterator[Parameter]
+    """
+    return self.features.parameters()
 
   def __init__(self, *, data: dict|None = None, labels = [],
                input_size: int = 784, dropout: float = 0.0) -> None:
@@ -56,21 +87,25 @@ class Elemental(AbsModule):
         dropout: float
           The dropout probability.
     """
-    super().__init__()
     if data is None:
-      self.labels = labels
-      self.num_classes = len(labels)
+      super().__init__(version="1_1", num_classes=len(labels), dropout=dropout)
       self.input_size = input_size
+      self.labels = labels
       self.training_history = []
-      self.features = torch.nn.Sequential(
-        torch.nn.Linear(self.input_size, self.num_classes),
-        torch.nn.LogSoftmax(dim=1)
+
+      feats = list(self.features)
+      feats.insert(0, torch.nn.Sequential(
+        torch.nn.Linear(self.input_size, 64),
+        torch.nn.ReLU())
       )
+      self.features = torch.nn.Sequential(*feats)
+      self.num_classes = len(labels)
     else:
       if 'dropout' in data:
         self.dropout = data['dropout']
       self.labels = data['labels']
-      self.num_classes = len(self.labels)
+      super().__init__(version="1_1", num_classes=len(self.labels), dropout=dropout)
+
       self.input_size = data['input_size']
       self.features = data['features']
       if 'training_history' in data:
@@ -79,43 +114,3 @@ class Elemental(AbsModule):
         self.dropout = data['dropout']
       if 'classifier' in data:
         self.classifier = data['classifier']
-
-  def forward(self, x: torch.Tensor) -> torch.Tensor:
-    """
-      A forward pass of the neural network.
-
-      Parameters:
-      -----------
-        x: torch.Tensor
-          A batch of input features.
-
-      Returns:
-      --------
-        torch.Tensor
-
-      Help:
-      -----
-        model.forward = lambda x: model.classifier(model.features(x)).view(x.size(0), class_count)
-    """
-    x = self.features(x)
-    return torch.flatten(x, 1)
-
-  def parameters(self) -> Iterator[Parameter]:
-    """
-      Get the parameters of the neural network.
-
-      Returns:
-      --------
-        Iterator[Parameter]
-    """
-    return self.features.parameters()
-
-  def create(self, *, input_size: int = 28, dropout: float|None = None) -> None: # pyright: ignore
-    """
-      Re creates the neural network.
-
-      Parameters:
-      -----------
-        input_size: int
-          The input size.
-    """

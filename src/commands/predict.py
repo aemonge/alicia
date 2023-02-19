@@ -1,6 +1,6 @@
 from dependencies.core import click, torch
 from modules import models
-from modules.transforms import ImageTransforms
+from modules.transforms.image_transforms import ImageTransforms
 from features import Trainer
 
 @click.command()
