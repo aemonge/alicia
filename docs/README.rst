@@ -49,7 +49,7 @@ Install and usage
     alicia --help
 
 
-If you just want to see a quick showcase of the tool, download and run `./showcase.sh` https://github.com/aemonge/alicia/raw/main/showcase.sh
+If you just want to see a quick showcase of the tool, download and run `showcase.sh` https://github.com/aemonge/alicia/raw/main/docs/showcase.sh
 
 Features
 -----------------------------------------------

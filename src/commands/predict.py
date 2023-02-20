@@ -1,6 +1,6 @@
 from dependencies.core import click, torch
 from modules import models
-from modules.transforms.image_transforms import ImageTransforms
+from modules.transforms.image_transforms import MNIST_28_Transforms
 from features import Trainer
 
 @click.command()
@@ -15,7 +15,7 @@ def predict(_, model_file, image, top_k):
   data = torch.load(model_file)
   model = getattr(models, data['name'])(**{"data": data})
 
-  trainer = Trainer(model, ImageTransforms)
+  trainer = Trainer(model, MNIST_28_Transforms)
   probs, labels = trainer.predict_image(image, topk= top_k)
 
   if top_k == 1:

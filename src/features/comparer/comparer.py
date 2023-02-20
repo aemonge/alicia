@@ -1,4 +1,4 @@
-from modules.transforms.image_transforms import ImageTransforms
+from modules.transforms.image_transforms import MNIST_28_Transforms
 from dependencies.core import contextlib, io
 from dependencies.datatypes import AbsModule, Type
 from libs import PrettifyComparer
@@ -54,7 +54,7 @@ class Comparer(PrettifyComparer):
 
     results = []
     for model in self.models:
-      t = self.Trainer(model, ImageTransforms)
+      t = self.Trainer(model, MNIST_28_Transforms)
       with contextlib.redirect_stdout(io.StringIO()) as f:
         t.test(*args, **kwargs)
         results.append(f.getvalue())
@@ -85,7 +85,7 @@ class Comparer(PrettifyComparer):
     results = []
     try:
       for model in self.models:
-        t = self.Trainer(model, ImageTransforms, **kwargs)
+        t = self.Trainer(model, MNIST_28_Transforms, **kwargs)
         with contextlib.redirect_stdout(io.StringIO()) as f:
           t.train(data_dir, labels, batch_size, 1)
           results.append(f.getvalue())

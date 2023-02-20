@@ -3,7 +3,7 @@ from dependencies.fancy import colored
 from .shared import labels_reader
 from modules import models
 from features import Trainer
-from modules.transforms.image_transforms import ImageTransforms
+from modules.transforms.image_transforms import MNIST_28_Transforms
 
 @click.command()
 @click.pass_context
@@ -29,9 +29,9 @@ def train(_, model_file, data_dir, categories_file, batch_size, epochs, learning
     print(colored(' Results of the training will not saved, since we are just pretending\n', 'yellow'))
 
   if momentum is not None:
-    trainer = Trainer(model, ImageTransforms, learning_rate = learning_rate, momentum = momentum)
+    trainer = Trainer(model, MNIST_28_Transforms, learning_rate = learning_rate, momentum = momentum)
   else:
-    trainer = Trainer(model, ImageTransforms, learning_rate = learning_rate)
+    trainer = Trainer(model, MNIST_28_Transforms, learning_rate = learning_rate)
 
   trainer.train(data_dir, labels, batch_size, epochs)
 

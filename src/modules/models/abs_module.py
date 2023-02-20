@@ -113,7 +113,7 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
 
     if hasattr(self, 'training_history'):
       obj['training_history'] = self.training_history
-    if hasattr(self, 'dropout'):
+    if hasattr(self, 'dropout') and self.dropout > 0.0:
       obj['dropout'] = self.dropout
     if hasattr(self, 'classifier'):
       obj['classifier'] = self.classifier

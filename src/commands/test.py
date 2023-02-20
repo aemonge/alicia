@@ -2,7 +2,7 @@ from dependencies.core import click, torch
 from .shared import labels_reader
 from modules import models
 from features import Trainer
-from modules.transforms.image_transforms import ImageTransforms
+from modules.transforms.image_transforms import MNIST_28_Transforms
 
 @click.command()
 @click.pass_context
@@ -25,7 +25,7 @@ def test(_, model_file, data_dir, categories_file, batch_size, console_plot, h_t
   data = torch.load(model_file)
   model = getattr(models, data['name'])(**{"data": data})
 
-  trainer = Trainer(model, ImageTransforms)
+  trainer = Trainer(model, MNIST_28_Transforms)
   trainer.test(data_dir, labels, batch_size)
   if n_images_test > 0:
     if console_plot:

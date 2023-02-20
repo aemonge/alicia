@@ -203,6 +203,7 @@ class Trainer(PrettyTrain):
       for param in self.model.features.parameters():
           param.requires_grad = False
 
+    self.model.train()
     for epoch in range(epochs):
       tr_loss = 0.0
       ix = 0
