@@ -66,8 +66,8 @@ slowprint "==      since training will take long time, I'll be using a smaller (
 slowprint "==      note that I'm choosing the \`data/mnist-fashion-small\` folder as main data folder"
 echo "== ================================================================================================="
 sleep 1
-typecmd "alicia train model.pth data/mnist-fashion-small mnist-data/labels.csv -l 0.3 -e 6"
-alicia train model.pth data/mnist-fashion-small mnist-data/labels.csv -l 0.03 -e 6
+typecmd "alicia train model.pth data/mnist-fashion-small mnist-data/labels.csv -l 0.3 -e 7"
+alicia train model.pth data/mnist-fashion-small mnist-data/labels.csv -l 0.03 -e 7
 sleep 5
 
 clear

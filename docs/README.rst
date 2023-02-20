@@ -1,44 +1,35 @@
 
-.. image:: https://img.shields.io/pypi/v/alicia.svg
-    :alt: PyPI-Server
-    :target: https://pypi.org/project/alicia/
+.. image:: https://img.shields.io/badge/badges-awesome-green.svg
+   :target: https://github.com/Naereen/badges
 
-.. image:: https://pepy.tech/badge/alicia/month
-    :alt: Monthly Downloads
-    :target: https://pepy.tech/project/alicia
+.. image:: https://img.shields.io/badge/Made%20with-Python-1f425f.svg
+   :target: https://www.python.org/
+
+.. image:: https://img.shields.io/pypi/v/ansicolortags.svg
+   :target: https://pypi.python.org/pypi/alicia/
+
+.. image:: https://img.shields.io/pypi/dm/ansicolortags.svg
+   :target: https://pypi.python.org/pypi/alicia/
+
+.. image:: https://img.shields.io/pypi/l/ansicolortags.svg
+   :target: https://pypi.python.org/pypi/ansicolortags/
+
+.. image:: https://img.shields.io/badge/say-thanks-ff69b4.svg
+   :target: https://saythanks.io/to/kennethreitz
+
+.. raw:: html
+
+   <img align="right" width="75px"
+     src="https://github.com/aemonge/alicia/raw/main/docs/DallE-Alicia-logo.png"
+   >
 
 ================================================
                    AlicIA
 ================================================
 
-.. image:: https://github.com/aemonge/alicia/raw/main/docs/DallE-Alicia-logo.png
-    :alt: DallE-Alicia-logo
+.. raw:: html
 
-::
-
-  Usage: alicia [OPTIONS] COMMAND [ARGS]...
-
-    A CLI to download, train, test, predict and compare an image classifiers.
-
-    Supporting mostly all torch-vision neural networks and datasets.
-
-    This will also identify cute 🐱 or a fierce 🐶, also flowers or what type of
-    🏘️ you should be.
-
-  Options:
-    -v, --verbose
-    -g, --gpu
-    --version      Show the version and exit.
-    --help         Show this message and exit.
-
-  Commands:
-    compare   Compare the info, accuracy, and step speed two (or more by...
-    create    Creates a new model for a given architecture.
-    download  Download a MNIST dataset with PyTorch and split it into...
-    info      Display information about a model architecture.
-    predict   Predict images using a pre trained model, for a given folder...
-    test      Test a pre trained model.
-    train     Train a given architecture with a data directory containing a...
+    <a href="https://asciinema.org/a/561138?autoplay=1" target="_blank"><img src="https://asciinema.org/a/561138.png"/></a>
 
 
 Install and usage
