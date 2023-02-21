@@ -16,6 +16,7 @@
 - [ ] Add an `-a, --auto [img-file]`  option to the `create` command to automatically set the input size
       based on the image resolution.
 - [x] Add the network training history log, to the model. To enhance the info and comparer.
+- [ ] Support pre-trained models, with weights settings.
 
 # Tech debt // Known Bugs
 

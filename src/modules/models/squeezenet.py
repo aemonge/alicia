@@ -69,8 +69,7 @@ class Squeezenet(AbsModule, torchvision.models.SqueezeNet):
     """
     return self.features.parameters()
 
-  def __init__(self, *, data: dict|None = None, labels = [],
-               input_size: int = 28, dropout: float = 0.0) -> None:
+  def __init__(self, *, data: dict|None = None, labels = [], input_size: int = 28, dropout: float = 0.0) -> None:
     """
       Constructor of the neural network.
 

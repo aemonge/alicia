@@ -1,4 +1,4 @@
-from dependencies.core import glob, os, pathlib, torchvision, tempfile
+from dependencies.core import glob, os, pathlib, torchvision, tempfile, inspect
 from dependencies.fancy import colored
 from dependencies.datatypes import *
 
@@ -41,7 +41,7 @@ class TorchvisionDownloader:
       -------
         None
     """
-    self.__dataset : Dataset[list[ImageDT]]
+    self.__dataset : list[Dataset[list[ImageDT]]]
     self.__tmp_path = tempfile.gettempdir()
     self.dataset_name = dataset
     self.dataset_kwargs = dataset_kwargs
@@ -85,14 +85,30 @@ class TorchvisionDownloader:
     print(colored(' Downloading ... 🌑 ', 'blue', attrs=['bold']), end='\r')
 
     try:
-      self.__dataset = getattr(torchvision.datasets, self.dataset_name)(**self.dataset_kwargs)
+      dataset = getattr(torchvision.datasets, self.dataset_name)
+      sig = inspect.signature(dataset.__init__)
+      if 'split' in sig.parameters:
+        self.__dataset = [
+          dataset(**{**self.dataset_kwargs, **{"split": "train"}}),
+          dataset(**{**self.dataset_kwargs, **{"split": "val"}}),
+          dataset(**{**self.dataset_kwargs, **{"split": "test"}})
+        ]
+      elif 'train' in sig.parameters:
+        self.__dataset = [
+          dataset(**{**self.dataset_kwargs, **{"train": True}}),
+          dataset(**{**self.dataset_kwargs, **{"train": False}}),
+        ]
+      else:
+        self.__dataset = [dataset(**self.dataset_kwargs)]
     except Exception:
       raise Exception("Target dataset cannot be downloaded!, please try another one.")
 
     if categories:
-      self.__dataset.idx_to_class = categories
+      self._idx_to_class = categories
     else:
-      self.__dataset.idx_to_class = {val:key for key, val in self.__dataset.class_to_idx.items()}
+      items = [ i.class_to_idx.items() for i in self.__dataset]
+      items = [item for sublist in items for item in sublist] # Flatten
+      self._idx_to_class = {val:key for key, val in items}
 
     print('\r', end='\r')
     print(colored(' Processing ...  🌕 ', 'yellow', attrs=['bold']), end='\r')
@@ -153,22 +169,23 @@ class TorchvisionDownloader:
         None
     """
     idx = 0
-    total = len(self.__dataset) # pyright: reportGeneralTypeIssues=false
+    total =  sum([len(ds) for ds in self.__dataset]) # pyright: reportGeneralTypeIssues=false
     max_train_idx = int(total * self.split_percentage[0])
     max_valid_idx = int(total * (self.split_percentage[0] + self.split_percentage[1]))
 
-    for img, label in self.__dataset:
-      label = self.__custom_label_mapping(label)
+    for ds in self.__dataset:
+      for img, label in ds:
+        label = self.__custom_label_mapping(label)
 
-      if idx < max_train_idx:
-        cb_fn(img, idx, self.__train_dir)
-      elif idx < max_valid_idx:
-        cb_fn(img, idx, self.__valid_dir)
-      else:
-        cb_fn(img, idx, self.__test_dir)
+        if idx < max_train_idx:
+          cb_fn(img, idx, self.__train_dir)
+        elif idx < max_valid_idx:
+          cb_fn(img, idx, self.__valid_dir)
+        else:
+          cb_fn(img, idx, self.__test_dir)
 
-      self.__labels.append(f"{self.__idx_to_img(idx)},{label}")
-      idx+=1
+        self.__labels.append(f"{self.__idx_to_img(idx)},{label}")
+        idx+=1
 
   def __write_images(self, img, idx, path):
     """
@@ -204,11 +221,11 @@ class TorchvisionDownloader:
         int
           The integer that represents the mapping.
     """
-    if hasattr(self.__dataset, 'idx_to_class'):
+    if hasattr(self, '_idx_to_class'):
       try:
-        return self.__dataset.idx_to_class[label]
+        return self._idx_to_class[label]
       except:
-        return self.__dataset.idx_to_class[str(label)]
+        return self._idx_to_class[str(label)]
     return label
 
   def __write_labels(self):

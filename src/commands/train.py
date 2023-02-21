@@ -17,9 +17,10 @@ TRANFORMS_NAMES = [ name for name, _ in inspect.getmembers(transforms, predicate
 @click.option("-l", "--learning-rate", default=round(1/137, 6), type=click.FLOAT)
 @click.option("-m", "--momentum", type=click.FLOAT)
 @click.option("-p", "--pretend", default=False, type=click.BOOL, is_flag=True)
+@click.option("-f", "--freeze-parameters", default=False, type=click.BOOL, is_flag=True)
 @click.option("-t", "--transform-name", default=TRANFORMS_NAMES[0], type=click.Choice(TRANFORMS_NAMES))
 def train(_, model_file, data_dir, categories_file, batch_size, epochs, learning_rate, momentum,
-          pretend, transform_name):
+          pretend, freeze_parameters, transform_name):
   """
     Train a given architecture with a data directory containing a '/validate' and '/train' subfolder
     each with the images files and a `labels.csv` file.
@@ -38,7 +39,7 @@ def train(_, model_file, data_dir, categories_file, batch_size, epochs, learning
   else:
     trainer = Trainer(model, transform, learning_rate = learning_rate)
 
-  trainer.train(data_dir, labels, batch_size, epochs)
+  trainer.train(data_dir, labels, batch_size, epochs, freeze_parameters = freeze_parameters)
 
   if not pretend:
     model.save(model_file)
