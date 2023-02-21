@@ -1,3 +1,4 @@
+from dependencies.core import torch
 import pytest; from unittest.mock import MagicMock # , ANY
 from features import Comparer, Trainer
 from fixtures.models import *
@@ -12,7 +13,8 @@ def mock_prints(c):
 def models_fixture(model_fixture, models_names_fixture):
   models = [model_fixture, model_fixture, model_fixture]
   for model, file in list(zip(models, models_names_fixture)):
-    model.load(f"tests/fixtures/{file}")
+    data = torch.load(f"tests/fixtures/{file}")
+    model.load(data['state_dict'])
   return models
 
 @pytest.fixture

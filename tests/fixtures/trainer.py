@@ -33,7 +33,8 @@ def data_shirt_image_fixture(path_shirt_image_fixture):
 @pytest.fixture
 def transforms_fixture():
   t = torchvision.transforms.Compose([
-    torchvision.transforms.ToTensor()
+    torchvision.transforms.ToTensor(),
+    Reshapetransform((-1, 28*28)),
   ])
   return { "valid": t, "display": t, "test": t, "train": t }
 

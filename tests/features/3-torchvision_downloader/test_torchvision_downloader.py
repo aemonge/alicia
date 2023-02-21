@@ -28,7 +28,6 @@ class TestTorchvisionDownloader:
     with pytest.raises(Exception):
       _ = TorchvisionDownloader(bad_test_directory_fixture, "FakeData")
 
-  @pytest.mark.download
   def test_call_create_images_in_the_three_folders(
       self, torchvision_downloader_really_fixture, tmp_directory_fixture
   ):
@@ -38,7 +37,6 @@ class TestTorchvisionDownloader:
     assert len(os.listdir(f"{tmp_directory_fixture}/valid")) > 0
     assert len(os.listdir(f"{tmp_directory_fixture}/test")) > 0
 
-  @pytest.mark.download
   def test_call_create_labels_file(
       self, torchvision_downloader_really_fixture, tmp_directory_fixture
   ):

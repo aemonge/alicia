@@ -1,10 +1,9 @@
 # ####################################################################################### #
 # ## Build, pack and dependency management                                             ## #
 # ####################################################################################### #
-
 [tool.poetry]
 name = "alicia"
-version = "0.0.15"
+version = "0.0.16"
 description = "A CLI to download, train, test, predict and compare an image classifiers."
 license = "MIT"
 authors = [
@@ -65,6 +64,7 @@ wcmatch         = "^8.4"
 [tool.poetry.group.test.dependencies]
 pytest-cov    = "^3.0"
 pytest-mccabe = "^2.0"
+pytest-lineno = "^0.0"
 pylint        = "^2.15"
 pyright       = "^1.1"
 toml          = "^0.10"
@@ -96,14 +96,13 @@ generated-members="numpy.*, torch.*, torchvision.*"
 # ####################################################################################### #
 # ## Testing and coverage                                                              ## #
 # ####################################################################################### #
+[tool.pytest]
+console_output_style = "progress"
 
 [tool.pytest.ini_options]
-markers = [
-"download: marks test as a download, therefore slow and internet dependent (deselect with '-m \"not download\"')",
-]
 pythonpath = [ '.', 'src', 'tests' ]
 testpaths = [ "tests" ]
-addopts = """
+addopts = """ -x --show-lineno
   --cov=src/features --cov=src/libs
   --cov-report=html
 """
@@ -113,7 +112,7 @@ branch = true
 omit = [
   # Pretty and colorized libraries, are pure front-end. Which would be testing with the stdout ouput
   # and changing constantly, as a personal rule of thumb I don't unit-test screens or pretty libs
-  "src/libs/pretty*.py",
+  "src/libs/prett*.py",
   "src/libs/colorized*.py",
   "src/libs/*_transforms.py",
   "**/__init__.py"

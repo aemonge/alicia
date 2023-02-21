@@ -66,8 +66,10 @@ class TestComparer:
     self, comparer_fixture, data_tmp_dir_fixture, data_tmp_dir_labels_fixture
   ):
     c = comparer_fixture
-    c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, 8, demo='ok')
-    c.Trainer.train.has_been_called_with(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, 1, 8, demo='ok')
+    c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, 8, learning_rate=0.003)
+    c.Trainer.train.has_been_called_with(
+      data_tmp_dir_fixture, data_tmp_dir_labels_fixture, 1, 8, learning_rate=0.003
+    )
 
   def test_when_train_raises_exception_should_raise_exception_and_terminate_loading(
     self, comparer_fixture, data_tmp_dir_fixture, data_tmp_dir_labels_fixture
