@@ -1,5 +1,4 @@
-
-from dependencies.core import click, torchvision
+from dependencies.core import click, torchvision, json
 from features import TorchvisionDownloader
 
 DATASETS=torchvision.datasets.__all__
@@ -11,11 +10,18 @@ DATASETS=torchvision.datasets.__all__
 @click.option("-s", "--split-percentage", default=(0.65, 0.25, 0.1), type=(float, float, float),
   help='The split percentage triplet "-s 0.65 0.25 0.1"'
 )
-@click.option("-f", "--force", type=click.BOOL, default=False, is_flag=True)
-def download(_, dataset, data_dir, split_percentage, force):
+@click.option("-c", "--category-map-file", type=click.Path(file_okay=True, readable=True),
+  help='The category map json file, which names the labels found on each image'
+)
+def download(_, dataset, data_dir, split_percentage, category_map_file):
   """
     Download a MNIST dataset with PyTorch and split it into `./train`, `./valid`, and `./test` directories.
 
     The download process will also generate the `./labels.csv` file containing the labels of all sets.
   """
-  TorchvisionDownloader(data_dir, dataset, split_percentage).call(force)
+  if category_map_file is not None:
+    with open(category_map_file, 'r') as f:
+      categories = json.load(f)
+    TorchvisionDownloader(data_dir, dataset, split_percentage).call(categories=categories)
+  else:
+    TorchvisionDownloader(data_dir, dataset, split_percentage).call()

@@ -69,7 +69,7 @@ class TorchvisionDownloader:
         os.mkdir(self.__valid_dir)
         os.mkdir(self.__test_dir)
 
-  def call(self, forced: bool = False) -> None:
+  def call(self, *, categories: dict = None) -> None:
     """
       Downloads the dataset from torch-vision.
 
@@ -86,10 +86,13 @@ class TorchvisionDownloader:
 
     try:
       self.__dataset = getattr(torchvision.datasets, self.dataset_name)(**self.dataset_kwargs)
-      self.__dataset.idx_to_class = {val:key for key, val in self.__dataset.class_to_idx.items()}
     except Exception:
-      if not forced:
-        raise Exception("Target dataset cannot be downloaded!, please try another one.")
+      raise Exception("Target dataset cannot be downloaded!, please try another one.")
+
+    if categories:
+      self.__dataset.idx_to_class = categories
+    else:
+      self.__dataset.idx_to_class = {val:key for key, val in self.__dataset.class_to_idx.items()}
 
     print('\r', end='\r')
     print(colored(' Processing ...  🌕 ', 'yellow', attrs=['bold']), end='\r')
@@ -111,11 +114,14 @@ class TorchvisionDownloader:
       -------
         None
     """
-    filelist = glob.glob(f"{self.__tmp_path}/{self.dataset_name}/raw/*")
+    filelist = glob.glob(f"{self.__tmp_path}/{self.dataset_name}/**/*")
     for file in filelist:
       os.remove(file)
-    os.rmdir(f"{self.__tmp_path}/{self.dataset_name}/raw")
-    os.rmdir(f"{self.__tmp_path}/{self.dataset_name}")
+    try:
+      os.rmdir(f"{self.__tmp_path}/{self.dataset_name}/raw")
+      os.rmdir(f"{self.__tmp_path}/{self.dataset_name}")
+    except:
+      pass
 
   def __idx_to_img(self, idx):
     """
@@ -199,8 +205,11 @@ class TorchvisionDownloader:
           The integer that represents the mapping.
     """
     if hasattr(self.__dataset, 'idx_to_class'):
-      return self.__dataset.idx_to_class[label]
-    return None
+      try:
+        return self.__dataset.idx_to_class[label]
+      except:
+        return self.__dataset.idx_to_class[str(label)]
+    return label
 
   def __write_labels(self):
     """

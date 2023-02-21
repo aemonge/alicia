@@ -3,7 +3,7 @@
 # ####################################################################################### #
 [tool.poetry]
 name = "alicia"
-version = "0.0.16"
+version = "0.0.17"
 description = "A CLI to download, train, test, predict and compare an image classifiers."
 license = "MIT"
 authors = [
@@ -36,19 +36,19 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence"
 ]
 packages = [
-  { include = "commands"    , from = "src" },
+  { include = "commands",     from = "src" },
   { include = "dependencies", from = "src" },
-  { include = "features"    , from = "src" },
-  { include = "libs"        , from = "src" },
-  { include = "main.py"     , from = "src" },
-  { include = "modules"     , from = "src" },
-  { include = "models"      , from = "src/modules" },
-  { include = "transforms"  , from = "src/modules" }
+  { include = "features",     from = "src" },
+  { include = "libs",         from = "src" },
+  { include = "main.py",      from = "src" },
+  { include = "modules",      from = "src" },
+  { include = "models",       from = "src/modules" },
+  { include = "transforms",   from = "src/modules" }
 ]
 include = ["./docs/LICENSE.txt", "./docs/CONTRIBUTING.rst", "./docs/CHANGELOG.rst"]
 
 [tool.poetry.dependencies]
-python          = "^3.10"
+python          =">=3.10,<3.12"
 better-abc      = "^0.0.3"
 click           = "^8.1"
 loading-display = "^0.2"
@@ -60,6 +60,7 @@ termcolor       = "^2.2"
 torch           = "^1.13"
 torchvision     = "^0.14"
 wcmatch         = "^8.4"
+scipy           = "^1.10"
 
 [tool.poetry.group.test.dependencies]
 pytest-cov    = "^3.0"

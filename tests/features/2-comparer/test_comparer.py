@@ -45,28 +45,28 @@ class TestComparer:
     self, comparer_fixture, data_tmp_dir_fixture, data_tmp_dir_labels_fixture
   ):
     c = comparer_fixture
-    c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, 1)
+    c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, transforms_fixture, 1)
     assert c.Trainer.train.call_count == 2
 
   def test_training_comparing_three_should_call_trice_train(
     self, comparer_3_fixture, data_tmp_dir_fixture, data_tmp_dir_labels_fixture
   ):
     c = comparer_3_fixture
-    c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, 1)
+    c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, transforms_fixture, 1)
     assert c.Trainer.train.call_count == 3
 
   def test_training_should_call_train_from_trainer_with_one_epoch_only(
     self, comparer_fixture, data_tmp_dir_fixture, data_tmp_dir_labels_fixture
   ):
     c = comparer_fixture
-    c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, 16)
+    c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, transforms_fixture, 16)
     c.Trainer.train.has_been_called_with(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, 1, 16)
 
   def test_training_should_call_train_from_trainer_with_kwargs(
     self, comparer_fixture, data_tmp_dir_fixture, data_tmp_dir_labels_fixture
   ):
     c = comparer_fixture
-    c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, 8, learning_rate=0.003)
+    c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, transforms_fixture, 8, learning_rate=0.003)
     c.Trainer.train.has_been_called_with(
       data_tmp_dir_fixture, data_tmp_dir_labels_fixture, 1, 8, learning_rate=0.003
     )
@@ -77,5 +77,5 @@ class TestComparer:
     c = comparer_fixture
     c.Trainer.train.side_effect = Exception
     with pytest.raises(Exception):
-      c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture)
+      c.training(data_tmp_dir_fixture, data_tmp_dir_labels_fixture, transforms_fixture)
     c._terminate_loading.assert_called_once

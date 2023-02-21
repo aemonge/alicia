@@ -1,4 +1,3 @@
-from modules.transforms.image_transforms import MNIST_28_Transforms
 from dependencies.core import contextlib, io
 from dependencies.datatypes import AbsModule, Type
 from libs import PrettifyComparer
@@ -35,12 +34,14 @@ class Comparer(PrettifyComparer):
     self.models = models
     self.names = names
 
-  def accuracy(self, *args, **kwargs) -> None:
+  def accuracy(self, transform, *args, **kwargs) -> None:
     """
       Compute the overall test accuracy of the models and compare them.
 
       Parameters:
       -----------
+        transform : Type[Transform]
+          Class of the transform to use.
         args:
           Arguments to pass to the `test` method of each model.
         kargs:
@@ -54,14 +55,14 @@ class Comparer(PrettifyComparer):
 
     results = []
     for model in self.models:
-      t = self.Trainer(model, MNIST_28_Transforms)
+      t = self.Trainer(model, transform)
       with contextlib.redirect_stdout(io.StringIO()) as f:
         t.test(*args, **kwargs)
         results.append(f.getvalue())
 
     self._print_results(results)
 
-  def training(self, data_dir, labels, batch_size, **kwargs) -> None:
+  def training(self, data_dir, transform, labels, batch_size, **kwargs) -> None:
     """
       Start parallel training of the models and compare their training and validation loss, time and accuracy.
 
@@ -69,6 +70,8 @@ class Comparer(PrettifyComparer):
       -----------
         data_dir : str
           Path to the directory containing the images in /valid and /train
+        transform : Type[Transform]
+          Class of the transform to use.
         labels : str
           Path to the labels file
         batch_size : int
@@ -85,7 +88,7 @@ class Comparer(PrettifyComparer):
     results = []
     try:
       for model in self.models:
-        t = self.Trainer(model, MNIST_28_Transforms, **kwargs)
+        t = self.Trainer(model, transform, **kwargs)
         with contextlib.redirect_stdout(io.StringIO()) as f:
           t.train(data_dir, labels, batch_size, 1)
           results.append(f.getvalue())

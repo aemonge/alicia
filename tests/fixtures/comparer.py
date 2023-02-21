@@ -34,3 +34,11 @@ def comparer_3_fixture(models_fixture, models_names_fixture):
   c.Trainer.test = MagicMock()
   c.Trainer.train = MagicMock()
   return mock_prints(c)
+
+@pytest.fixture
+def transforms_fixture():
+  t = torchvision.transforms.Compose([
+    torchvision.transforms.ToTensor(),
+    Reshapetransform((-1, 28*28)),
+  ])
+  return { "valid": t, "display": t, "test": t, "train": t }

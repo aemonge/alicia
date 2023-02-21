@@ -48,6 +48,7 @@ Features
 To see the full list of features, and option please refer to `alicia --help`
 
 * Download common torchvision datasets
+* Select different transforms to train.
 * Train, test and predict using different custom-made and torch-vision models.
 * Get information about each model.
 * Compare models training speed, accuracy, and meta information.

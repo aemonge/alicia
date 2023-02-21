@@ -1,9 +1,11 @@
-from dependencies.core import click, torch
+from dependencies.core import click, torch, inspect
 from dependencies.fancy import colored
 from .shared import labels_reader
 from modules import models
 from features import Trainer
-from modules.transforms.image_transforms import MNIST_28_Transforms
+from modules import transforms
+
+TRANFORMS_NAMES = [ name for name, _ in inspect.getmembers(transforms, predicate=inspect.isfunction) ]
 
 @click.command()
 @click.pass_context
@@ -15,7 +17,9 @@ from modules.transforms.image_transforms import MNIST_28_Transforms
 @click.option("-l", "--learning-rate", default=round(1/137, 6), type=click.FLOAT)
 @click.option("-m", "--momentum", type=click.FLOAT)
 @click.option("-p", "--pretend", default=False, type=click.BOOL, is_flag=True)
-def train(_, model_file, data_dir, categories_file, batch_size, epochs, learning_rate, momentum, pretend):
+@click.option("-t", "--transform-name", default=TRANFORMS_NAMES[0], type=click.Choice(TRANFORMS_NAMES))
+def train(_, model_file, data_dir, categories_file, batch_size, epochs, learning_rate, momentum,
+          pretend, transform_name):
   """
     Train a given architecture with a data directory containing a '/validate' and '/train' subfolder
     each with the images files and a `labels.csv` file.
@@ -24,14 +28,15 @@ def train(_, model_file, data_dir, categories_file, batch_size, epochs, learning
 
   data = torch.load(model_file)
   model = getattr(models, data['name'])(**{"data": data})
+  transform = getattr(transforms, transform_name)()
 
   if pretend:
     print(colored(' Results of the training will not saved, since we are just pretending\n', 'yellow'))
 
   if momentum is not None:
-    trainer = Trainer(model, MNIST_28_Transforms, learning_rate = learning_rate, momentum = momentum)
+    trainer = Trainer(model, transform, learning_rate = learning_rate, momentum = momentum)
   else:
-    trainer = Trainer(model, MNIST_28_Transforms, learning_rate = learning_rate)
+    trainer = Trainer(model, transform, learning_rate = learning_rate)
 
   trainer.train(data_dir, labels, batch_size, epochs)
 
