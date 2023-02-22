@@ -1,8 +1,8 @@
-from dependencies.core import torch, torchvision
-from dependencies.datatypes import Parameter, Iterator
+from dependencies.core import torch
 from .abs_module import AbsModule
+from torchvision.models import MNASNet
 
-class Mnasnet(AbsModule, torchvision.models.MNASNet):
+class Mnasnet(MNASNet, AbsModule):
   """
     A basic neural network module. With randomly selected features.
 
@@ -33,21 +33,6 @@ class Mnasnet(AbsModule, torchvision.models.MNASNet):
         Re creates the neural network.
   """
 
-  def __call__(self, x: torch.Tensor) -> torch.Tensor:
-    """
-      A forward pass of the neural network.
-
-      Parameters:
-      -----------
-        x: torch.Tensor
-          A batch of input features.
-
-      Returns:
-      --------
-        torch.Tensor
-    """
-    return self.forward(x)
-
   def __repr__(self):
     """
       A string representation of the neural network.
@@ -57,17 +42,7 @@ class Mnasnet(AbsModule, torchvision.models.MNASNet):
         : str
           A string representation 'Basic()'.
     """
-    return 'Squeezenet()'
-
-  def parameters(self) -> Iterator[Parameter]:
-    """
-      Get the parameters of the neural network.
-
-      Returns:
-      --------
-        Iterator[Parameter]
-    """
-    return self.features.parameters()
+    return 'Mnasnet()'
 
   def __init__(self, *, data: dict|None = None, labels = [],
                input_size: int = 28, dropout: float = 0.0) -> None:
@@ -85,25 +60,16 @@ class Mnasnet(AbsModule, torchvision.models.MNASNet):
         dropout: float
           The dropout probability.
     """
-    if data is None:
-      super().__init__(alpha=1.0, num_classes=len(labels), dropout=dropout)
-      self.input_size = input_size
-      self.labels = labels
-      self.training_history = []
-      self.num_classes = len(labels)
-      self.features = self.layers
-    else:
-      if 'dropout' in data:
-        self.dropout = data['dropout']
-      self.labels = data['labels']
-      super().__init__(alpha=1.0, num_classes=len(self.labels), dropout=dropout)
 
-      self.input_size = data['input_size']
+    if data is None:
+      if dropout > 0.0:
+        AbsModule.__init__(self, labels = labels, input_size = input_size, dropout = dropout)
+        MNASNet.__init__(self, alpha=1.0, num_classes=len(labels), dropout=dropout)
+      else:
+        AbsModule.__init__(self, labels = labels, input_size = input_size)
+        MNASNet.__init__(self, alpha=1.0, num_classes=len(labels))
       self.features = self.layers
-      self.features = data['features']
-      if 'training_history' in data:
-        self.training_history = data['training_history']
-      if 'dropout' in data:
-        self.dropout = data['dropout']
-      if 'classifier' in data:
-        self.classifier = data['classifier']
+      self.labels = labels # MNASNet destroys the labels attribute.
+    else:
+      AbsModule.__init__(self, data = data)
+      self.layers = self.features

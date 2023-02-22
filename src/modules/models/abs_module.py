@@ -1,4 +1,5 @@
-from dependencies.core import torch, abstractmethod, abstract_attribute, ABCMeta, textwrap, sys, time
+from dependencies.core import torch, abstract_attribute, ABCMeta, textwrap, sys, time
+from dependencies.datatypes import Parameter, Iterator
 
 # TODO: Move this as a library
 def sizeof_formated(num, suffix='B'):
@@ -68,7 +69,7 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
         f"\t label count (output): {self.num_classes}"
 
     training_history_str = ""*4
-    for line in self.training_history:
+    for line in self.training_history: # pyright: reportGeneralTypeIssues=false
       training_history_str += f"Epochs: {line[0][1]}, "
       training_history_str += f"Batch: {line[1][1]}, "
       training_history_str += f"Items: ({line[2][1]}, {line[2][2]})\n"
@@ -86,9 +87,15 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       (f"  (training history): \n    {training_history_str[:-1]}" if len(self.training_history) > 0 else '') + \
     f")"
 
-  @abstractmethod
-  def parameters(self) -> list:
-    pass
+  def parameters(self) -> Iterator[Parameter]:
+    """
+      Get the parameters of the neural network.
+
+      Returns:
+      --------
+        Iterator[Parameter]
+    """
+    return self.features.parameters()
 
   def save(self, path: str) -> None:
     """
@@ -117,6 +124,8 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       obj['dropout'] = self.dropout
     if hasattr(self, 'classifier'):
       obj['classifier'] = self.classifier
+    if hasattr(self, 'avgpool'): # Supporting AlexNet
+      obj['avgpool'] = self.avgpool
 
     torch.save(obj, path)
 
@@ -132,3 +141,42 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
         None
     """
     self.load_state_dict(state_dict)
+
+  def __init__(self, *, data: dict|None = None, labels = [], input_size: int = 28, dropout: float = 0.0) -> None:
+    """
+      Constructor of the neural network.
+
+      Parameters:
+      -----------
+        data: dict
+          A dictionary containing the data, to load the network though the pth file.
+        labels: list
+          A list of labels.
+        input_size: int
+          The input size.
+        dropout: float
+          The dropout probability.
+    """
+    super().__init__()
+    if data is None:
+      self.labels = labels
+      self.num_classes = len(labels)
+      self.training_history = []
+      self.input_size = input_size
+      self.dropout = dropout
+    else:
+      self.labels = data['labels']
+      self.num_classes = len(self.labels)
+      self.input_size = data['input_size']
+      self.features = data['features']
+
+      if 'dropout' in data:
+        self.dropout = data['dropout']
+      if 'training_history' in data:
+        self.training_history = data['training_history']
+      if 'dropout' in data:
+        self.dropout = data['dropout']
+      if 'classifier' in data:
+        self.classifier = data['classifier']
+      if 'avgpool' in data:
+        self.avgpool = data['avgpool']

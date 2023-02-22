@@ -1,4 +1,8 @@
 
+.. image:: https://github.com/aemonge/alicia/raw/main/docs/DallE-Alicia-logo.jpg
+   :width: 75px
+   :align: left
+
 .. image:: https://img.shields.io/badge/badges-awesome-green.svg
    :target: https://github.com/Naereen/badges
 
@@ -17,14 +21,9 @@
 .. image:: https://img.shields.io/badge/say-thanks-ff69b4.svg
    :target: https://saythanks.io/to/kennethreitz
 
-.. image:: https://github.com/aemonge/alicia/raw/main/docs/DallE-Alicia-logo.jpg
-   :width: 75px
-   :align: right
-
 ================================================
                    AlicIA
 ================================================
-
 
 .. image:: https://asciinema.org/a/561138.png
    :target: https://asciinema.org/a/561138?autoplay=1"

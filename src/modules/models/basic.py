@@ -74,29 +74,12 @@ class Basic(AbsModule):
         dropout: float
           The dropout probability.
     """
-    super().__init__()
     if data is None:
-      self.labels = labels
-      self.num_classes = len(labels)
-      self.training_history = []
-
-      self.input_size = input_size
-      self.dropout = dropout
+      AbsModule.__init__(self, labels = labels, input_size = input_size, dropout = dropout)
       last_size = self.__create_features__()
       self.__create_classifier__(last_size)
     else:
-      if 'dropout' in data:
-        self.dropout = data['dropout']
-      self.labels = data['labels']
-      self.num_classes = len(self.labels)
-      self.input_size = data['input_size']
-      self.features = data['features']
-      if 'training_history' in data:
-        self.training_history = data['training_history']
-      if 'dropout' in data:
-        self.dropout = data['dropout']
-      if 'classifier' in data:
-        self.classifier = data['classifier']
+      AbsModule.__init__(self, data = data)
 
   def __create_classifier__(self, last_size: int) -> None:
     """
