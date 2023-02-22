@@ -15,14 +15,14 @@
 - [ ] Pay tech debt.
 - [ ] Add an `-a, --auto [img-file]`  option to the `create` command to automatically set the input size
       based on the image resolution.
-- [x] Add the network training history log, to the model. To enhance the info and comparer.
+- [x] Add the network training history log, to the model. To enhance the info and compare.
 - [ ] Support pre-trained models, with weights settings.
 
 # Tech debt // Known Bugs
 
 * [ ] Hide Elemental on production from `src/modules/models/__init__.py` import rule.
-* [ ] Make pylint understand venv paths rightfully.
-* [ ] Make pylint and pyright to understand the callback method class, or create a abstract class
+* [x] Make pylint understand venv paths rightfully.
+* [x] Make pylint and pyright to understand the callback method class, or create a abstract class
 * [ ] Change `--verbose` and display none, less, all information.
 * [ ] Choose a default width, and adjust all output to such a width
 * [ ] `Tear_down`, `reset()` or `request.getfixturevalue()` fixture to avoid setting a manual order on pytest

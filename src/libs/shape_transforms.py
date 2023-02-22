@@ -15,7 +15,7 @@ class UnShapetransform(object):
     """
     self.shape = shape
 
-  def __call__(self, tensor:Tensor):
+  def __call__(self, tensor:Tensor, shape: tuple = (1, 28, 8)):
     """
       Transform a tensor from the original shape.
 
@@ -29,7 +29,7 @@ class UnShapetransform(object):
         torch.Tensor
           The transformed tensor.
     """
-    return torch.reshape(tensor, (1, 28, 28))
+    return torch.reshape(tensor, shape)
 
 class Reshapetransform(object):
   """

@@ -1,5 +1,5 @@
 from dependencies.core import torchvision
-from libs import ImageToMatPlotLib, UnShapetransform, Reshapetransform
+from libs import ImageToMatPlotLib
 
 def flowers_unshaped():
   return {
@@ -14,8 +14,6 @@ def flowers_unshaped():
     ]),
     "display": torchvision.transforms.Compose([
       torchvision.transforms.ToTensor(),
-      torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-      UnShapetransform((-1, )),
       ImageToMatPlotLib((-1, )),
     ]),
     "test": torchvision.transforms.Compose([

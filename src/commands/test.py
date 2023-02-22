@@ -28,7 +28,7 @@ def test(_, model_file, data_dir, categories_file, batch_size, console_plot,
 
   data = torch.load(model_file)
   model = getattr(models, data['name'])(**{"data": data})
-  transform = getattr(transforms, transform_name)
+  transform = getattr(transforms, transform_name)()
 
   trainer = Trainer(model, transform)
   trainer.test(data_dir, labels, batch_size)

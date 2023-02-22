@@ -7,7 +7,7 @@
   or what type of 🏘️ you should be.
 """
 
-from dependencies.core import click
+from dependencies.core import click, torch
 from commands import download, create, train, test, info, predict, compare
 
 __author__ = "aemonge"
@@ -30,9 +30,14 @@ def call(ctx, verbose, gpu):
     This will also identify cute 🐱 or a fierce 🐶, also flowers
     or what type of 🏘️ you should be.
   """
-  ctx.ensure_object(dict)
-  ctx.obj['verbose'] = verbose
-  ctx.obj['use_gpu'] = gpu
+  # ctx.ensure_object(dict) # ctx.obj['verbose'] = verbose
+  if gpu and not torch.cuda.is_available():
+    raise Exception("GPU is not available")
+  else:
+    torch.device("cuda:0" if gpu else "cpu")
+
+  if verbose:
+    raise Exception("Verbose mode is not implemented yet")
 
 call.add_command(download)
 call.add_command(create)
