@@ -17,20 +17,17 @@
 .. image:: https://img.shields.io/badge/say-thanks-ff69b4.svg
    :target: https://saythanks.io/to/kennethreitz
 
-.. raw:: html
-
-   <img align="right" width="75px"
-     src="https://github.com/aemonge/alicia/raw/main/docs/DallE-Alicia-logo.png"
-   >
+.. image:: https://github.com/aemonge/alicia/raw/main/docs/DallE-Alicia-logo.jpg
+   :width: 75px
+   :align: right
 
 ================================================
                    AlicIA
 ================================================
 
-.. raw:: html
 
-    <a href="https://asciinema.org/a/561138?autoplay=1" target="_blank"><img src="https://asciinema.org/a/561138.png"/></a>
-
+.. image:: https://asciinema.org/a/561138.png
+   :target: https://asciinema.org/a/561138?autoplay=1"
 
 Install and usage
 ================================================
