@@ -3,7 +3,7 @@
 # ####################################################################################### #
 [tool.poetry]
 name = "alicia"
-version = "0.0.20"
+version = "0.1.0"
 description = "A CLI to download, train, test, predict and compare an image classifiers."
 license = "MIT"
 authors = [

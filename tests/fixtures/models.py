@@ -28,4 +28,4 @@ def labels_dict_fixture(data_tmp_dir_labels_fixture):
 
 @pytest.fixture
 def model_fixture(labels_fixture):
-  return Elemental(labels=labels_fixture)
+  return Elemental(labels=labels_fixture, input_size=784)

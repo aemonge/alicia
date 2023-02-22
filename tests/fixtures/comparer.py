@@ -11,10 +11,10 @@ def mock_prints(c):
 
 @pytest.fixture
 def models_fixture(model_fixture, models_names_fixture):
-  models = [model_fixture, model_fixture, model_fixture]
-  for model, file in list(zip(models, models_names_fixture)):
+  models = []
+  for file in models_names_fixture:
     data = torch.load(f"tests/fixtures/{file}")
-    model.load(data['state_dict'])
+    models.append(Elemental(data=data))
   return models
 
 @pytest.fixture

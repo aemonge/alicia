@@ -43,13 +43,13 @@ Features
 
 To see the full list of features, and option please refer to `alicia --help`
 
-* Download common torchvision datasets
+* Download common torchvision datasets.
 * Select different transforms to train.
-* Train, test and predict using different custom-made and torch-vision models.
+* Train, test and predict using different custom-made and torch-vision models (SqueezeNet, AlexNet, MNASNet)
 * Get information about each model.
 * Compare models training speed, accuracy, and meta information.
-* Tested with MNIST and FashionMNIST.
-* View results in the console, or with matplotlib
+* Tested with MNIST, FashionMNIST, Flowers102.
+* View results in the console, or with matplotlib.
 
 References
 -----------------------------------------------

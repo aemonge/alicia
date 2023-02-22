@@ -129,20 +129,33 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
 
     torch.save(obj, path)
 
-  def load(self, state_dict: dict) -> None:
+  def modify(self, *, labels:list|None = None, input_size: int|None = None, num_classes: int|None = None,
+             dropout: float|None = None, state_dict: dict|None = None) -> None:
     """
       Parameters:
       -----------
-        path: str
-          path to load model
+        url: str|None
+          The url to load the model from.
+        state_dict: dict
+          The state dict to load the model from.
 
       Returns:
       --------
         None
     """
-    self.load_state_dict(state_dict)
+    if labels is not None:
+      self.labels = labels
+    if num_classes is not None:
+      self.num_classes = num_classes
+    if input_size is not None:
+      self.input_size = input_size
+    if dropout is not None:
+      self.dropout = dropout
+    if state_dict is not None:
+      self.load_state_dict(state_dict)
 
-  def __init__(self, *, data: dict|None = None, labels = [], input_size: int = 28, dropout: float = 0.0) -> None:
+  def __init__(self, *, data: dict|None = None, labels:list = [], input_size: int = 28, dropout: float = 0.0,
+               num_classes: int|None = None) -> None:
     """
       Constructor of the neural network.
 
@@ -160,7 +173,7 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
     super().__init__()
     if data is None:
       self.labels = labels
-      self.num_classes = len(labels)
+      self.num_classes = len(labels) if num_classes is None else num_classes
       self.training_history = []
       self.input_size = input_size
       self.dropout = dropout

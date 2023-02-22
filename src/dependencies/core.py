@@ -1,10 +1,10 @@
-import json
 import click
 import contextlib
 import csv
 import difflib
 import inspect
 import io
+import json
 import math
 import multiprocessing
 import numpy as np
@@ -17,6 +17,7 @@ import textwrap
 import time
 import torch
 import torchvision
+import urllib
 
 from PIL import Image
 from random import randrange

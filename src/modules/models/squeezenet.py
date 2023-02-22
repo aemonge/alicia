@@ -1,5 +1,4 @@
 from dependencies.core import torch
-from dependencies.datatypes import Parameter, Iterator
 from .abs_module import AbsModule
 from torchvision.models import SqueezeNet # Alias
 
@@ -45,7 +44,8 @@ class Squeezenet(SqueezeNet, AbsModule):
     """
     return 'Squeezenet()'
 
-  def __init__(self, *, data: dict|None = None, labels = [], input_size: int = 28, dropout: float = 0.0) -> None:
+  def __init__(self, *, data: dict|None = None, labels:list = [], input_size: int = 28, dropout: float = 0.0,
+               num_classes: int|None = None) -> None:
     """
       Constructor of the neural network.
 
@@ -60,13 +60,19 @@ class Squeezenet(SqueezeNet, AbsModule):
         dropout: float
           The dropout probability.
     """
+    if num_classes is None:
+      num_classes = len(labels)
+
     if data is None:
       if dropout > 0.0:
-        AbsModule.__init__(self, labels = labels, input_size = input_size, dropout = dropout)
-        SqueezeNet.__init__(self, version="1_1", num_classes=len(labels), dropout=dropout)
+        AbsModule.__init__(self,
+          labels = labels, input_size = input_size, dropout = dropout, num_classes = num_classes
+        )
+        SqueezeNet.__init__(self, version="1_1", num_classes = num_classes, dropout=dropout)
       else:
-        AbsModule.__init__(self, labels = labels, input_size = input_size)
-        SqueezeNet.__init__(self, version="1_1", num_classes=len(labels))
-      self.labels = labels # SqueezeNet destroys the labels attribute.
+        AbsModule.__init__(self, labels = labels, input_size = input_size, num_classes = num_classes)
+        SqueezeNet.__init__(self, version="1_1", num_classes = num_classes)
+      # SqueezeNet destroys the labels attribute.
+      self.labels = labels  # pyright: reportGeneralTypeIssues=false
     else:
       AbsModule.__init__(self, data = data)

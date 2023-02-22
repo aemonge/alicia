@@ -58,8 +58,8 @@ class Basic(AbsModule):
     """
     return 'Basic()'
 
-  def __init__(self, *, data: dict|None = None, labels = [],
-               input_size: int = 784, dropout: float = 0.0) -> None:
+  def __init__(self, *, data: dict|None = None, labels:list = [], input_size: int = 28, dropout: float = 0.0,
+               num_classes: int|None = None) -> None:
     """
       Constructor of the neural network.
 
@@ -75,7 +75,9 @@ class Basic(AbsModule):
           The dropout probability.
     """
     if data is None:
-      AbsModule.__init__(self, labels = labels, input_size = input_size, dropout = dropout)
+      AbsModule.__init__(self,
+        labels = labels, input_size = input_size, dropout = dropout, num_classes = num_classes
+      )
       last_size = self.__create_features__()
       self.__create_classifier__(last_size)
     else:

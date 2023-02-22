@@ -1,4 +1,3 @@
-from dependencies.core import torch
 from .abs_module import AbsModule
 from torchvision.models import MNASNet
 
@@ -44,8 +43,8 @@ class Mnasnet(MNASNet, AbsModule):
     """
     return 'Mnasnet()'
 
-  def __init__(self, *, data: dict|None = None, labels = [],
-               input_size: int = 28, dropout: float = 0.0) -> None:
+  def __init__(self, *, data: dict|None = None, labels:list = [], input_size: int = 28, dropout: float = 0.0,
+               num_classes: int|None = None) -> None:
     """
       Constructor of the neural network.
 
@@ -60,16 +59,21 @@ class Mnasnet(MNASNet, AbsModule):
         dropout: float
           The dropout probability.
     """
+    if num_classes is None:
+      num_classes = len(labels)
 
     if data is None:
       if dropout > 0.0:
-        AbsModule.__init__(self, labels = labels, input_size = input_size, dropout = dropout)
-        MNASNet.__init__(self, alpha=1.0, num_classes=len(labels), dropout=dropout)
+        AbsModule.__init__(self,
+          labels = labels, input_size = input_size, dropout = dropout, num_classes = num_classes
+        )
+        MNASNet.__init__(self, alpha=1.0, num_classes = num_classes, dropout=dropout)
       else:
-        AbsModule.__init__(self, labels = labels, input_size = input_size)
-        MNASNet.__init__(self, alpha=1.0, num_classes=len(labels))
+        AbsModule.__init__(self, labels = labels, input_size = input_size, num_classes = num_classes)
+        MNASNet.__init__(self, alpha=1.0, num_classes = num_classes)
       self.features = self.layers
-      self.labels = labels # MNASNet destroys the labels attribute.
+      # MNASNet destroys the labels attribute.
+      self.labels = labels # pyright: reportGeneralTypeIssues=false
     else:
       AbsModule.__init__(self, data = data)
       self.layers = self.features
