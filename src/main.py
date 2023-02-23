@@ -1,5 +1,5 @@
 """
-  A CLI to download, train, test, predict and compare an image classifiers.
+  A CLI to download, create, modify, train, test, predict and compare an image classifiers.
 
   Supporting mostly all torch-vision neural networks and datasets.
 

@@ -1,0 +1,34 @@
+{
+  "Places365": {
+    "split": [
+      "train-standard",
+      "train-challenge",
+      "val"
+    ]
+  },
+  "Flowers102": {
+    "split": [
+      "train",
+      "val",
+      "test"
+    ]
+  },
+  "EMNIST": {
+    "split": [
+      "balanced",
+      "letters"
+    ]
+  },
+  "MNIST": {
+    "train": [
+      true,
+      false
+    ]
+  },
+  "FashionMNIST": {
+    "train": [
+      true,
+      false
+    ]
+  }
+}

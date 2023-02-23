@@ -1,6 +1,14 @@
 # Features
 
-- [ ] Support Un tagged data: Cifar, EMNIST, CelebA, KMNIST, Omniglot, PhotoTour, Places265, SBU, STL10, USPS, VOC
+- [ ] Support Un tagged data
+    - [x] CIFAR10
+    - [x] EMNIST
+    - [x] StanfordCars
+    - [x] KMNIST
+    - [-] Omniglot: Missing category labels
+    - [-] Places265: Error 404
+    - [-] Kitti: File to big for my /tmp
+    - [-] EuroSAT: Requires Secure Certificate
 - [ ] Implement a behavior to change hidden units on all models.
 - [ ] Implement and extend with this other models.
     - [x] SqueezeNet
@@ -14,10 +22,11 @@
 - [x] Add an `-a, --auto [img-file]`  option to the `create` command to automatically set the input size
       based on the image resolution.
 - [x] Add the network training history log, to the model. To enhance the info and compare.
-- [ ] Support pre-trained models, with weights settings.
+- [x] Support pre-trained models, with weights settings.
 
 # Tech debt // Known Bugs
 
+* [ ] Processing huge data, kills the app. Make it performant.
 * [ ] Fix size information on the models, it doesn't match at all.
 * [ ] Hide Elemental on production from `src/modules/models/__init__.py` import rule.
 * [x] Make pylint understand venv paths rightfully.

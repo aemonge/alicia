@@ -24,6 +24,35 @@
 ================================================
                    AlicIA
 ================================================
+::
+
+  Usage: alicia [OPTIONS] COMMAND [ARGS]...
+
+    A CLI to download, create, modify, train, test, predict and compare an image classifiers.
+
+    Supporting mostly all torch-vision neural networks and datasets.
+
+    This will also identify cute 🐱 or a fierce 🐶, also flowers or what type of
+    🏘️ you should be.
+
+  Options:
+    -v, --verbose
+    -g, --gpu
+    --version      Show the version and exit.
+    --help         Show this message and exit.
+
+  Commands:
+    compare   Compare the info, accuracy, and step speed two (or more by...
+    create    Creates a new model for a given architecture.
+    download  Download a MNIST dataset with PyTorch and split it into...
+    info      Display information about a model architecture.
+    modify    Changes the hyper parameters of a model.
+    predict   Predict images using a pre trained model, for a given folder...
+    test      Test a pre trained model.
+    train     Train a given architecture with a data directory containing a...
+
+View a FashionMNIST demo
+-----------------------------------------------
 
 .. image:: https://asciinema.org/a/561138.png
    :target: https://asciinema.org/a/561138?autoplay=1"
@@ -43,13 +72,24 @@ Features
 
 To see the full list of features, and option please refer to `alicia --help`
 
-* Download common torchvision datasets.
+* Download common torchvision datasets (tested with the following):
+    - MNIST
+    - FashionMNIST
+    - Flowers102
+    - EMNIST
+    - StanfordCars
+    - KMNIST and CIFAR10
 * Select different transforms to train.
-* Train, test and predict using different custom-made and torch-vision models (SqueezeNet, AlexNet, MNASNet)
+* Train, test and predict using different custom-made and torch-vision models:
+    - SqueezeNet
+    - AlexNet
+    - MNASNet
 * Get information about each model.
 * Compare models training speed, accuracy, and meta information.
-* Tested with MNIST, FashionMNIST, Flowers102.
-* View results in the console, or with matplotlib.
+* View test prediction results in the console, or with matplotlib.
+* Adds the network training history log, to the model. To enhance the info and compare.
+* Supports pre-trained models, with weights settings.
+* Automatically set the input size based on the image resolution.
 
 References
 -----------------------------------------------

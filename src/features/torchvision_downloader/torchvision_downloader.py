@@ -1,6 +1,8 @@
-from dependencies.core import glob, os, pathlib, torchvision, tempfile, inspect
+from torchvision.datasets import Places365
+from dependencies.core import glob, os, pathlib, torchvision, tempfile, inspect, json, pkg_resources
 from dependencies.fancy import colored
 from dependencies.datatypes import *
+import configs
 
 class TorchvisionDownloader:
   """
@@ -69,6 +71,31 @@ class TorchvisionDownloader:
         os.mkdir(self.__valid_dir)
         os.mkdir(self.__test_dir)
 
+  def __get_all_posible_splits(self) -> list[Dataset[list[ImageDT]]]:
+    """
+      Gets all the possible splits of the dataset.
+
+      Returns
+      -------
+        list[Dataset[list[ImageDT]]]
+    """
+    datasets = []
+    with pkg_resources.open_text(configs, 'dataset_split_methods.json') as f:
+      specific_split = json.load(f)
+
+    try:
+      dataset = getattr(torchvision.datasets, self.dataset_name)
+      if self.dataset_name in specific_split:
+        for method, values in specific_split[self.dataset_name].items():
+          for value in values:
+            datasets.append(dataset(**{**self.dataset_kwargs, **{ method: value }}))
+      else:
+        datasets.append(dataset(**self.dataset_kwargs))
+    except Exception as msg:
+      raise Exception(f"Target dataset cannot be downloaded!, please try another one.\n\t\t{msg}")
+
+    return datasets
+
   def call(self, *, categories: dict = None) -> None:
     """
       Downloads the dataset from torch-vision.
@@ -83,32 +110,17 @@ class TorchvisionDownloader:
         None
     """
     print(colored(' Downloading ... 🌑 ', 'blue', attrs=['bold']), end='\r')
-
-    try:
-      dataset = getattr(torchvision.datasets, self.dataset_name)
-      sig = inspect.signature(dataset.__init__)
-      if 'split' in sig.parameters:
-        self.__dataset = [
-          dataset(**{**self.dataset_kwargs, **{"split": "train"}}),
-          dataset(**{**self.dataset_kwargs, **{"split": "val"}}),
-          dataset(**{**self.dataset_kwargs, **{"split": "test"}})
-        ]
-      elif 'train' in sig.parameters:
-        self.__dataset = [
-          dataset(**{**self.dataset_kwargs, **{"train": True}}),
-          dataset(**{**self.dataset_kwargs, **{"train": False}}),
-        ]
-      else:
-        self.__dataset = [dataset(**self.dataset_kwargs)]
-    except Exception:
-      raise Exception("Target dataset cannot be downloaded!, please try another one.")
+    self.__dataset = self.__get_all_posible_splits()
 
     if categories:
       self._idx_to_class = categories
     else:
-      items = [ i.class_to_idx.items() for i in self.__dataset]
-      items = [item for sublist in items for item in sublist] # Flatten
-      self._idx_to_class = {val:key for key, val in items}
+      try:
+        items = [ i.class_to_idx.items() for i in self.__dataset]
+        items = [item for sublist in items for item in sublist] # Flatten
+        self._idx_to_class = {val:key for key, val in items}
+      except:
+        raise Exception("Target dataset does not have `class_to_idx`, provide a categories file")
 
     print('\r', end='\r')
     print(colored(' Processing ...  🌕 ', 'yellow', attrs=['bold']), end='\r')
