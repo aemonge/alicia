@@ -3,7 +3,7 @@
 # ####################################################################################### #
 [tool.poetry]
 name = "alicia"
-version = "0.1.1"
+version = "0.2.0"
 description = "A CLI to download, create, modify, train, test, predict and compare an image classifiers."
 license = "MIT"
 authors = [
@@ -97,10 +97,10 @@ generated-members="numpy.*, torch.*, torchvision.*"
 # ####################################################################################### #
 # ## Testing and coverage                                                              ## #
 # ####################################################################################### #
-[tool.pytest]
-console_output_style = "progress"
-
 [tool.pytest.ini_options]
+console_output_style = "progress"
+python_files = ['*.py']
+python_functions = ['*_test', 'should_*', 'test_*']
 pythonpath = [ '.', 'src', 'tests' ]
 testpaths = [ "tests" ]
 addopts = """ -x --show-lineno
@@ -110,17 +110,20 @@ addopts = """ -x --show-lineno
 
 [tool.coverage.run]
 branch = true
+partials = false
 omit = [
   # Pretty and colorized libraries, are pure front-end. Which would be testing with the stdout ouput
   # and changing constantly, as a personal rule of thumb I don't unit-test screens or pretty libs
   "src/libs/prett*.py",
   "src/libs/colorized*.py",
-  "src/libs/*_transforms.py",
   "**/__init__.py"
 ]
 
 [tool.coverage.report]
 fail_under = 95
+partial_branches = [
+  "for .*"
+]
 exclude_lines = [
   # Have to re-enable the standard pragma
   "pragma: no cover",

@@ -1,28 +1,6 @@
-from dependencies.core import torch, abstract_attribute, ABCMeta, textwrap, sys, time
+from dependencies.core import torch, abstract_attribute, ABCMeta, textwrap, sys, time, re
 from dependencies.datatypes import Parameter, Iterator
-
-# TODO: Move this as a library
-def sizeof_formated(num, suffix='B'):
-    """
-      Converts a size in bytes to a human-readable format.
-
-      Parameters:
-      -----------
-        num: int
-          Size in bytes.
-        suffix: str
-          Suffix to append to the unit.
-
-      Returns:
-      --------
-        : str
-          Human-readable size.
-    """
-    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
-        if abs(num) < 1024.0:
-            return f"{num:3.1f} {unit}{suffix}"
-        num /= 1024.0
-    return f"{num:.1f} Yi{suffix}"
+from libs import sizeof_formated, get_args_kwargs_from_string
 
 class AbsModule(torch.nn.Module, metaclass=ABCMeta):
   @abstract_attribute
@@ -128,6 +106,37 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       obj['avgpool'] = self.avgpool
 
     torch.save(obj, path)
+
+  def modify_parameters(self, parameter_type: str, idx: int, module: str) -> None:
+    """
+      Modify the classifier or features of the neural network.
+
+      Parameters:
+      -----------
+        parameter_type: str
+          The type of the parameter to modify either classifier or features.
+        idx: str|int
+          The index of the classifier to modify. Or -1 for the last
+        module: str (torch.nn.Module)
+          The new classifier or feature.
+
+      Returns:
+      --------
+        None
+    """
+    if parameter_type != 'classifier' and parameter_type != 'features':
+      raise ValueError(f"parameter_type must be either 'classifier' or 'features', not {parameter_type}")
+
+    parameters = list(getattr(self, parameter_type))
+
+    if module != "None":
+      func_name, fargs, fkwargs = get_args_kwargs_from_string(module)
+      mod = getattr(torch.nn, func_name)(*fargs, **fkwargs)
+      parameters.insert(idx, mod)
+    else:
+      del parameters[idx]
+
+    setattr(self, parameter_type, torch.nn.Sequential(*parameters))
 
   def modify(self, *, labels:list|None = None, input_size: int|None = None, num_classes: int|None = None,
              dropout: float|None = None, state_dict: dict|None = None) -> None:

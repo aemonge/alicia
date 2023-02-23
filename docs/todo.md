@@ -9,7 +9,8 @@
     - [-] Places265: Error 404
     - [-] Kitti: File to big for my /tmp
     - [-] EuroSAT: Requires Secure Certificate
-- [ ] Implement a behavior to change hidden units on all models.
+- [x] Implement a behavior to change hidden units on all models.
+- [ ] Merge create with modify.
 - [ ] Implement and extend with this other models.
     - [x] SqueezeNet
     - [x] AlexNet
@@ -35,3 +36,5 @@
 * [ ] Choose a default width, and adjust all output to such a width
 * [ ] `Tear_down`, `reset()` or `request.getfixturevalue()` fixture to avoid setting a manual order on pytest
 * [ ] When showing the probability, it should add up to lees than 1.0. Check it out
+* [ ] Centralize **all** dependencies, in the dependencies main package, beware of circular dependencies.
+* [ ] Remove the UnShapetransform and Use the Reshapetransform((1,28,8)) instead. Check with unit test

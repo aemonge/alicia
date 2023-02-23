@@ -9,6 +9,7 @@ MODELS_NAMES = [ name for name, _ in inspect.getmembers(models, predicate=inspec
 @click.argument("categories-file", type=click.Path(file_okay=True, writable=True), required=1)
 @click.argument("save-file", type=click.Path(file_okay=True, writable=True), required=1)
 @click.option('-d', '--dropout', type=click.FLOAT, default=0.0)
+@click.option('-i', '--input-size', type=click.INT, default=28)
 @click.option('-a', '--from-image', type=click.Path(file_okay=True, readable=True),
   help="set the input-size from an image, resulting in {width X height}"
 )

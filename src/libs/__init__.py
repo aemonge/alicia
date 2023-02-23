@@ -4,3 +4,5 @@ from .image_transforms import ImageToMatPlotLib
 from .shape_transforms import UnShapetransform, Reshapetransform
 from .colorized_diff import colorize_diff
 from .prettify_comparer import PrettifyComparer
+from .sizeof_formated import sizeof_formated
+from .get_args_kwargs_from_string import get_args_kwargs_from_string
