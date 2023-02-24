@@ -3,7 +3,7 @@
 # ####################################################################################### #
 [tool.poetry]
 name = "alicia"
-version = "0.2.0"
+version = "0.2.1"
 description = "A CLI to download, create, modify, train, test, predict and compare an image classifiers."
 license = "MIT"
 authors = [
@@ -102,7 +102,7 @@ console_output_style = "progress"
 python_files = ['*.py']
 python_functions = ['*_test', 'should_*', 'test_*']
 pythonpath = [ '.', 'src', 'tests' ]
-testpaths = [ "tests" ]
+testpaths = [ "tests/features/**/*py", "tests/libs/*py" ]
 addopts = """ -x --show-lineno
   --cov=src/features --cov=src/libs
   --cov-report=html
@@ -121,9 +121,9 @@ omit = [
 
 [tool.coverage.report]
 fail_under = 95
-partial_branches = [
-  "for .*"
-]
+# partial_branches = [
+#   "for .*"
+# ]
 exclude_lines = [
   # Have to re-enable the standard pragma
   "pragma: no cover",
@@ -131,13 +131,6 @@ exclude_lines = [
   # Don't complain about missing debug-only code:
   "def __repr__",
   "if self\\.debug",
-
-  # Don't complain if tests don't hit defensive assertion code:
-  "except Exception",
-  "raise AssertionError",
-  "raise Exception",
-  "raise ValueError",
-  "raise NotImplementedError",
 
   # Don't complain if non-runnable code isn't run:
   "if 0:",

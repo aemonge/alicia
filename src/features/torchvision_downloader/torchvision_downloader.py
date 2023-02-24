@@ -43,14 +43,14 @@ class TorchvisionDownloader:
       -------
         None
     """
-    self.__dataset : list[Dataset[list[ImageDT]]]
+    self._datasets : list[Dataset[list[ImageDT]]]
     self.__tmp_path = tempfile.gettempdir()
     self.dataset_name = dataset
     self.dataset_kwargs = dataset_kwargs
     self.dataset_kwargs["root"] = self.__tmp_path
     self.dataset_kwargs["download"] = True
     self.split_percentage = split_percentage
-    self.__labels = []
+    self._labels = []
 
     self.__root_dir = dir
     self.__train_dir = pathlib.Path(dir, 'train')
@@ -71,7 +71,7 @@ class TorchvisionDownloader:
         os.mkdir(self.__valid_dir)
         os.mkdir(self.__test_dir)
 
-  def __get_all_posible_splits(self) -> list[Dataset[list[ImageDT]]]:
+  def _get_all_posible_splits(self) -> list[Dataset[list[ImageDT]]]:
     """
       Gets all the possible splits of the dataset.
 
@@ -110,13 +110,13 @@ class TorchvisionDownloader:
         None
     """
     print(colored(' Downloading ... 🌑 ', 'blue', attrs=['bold']), end='\r')
-    self.__dataset = self.__get_all_posible_splits()
+    self._datasets = self._get_all_posible_splits()
 
     if categories:
       self._idx_to_class = categories
     else:
       try:
-        items = [ i.class_to_idx.items() for i in self.__dataset]
+        items = [ i.class_to_idx.items() for i in self._datasets]
         items = [item for sublist in items for item in sublist] # Flatten
         self._idx_to_class = {val:key for key, val in items}
       except:
@@ -181,11 +181,11 @@ class TorchvisionDownloader:
         None
     """
     idx = 0
-    total =  sum([len(ds) for ds in self.__dataset]) # pyright: reportGeneralTypeIssues=false
+    total =  sum([len(ds) for ds in self._datasets]) # pyright: reportGeneralTypeIssues=false
     max_train_idx = int(total * self.split_percentage[0])
     max_valid_idx = int(total * (self.split_percentage[0] + self.split_percentage[1]))
 
-    for ds in self.__dataset:
+    for ds in self._datasets:
       for img, label in ds:
         label = self.__custom_label_mapping(label)
 
@@ -196,7 +196,7 @@ class TorchvisionDownloader:
         else:
           cb_fn(img, idx, self.__test_dir)
 
-        self.__labels.append(f"{self.__idx_to_img(idx)},{label}")
+        self._labels.append(f"{self.__idx_to_img(idx)},{label}")
         idx+=1
 
   def __write_images(self, img, idx, path):
@@ -254,7 +254,7 @@ class TorchvisionDownloader:
     """
     path = pathlib.Path(self.__root_dir, 'labels.csv')
     with path.open(mode = 'w', encoding='utf-8') as file:
-      for label in self.__labels:
+      for label in self._labels:
         file.write(label)
         file.write('\n')
     file.close()
