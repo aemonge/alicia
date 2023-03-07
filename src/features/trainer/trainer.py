@@ -98,7 +98,7 @@ class Trainer(PrettyTrain):
 
     return loss_count
 
-  def validation_step(self, dataloaders: DataLoader, batch_size: int) -> tuple[float, int]:
+  def validation_step(self, dataloaders: DataLoader, batch_size: int) -> Tuple[float, int]:
     """
       Performs a single validation step.
 
@@ -117,7 +117,7 @@ class Trainer(PrettyTrain):
     ix = 0
     vd_loss = 0.0
     vd_correct = 0
-    validate_loader_count = len(dataloaders.dataset) # pyright: reportGeneralTypeIssues=false
+    validate_loader_count = len(dataloaders.dataset)
 
     with torch.no_grad():
       self.model.eval()
@@ -261,7 +261,7 @@ class Trainer(PrettyTrain):
     start_time = time.time()
     category_labels_ids = { v:k for k,v in enumerate(self.model.labels)}
     test_ldr = DataLoader(UnLabeledImageDataset(
-      f"{data_dir}/test", labels, category_labels_ids, transform = self.transforms['valid']
+      f"{data_dir}/test", labels, category_labels_ids, transform = self.transforms['test']
       ), batch_size = batch_size, shuffle=True
     )
 
@@ -280,6 +280,7 @@ class Trainer(PrettyTrain):
         ix += batch_size * 1
         self._spin(step='test')
 
+        # print('shapes', images.shape, images[0].shape)
         output = self.model(images)
         self._spin(step='test')
 
@@ -293,7 +294,7 @@ class Trainer(PrettyTrain):
       else:
         self._print_t_step(start_time, t_correct, test_loader_count)
 
-  def predict_image(self, image: str, **kwargs) -> tuple[np.array, list[str]]:
+  def predict_image(self, image: str, **kwargs) -> Tuple[np.ndarray, List[str]]:
     """
       Calls the predict method, by transforming the given image path to a Pil.Image
 
@@ -312,7 +313,7 @@ class Trainer(PrettyTrain):
     """
     return self.predict(Image.open(image), **kwargs)
 
-  def predict(self, image:ImageDT, topk:int = 5) -> tuple[np.array, list[str]]:
+  def predict(self, image:ImageDT, topk:int = 5) -> Tuple[np.ndarray, List[str]]:
     """
       Predicts the class of an given image.
 
@@ -332,7 +333,7 @@ class Trainer(PrettyTrain):
       self.model.eval()
       tensor_img = self.transforms['test'](image)
       logps = self.model(tensor_img.unsqueeze(0)) # from 3d to 4d [ introducing a batch dimension ]
-      ps = logps[0] # Return to 3D [ no batches again ]
+      ps = torch.exp(logps[0]) # Return to 3D [ no batches again ]
       ps_val, ps_idx = ps.topk(topk)
 
       label_predictions = [self.model.labels[x] for x in ps_idx.numpy()]

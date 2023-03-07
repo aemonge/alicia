@@ -68,7 +68,7 @@ anaconda_::
     conda create -n alicia
     conda activate alicia
     pip install poetry
-    poetry install
+    poetry install --all-extras
 
 Clone the repository
 --------------------
@@ -87,7 +87,7 @@ Install my chosen build tool::
 
 Then, you should run to test locally::
 
-   poetry install
+   poetry install --all-extras
 
 Implement your changes
 ----------------------

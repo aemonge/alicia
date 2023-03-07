@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List, Type, Tuple
 from torch.utils.data import Dataset, DataLoader
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module as nnModule

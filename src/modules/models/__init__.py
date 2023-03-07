@@ -1,6 +1,7 @@
 DEBUG_MODE = True
 
 from .basic import Basic
+from .basic_conv import BasicConv
 from .dummy import Dummy
 from .squeezenet import Squeezenet
 from .alexnet import Alexnet

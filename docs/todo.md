@@ -38,3 +38,9 @@
 * [ ] Processing huge data, kills the app. Make it performant.
 * [ ] Change `--verbose` and display none, less, all information.
 * [ ] Choose a default width, and adjust all output to such a width
+
+# Extras (from new learnings from udacity-deeplearinig)
+
+* [ ] Use the `Softmax` function as an output, since it will return the probabilities for our classes.
+* [ ] Implement a random start for the trainer, to avoid local getting stuck at mins
+* [x] Use a network with Conv2d to avoid network coupled with the image sizes, use the `final-mnist.qmd` as an example.

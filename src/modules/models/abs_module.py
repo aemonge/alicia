@@ -1,4 +1,4 @@
-from dependencies.core import torch, abstract_attribute, ABCMeta, textwrap, sys, time, re
+from dependencies.core import torch, abstract_attribute, ABCMeta, textwrap, sys, time, re, asizeof
 from dependencies.datatypes import Parameter, Iterator
 from libs import sizeof_formated, get_args_kwargs_from_string
 
@@ -34,7 +34,7 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
     features_str = "\n  ".join(str(self.features).split("\n"))
     labels_str = textwrap.fill(str(self.labels)[1:-1], width=80)
     labels_str = labels_str.replace('\n', '\n' + ' '*4)
-    formated_size = sizeof_formated(sys.getsizeof(self))
+    formated_size = sizeof_formated(asizeof.asizeof(self))
 
     if hasattr(self, "classifier"):
       classifier_str = "\n  ".join(str(self.classifier).split("\n"))

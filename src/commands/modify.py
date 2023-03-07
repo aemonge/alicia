@@ -38,8 +38,6 @@ def modify(_, model_file, re_create, categories_file, num_classes, input_size, s
   if dropout is not None:
     kwargs["dropout"] = dropout
 
-  print(feature_layers, classifier_layers)
-
   if state_dict_file is not None:
     kwargs["state_dict"] = torch.load(state_dict_file)
   if state_dict_weights_url is not None:

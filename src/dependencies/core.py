@@ -23,9 +23,10 @@ import torchvision
 import urllib
 
 from PIL import Image
+from pympler import asizeof
 from random import randrange
-from wcmatch import glob
 from torchvision import transforms
+from wcmatch import glob
 import importlib.resources as pkg_resources
 
 from abc import abstractmethod

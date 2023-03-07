@@ -144,7 +144,9 @@ class TorchvisionDownloader:
     """
     filelist = glob.glob(f"{self.__tmp_path}/{self.dataset_name}/**/*")
     for file in filelist:
-      os.remove(file)
+      # If file is not a directory, delete it
+      if not os.path.isdir(file):
+        os.remove(file)
     try:
       os.rmdir(f"{self.__tmp_path}/{self.dataset_name}/raw")
       os.rmdir(f"{self.__tmp_path}/{self.dataset_name}")

@@ -3,7 +3,7 @@
 # ####################################################################################### #
 [tool.poetry]
 name = "alicia"
-version = "0.2.1"
+version = "0.3.0"
 description = "A CLI to download, create, modify, train, test, predict and compare an image classifiers."
 license = "MIT"
 authors = [
@@ -61,6 +61,7 @@ torch           = "^1.13"
 torchvision     = "^0.14"
 wcmatch         = "^8.4"
 scipy           = "^1.10"
+pympler = "^1.0.1"
 
 [tool.poetry.group.test.dependencies]
 pylint                 = "^2.15"

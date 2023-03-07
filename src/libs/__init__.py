@@ -1,4 +1,5 @@
 from .pretty_train import PrettyTrain
+from .pad_to_size_transform import PadToSize
 from .un_labeled_image_dataset import UnLabeledImageDataset
 from .image_transforms import ImageToMatPlotLib
 from .shape_transforms import UnShapetransform, Reshapetransform
