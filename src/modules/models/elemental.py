@@ -28,7 +28,6 @@ class Elemental(AbsModule):
       create(self, input_size: int, num_classes: int) -> None
         Re creates the neural network.
   """
-
   def __repr__(self):
     """
       A string representation of the neural network.
@@ -66,36 +65,6 @@ class Elemental(AbsModule):
       )
     else:
       AbsModule.__init__(self, data = data)
-
-  def forward(self, x: torch.Tensor) -> torch.Tensor:
-    """
-      A forward pass of the neural network.
-
-      Parameters:
-      -----------
-        x: torch.Tensor
-          A batch of input features.
-
-      Returns:
-      --------
-        torch.Tensor
-
-      Help:
-      -----
-        model.forward = lambda x: model.classifier(model.features(x)).view(x.size(0), class_count)
-    """
-    x = self.features(x)
-    return torch.flatten(x, 1)
-
-  def parameters(self) -> Iterator[Parameter]:
-    """
-      Get the parameters of the neural network.
-
-      Returns:
-      --------
-        Iterator[Parameter]
-    """
-    return self.features.parameters()
 
   def create(self, *, input_size: int = 28, dropout: float|None = None) -> None: # pyright: ignore
     """

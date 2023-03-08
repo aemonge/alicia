@@ -8,7 +8,7 @@
 """
 
 from dependencies.core import click, torch
-from commands import download, create, train, test, info, predict, compare, modify
+from commands import download, create, train, test, info, predict, compare
 
 __author__ = "aemonge"
 __copyright__ = "aemonge"
@@ -16,6 +16,7 @@ __license__ = "MIT"
 __name__ = "alicia"
 __version__ = "0.0.9"
 
+# @click.Context(call, max_content_width=120)
 @click.group()
 @click.pass_context
 @click.option("-v", "--verbose", default=False, is_flag=True, type=click.BOOL)
@@ -45,7 +46,6 @@ call.add_command(train)
 call.add_command(test)
 call.add_command(predict)
 call.add_command(info)
-call.add_command(modify)
 call.add_command(compare)
 
 if __name__ == '__main__':

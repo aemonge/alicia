@@ -44,3 +44,6 @@
 * [ ] Use the `Softmax` function as an output, since it will return the probabilities for our classes.
 * [ ] Implement a random start for the trainer, to avoid local getting stuck at mins
 * [x] Use a network with Conv2d to avoid network coupled with the image sizes, use the `final-mnist.qmd` as an example.
+* [x] Save the model path location on itself to get the right size
+* [x] Save the last image transform on the model to simplify the usage
+* [x] Also save the data, and data/labels in the pth. With an option on the create/modify to "trim", but they're simple string should be ok

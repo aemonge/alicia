@@ -1,6 +1,6 @@
 from dependencies.core import csv
 
-def labels_reader(file: str, _sorted: bool = True) -> (list|dict):
+def labels_reader(file: str, _sorted: bool = True) -> list|dict:
   """
     Reads labels from a CSV file.
 
@@ -16,20 +16,19 @@ def labels_reader(file: str, _sorted: bool = True) -> (list|dict):
       list|dict
         Labels in the CSV file as a list or dictionary, dependent on the `sorted` parameter
   """
+  labels: set|dict = dict()
   if _sorted:
     labels = set()
-  else:
-    labels = {}
 
   with open(file, "r", encoding="utf-8") as f:
     reader = csv.reader(f)
     if _sorted:
       for _, label in reader:
-        labels.add(label) # pyright: ignore [reportGeneralTypeIssues]
+        labels.add(label)
     else:
       for filename, label in reader:
-        labels[filename] = label # pyright: ignore [reportGeneralTypeIssues]
+        labels[filename] = label
 
   if _sorted:
-    return sorted(list(labels)) # pyright: ignore [reportGeneralTypeIssues]
-  return labels # pyright: ignore [reportGeneralTypeIssues]
+    return sorted(list(labels))
+  return labels

@@ -11,21 +11,6 @@ class Dummy(AbsModule):
       forward(self, x: torch.Tensor) -> torch.Tensor
         A forward pass of the neural network.
   """
-  def __call__(self, x: torch.Tensor) -> torch.Tensor:
-    """
-      A forward pass of the neural network.
-
-      Parameters:
-      -----------
-        x: torch.Tensor
-          A batch of input features.
-
-      Returns:
-      --------
-        torch.Tensor
-    """
-    return self.forward(x)
-
   def __repr__(self):
     """
       A string representation of the neural network.

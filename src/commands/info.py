@@ -10,6 +10,9 @@ def info(_, model_file):
     Hidden layers, the trained time, out put, and features.
   """
   data = torch.load(model_file)
-  model = getattr(models, data['name'])(**{"data": data})
+  architecture = data['name']
+  del data['name']
+  print(data.keys())
+  model = getattr(models, architecture)(**data)
 
   print(model)
