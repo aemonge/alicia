@@ -57,11 +57,13 @@ class Elemental(AbsModule, torch.nn.Module):
       self.features = torch.nn.Sequential(
         torch.nn.Linear(input_size, 64, bias=False),
         torch.nn.ReLU(),
+      )
+      self.classifier = torch.nn.Sequential(
         torch.nn.Linear(64, num_classes, bias=False),
         torch.nn.ReLU(),
         torch.nn.LogSoftmax(dim=1)
       )
       kwargs['features'] = self.features
-      kwargs['classifier'] = None
+      kwargs['classifier'] = self.classifier
       kwargs['state_dict'] = {}
     AbsModule.__init__(self, **kwargs)

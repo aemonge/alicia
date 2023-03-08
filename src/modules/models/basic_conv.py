@@ -58,14 +58,14 @@ class BasicConv(AbsModule, torch.nn.Module):
       labels = kwargs.get('labels', [])
       num_classes = kwargs.get('num_classes', len(labels))
       torch.nn.Module.__init__(self)
-      last_size = self.__create_features__(dropout = dropout)
-      self.__create_classifier__(last_size, num_classes)
+      self.__create_features__(dropout = dropout)
+      self.__create_classifier__(num_classes)
       kwargs['features'] = self.features
       kwargs['classifier'] = self.classifier
       kwargs['state_dict'] = {}
     AbsModule.__init__(self, **kwargs)
 
-  def __create_classifier__(self, last_size: int, num_classes: int) -> None:
+  def __create_classifier__(self, num_classes: int) -> None:
     """
       Creates the classifier.
 
@@ -75,12 +75,13 @@ class BasicConv(AbsModule, torch.nn.Module):
           The size of the last layer.
     """
     self.classifier = torch.nn.Sequential(
-      torch.nn.Linear(last_size, num_classes),
+      torch.nn.Flatten(),
+      torch.nn.Linear(64, num_classes),
       torch.nn.ReLU(),
       torch.nn.LogSoftmax(dim=1),
     )
 
-  def __create_features__(self, dropout: float = 0.0) -> int:
+  def __create_features__(self, dropout: float = 0.0) -> None:
     """
       Creates the features.
 
@@ -89,7 +90,6 @@ class BasicConv(AbsModule, torch.nn.Module):
         int
           The size of the last features, to pipe it to the classifier.
     """
-    last_size = 96
     self.features = torch.nn.Sequential(
       torch.nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1),
       torch.nn.BatchNorm2d(64),
@@ -106,7 +106,7 @@ class BasicConv(AbsModule, torch.nn.Module):
       torch.nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
       torch.nn.BatchNorm2d(256, momentum=0.9),
       torch.nn.Dropout2d(dropout),
-      torch.nn.ReLU(),
+      torch.nn.Tanh(),
       torch.nn.MaxPool2d(kernel_size=2, stride=2),
 
       torch.nn.Conv2d(256, 512, kernel_size=3, stride=1, padding=1),
@@ -116,7 +116,6 @@ class BasicConv(AbsModule, torch.nn.Module):
       torch.nn.MaxPool2d(kernel_size=2, stride=2),
 
       torch.nn.Conv2d(512, 64, kernel_size=3, stride=1, padding=1),
-      torch.nn.Flatten(),
-      torch.nn.Linear(64, last_size),
+      torch.nn.Tanh(),
+      torch.nn.MaxPool2d(kernel_size=2, stride=2),
     )
-    return last_size
