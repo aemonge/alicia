@@ -15,7 +15,6 @@ def mnist():
       torchvision.transforms.Grayscale(),
       torchvision.transforms.ToTensor(),
       torchvision.transforms.Normalize((0.5,), (0.5,)),
-      UnShapetransform((-1, )),
       ImageToMatPlotLib((-1, )),
     ]),
     "test": torchvision.transforms.Compose([

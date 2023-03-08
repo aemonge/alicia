@@ -1,8 +1,7 @@
-from dependencies.core import torch
 from .abs_module import AbsModule
-from torchvision.models import AlexNet
+from torchvision.models import AlexNet as AlexNet_O
 
-class Alexnet(AlexNet, AbsModule):
+class AlexNet(AlexNet_O, AbsModule):
   """
     A basic neural network module. With randomly selected features.
 
@@ -42,33 +41,26 @@ class Alexnet(AlexNet, AbsModule):
         : str
           A string representation 'Basic()'.
     """
-    return 'Alexnet()'
+    return 'AlexNet()'
 
-  def __init__(self, *, data: dict|None = None, labels:list = [], input_size: int = 28, dropout: float = 0.0,
-               num_classes: int|None = None) -> None:
+  def __init__(self, init_features:bool = False, **kwargs) -> None:
     """
       Constructor of the neural network.
 
       Parameters:
       -----------
-        data: dict
-          A dictionary containing the data, to load the network though the pth file.
-        labels: list
-          A list of labels.
-        input_size: int
-          The input size.
-        dropout: float
-          The dropout probability.
+        init_features: bool
+          A flag indicating if the features should be initialized with the module
+        **kwargs: dict
+          A dictionary containing the parameters
     """
-    if data is None:
-      if dropout > 0.0:
-        AbsModule.__init__(self,
-          labels = labels, input_size = input_size, dropout = dropout, num_classes = num_classes
-        )
-        AlexNet.__init__(self, num_classes=len(labels), dropout=dropout)
-      else:
-        AbsModule.__init__(self, labels = labels, input_size = input_size, num_classes = num_classes)
-        AlexNet.__init__(self, num_classes=len(labels))
-      self.labels = labels # AlexNet destroys the labels attribute.
-    else:
-      AbsModule.__init__(self, data = data)
+    if init_features:
+      dropout = kwargs.get('dropout', 0.0)
+      labels = kwargs.get('labels', [])
+      num_classes = kwargs.get('num_classes', len(labels))
+
+      AlexNet_O.__init__(self, dropout = dropout, num_classes = num_classes)
+      kwargs['features'] = self.features
+      kwargs['classifier'] = self.classifier
+      kwargs['state_dict'] = {}
+    AbsModule.__init__(self, **kwargs)

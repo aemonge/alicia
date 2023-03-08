@@ -1,7 +1,7 @@
 from .abs_module import AbsModule
 from torchvision.models import MNASNet
 
-class Mnasnet(MNASNet, AbsModule):
+class MnasNet(MNASNet, AbsModule):
   """
     A basic neural network module. With randomly selected features.
 
@@ -41,39 +41,26 @@ class Mnasnet(MNASNet, AbsModule):
         : str
           A string representation 'Basic()'.
     """
-    return 'Mnasnet()'
+    return 'MnasNet()'
 
-  def __init__(self, *, data: dict|None = None, labels:list = [], input_size: int = 28, dropout: float = 0.0,
-               num_classes: int|None = None) -> None:
+  def __init__(self, init_features:bool = False, **kwargs) -> None:
     """
       Constructor of the neural network.
 
       Parameters:
       -----------
-        data: dict
-          A dictionary containing the data, to load the network though the pth file.
-        labels: list
-          A list of labels.
-        input_size: int
-          The input size.
-        dropout: float
-          The dropout probability.
+        init_features: bool
+          A flag indicating if the features should be initialized with the module
+        **kwargs: dict
+          A dictionary containing the parameters
     """
-    if num_classes is None:
-      num_classes = len(labels)
-
-    if data is None:
-      if dropout > 0.0:
-        AbsModule.__init__(self,
-          labels = labels, input_size = input_size, dropout = dropout, num_classes = num_classes
-        )
-        MNASNet.__init__(self, alpha=1.0, num_classes = num_classes, dropout=dropout)
-      else:
-        AbsModule.__init__(self, labels = labels, input_size = input_size, num_classes = num_classes)
-        MNASNet.__init__(self, alpha=1.0, num_classes = num_classes)
+    if init_features:
+      labels = kwargs.get('labels', [])
+      num_classes = kwargs.get('num_classes', len(labels))
+      dropout = kwargs.get('dropout', 0.0)
+      MNASNet.__init__(self, alpha=1.0, num_classes = num_classes, dropout = dropout)
       self.features = self.layers
-      # MNASNet destroys the labels attribute.
-      self.labels = labels # pyright: reportGeneralTypeIssues=false
-    else:
-      AbsModule.__init__(self, data = data)
-      self.layers = self.features
+      kwargs['features'] = self.features
+      kwargs['classifier'] = self.classifier
+      kwargs['state_dict'] = {}
+    AbsModule.__init__(self, **kwargs)

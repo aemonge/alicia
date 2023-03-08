@@ -10,7 +10,7 @@
     - [-] Kitti: File to big for my /tmp
     - [-] EuroSAT: Requires Secure Certificate
 - [x] Implement a behavior to change hidden units on all models.
-- [ ] Merge create with modify.
+- [x] Merge create with modify.
 - [ ] Implement and extend with this other models.
     - [x] SqueezeNet
     - [x] AlexNet
@@ -28,7 +28,7 @@
 # Tech debt // Known Bugs
 
 * [ ] When showing the probability, it should add up to lees than 1.0. Check it out
-* [ ] Fix size information on the models, it doesn't match at all.
+* [x] Fix size information on the models, it doesn't match at all.
 * [ ] Remove the UnShapetransform and Use the Reshapetransform((1,28,8)) instead. Check with unit test
 * [ ] Centralize **all** dependencies, in the dependencies main package, beware of circular dependencies.
       (https://pypi.org/project/dependency-injector/)
@@ -36,7 +36,6 @@
 * [ ] Fix all pylint, pyright and robocop issues
 * [ ] `Tear_down`, `reset()` or `request.getfixturevalue()` fixture to avoid setting a manual order on pytest
 * [ ] Processing huge data, kills the app. Make it performant.
-* [ ] Change `--verbose` and display none, less, all information.
 * [ ] Choose a default width, and adjust all output to such a width
 
 # Extras (from new learnings from udacity-deeplearinig)

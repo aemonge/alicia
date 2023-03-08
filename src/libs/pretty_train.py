@@ -404,7 +404,7 @@ class PrettyTrain:
       --------
         None
     """
-    all_imgs = [
+    all_imgs = [file for file in glob.glob(f"{path}/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)] + [
       file for file in glob.glob(f"{path}/**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)
     ]
 
@@ -449,7 +449,7 @@ class PrettyTrain:
       --------
         None
     """
-    all_imgs = [
+    all_imgs = [file for file in glob.glob(f"{path}/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)] + [
       file for file in glob.glob(f"{path}/**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)
     ]
 

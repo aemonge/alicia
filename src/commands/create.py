@@ -6,15 +6,17 @@ TRANFORMS_NAMES = [ name for name, _ in inspect.getmembers(transforms, predicate
 
 help_layer_change='\
   (id, nn.module) change a classifier layer. \
-    Id can be $: Use "$" "None" to remove the last\
+    Id can be -1: Use "-1" "None" to remove the last\
     nn.module as text: "0" "Linear(784, 101")\
 '
 
 @click.command()
 @click.pass_context
 @click.argument("model_file", type=click.Path(file_okay=True, readable=True, writable=True), required=1)
-@click.option('-a', '--architecture', default=MODELS_NAMES[0], type=click.Choice(MODELS_NAMES))
-@click.option('-c', '--categories-file', type=click.Path(file_okay=True, readable=True), required=1)
+@click.option('-a', '--architecture', type=click.Choice(MODELS_NAMES),
+              help="If the architecture is given for an existing model, it will overwrite the features."
+              )
+@click.option('-c', '--categories-file', type=click.Path(file_okay=True, readable=True))
 @click.option("-t", "--transform-name", default=TRANFORMS_NAMES[0], type=click.Choice(TRANFORMS_NAMES))
 @click.option("-D", "--data_dir", type=click.Path(exists=True, dir_okay=True, readable=True))
 @click.option('-n', '--num-classes', type=click.INT, default=None)
@@ -34,6 +36,7 @@ def create(_, model_file, architecture, categories_file, transform_name, data_di
   kwargs = {
     'path': model_file
   }
+  architecture_name = architecture
   if categories_file is not None:
     kwargs["labels"] = labels_reader(categories_file)
   if num_classes is not None:
@@ -57,26 +60,26 @@ def create(_, model_file, architecture, categories_file, transform_name, data_di
   if state_dict_weights_url is not None:
     print('💙', end='\r')
     with tempfile.NamedTemporaryFile(mode="w+") as file:
-      urllib.request.urlretrieve(state_dict_weights_url, file.name) # pyright: reportGeneralTypeIssues=false
+      urllib.request.urlretrieve(state_dict_weights_url, file.name) # pyright: ignore [reportGeneralTypeIssues]
       kwargs["state_dict"] = torch.load(file.name)
 
   print('💛', end='\r')
 
   if os.path.exists(kwargs['path']):
     data = torch.load(kwargs['path'])
-    architecture = data['name']
-    for key in ['input_size', 'labels', 'num_classes', 'dropout', 'state_dict']:
-      if key in data and data[key] is not None:
+    architecture_name = architecture_name or data['name']
+    for key in ['input_size', 'labels', 'num_classes', 'dropout', 'state_dict', 'features', 'classifier',
+                'avgpool', 'training_history', 'transform', 'data_paths', 'path']:
+      if key not in kwargs and key in data:
         kwargs[key] = data[key]
 
-  model = getattr(models, architecture)(**kwargs)
+  model = getattr(models, architecture_name)(architecture is not None, **kwargs)
 
   if feature_layers is not None or classifier_layers is not None:
     if feature_layers is not None:
       model.modify_parameters("features", feature_layers[0], feature_layers[1])
     if classifier_layers is not None:
       model.modify_parameters("classifier", classifier_layers[0], classifier_layers[1])
-    model.modify(**kwargs)
 
-  model.save(kwargs['path'])
+  model.save()
   print('💚')

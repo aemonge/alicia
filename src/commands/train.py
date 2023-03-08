@@ -19,10 +19,13 @@ def train(_, model_file, batch_size, epochs, learning_rate, momentum, pretend, f
     each with the images files and a `labels.csv` file.
   """
   data = torch.load(model_file)
-  model = getattr(models, data['name'])(**{"data": data})
+  architecture = data["name"]
+  data_dir = data['data_paths']
+  categories_file = data['data_paths']['labels_map']
+  del data["name"]
+
+  model = getattr(models, architecture)(**data)
   transform = getattr(transforms, data['transform'])()
-  data_dir = data['data_path']
-  categories_file = data['data_path']['labels_map']
   labels: dict = labels_reader(categories_file, _sorted=False)
 
   if pretend:

@@ -180,11 +180,11 @@ class Trainer(PrettyTrain):
 
     category_labels_ids = { v:k for k,v in enumerate(self.model.labels)}
     train_ldr = DataLoader(UnLabeledImageDataset(
-        f"{data_dir}/train", labels, category_labels_ids, transform = self.transforms['train']
+        data_dir['train'], labels, category_labels_ids, transform = self.transforms['train']
       ), batch_size = batch_size, shuffle=True
     )
     valid_ldr = DataLoader(UnLabeledImageDataset(
-        f"{data_dir}/valid", labels, category_labels_ids, transform = self.transforms['valid']
+        data_dir['valid'], labels, category_labels_ids, transform = self.transforms['valid']
       ), batch_size = batch_size, shuffle=True
     )
 
@@ -261,7 +261,7 @@ class Trainer(PrettyTrain):
     start_time = time.time()
     category_labels_ids = { v:k for k,v in enumerate(self.model.labels)}
     test_ldr = DataLoader(UnLabeledImageDataset(
-      f"{data_dir}/test", labels, category_labels_ids, transform = self.transforms['test']
+      data_dir["test"], labels, category_labels_ids, transform = self.transforms['test']
       ), batch_size = batch_size, shuffle=True
     )
 

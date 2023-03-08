@@ -2,6 +2,7 @@ from dependencies.core import contextlib, io
 from dependencies.datatypes import AbsModule, Type
 from libs import PrettifyComparer
 from features import Trainer
+from modules import transforms
 
 class Comparer(PrettifyComparer):
   """
@@ -34,7 +35,7 @@ class Comparer(PrettifyComparer):
     self.models = models
     self.names = names
 
-  def accuracy(self, transform, *args, **kwargs) -> None:
+  def accuracy(self, *args, **kwargs) -> None:
     """
       Compute the overall test accuracy of the models and compare them.
 
@@ -55,6 +56,7 @@ class Comparer(PrettifyComparer):
 
     results = []
     for model in self.models:
+      transform = getattr(transforms, model.transform)()
       t = self.Trainer(model, transform)
       with contextlib.redirect_stdout(io.StringIO()) as f:
         t.test(*args, **kwargs)
@@ -62,7 +64,7 @@ class Comparer(PrettifyComparer):
 
     self._print_results(results)
 
-  def training(self, data_dir, transform, labels, batch_size, **kwargs) -> None:
+  def training(self, data_dir, labels, batch_size, **kwargs) -> None:
     """
       Start parallel training of the models and compare their training and validation loss, time and accuracy.
 
@@ -88,6 +90,7 @@ class Comparer(PrettifyComparer):
     results = []
     try:
       for model in self.models:
+        transform = getattr(transforms, model.transform)()
         t = self.Trainer(model, transform, **kwargs)
         with contextlib.redirect_stdout(io.StringIO()) as f:
           t.train(data_dir, labels, batch_size, 1)

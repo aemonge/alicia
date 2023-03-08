@@ -12,7 +12,6 @@ def info(_, model_file):
   data = torch.load(model_file)
   architecture = data['name']
   del data['name']
-  print(data.keys())
   model = getattr(models, architecture)(**data)
 
   print(model)

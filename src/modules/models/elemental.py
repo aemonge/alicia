@@ -1,8 +1,7 @@
 from dependencies.core import torch
-from dependencies.datatypes import Parameter, Iterator
 from modules.models.abs_module import AbsModule
 
-class Elemental(AbsModule):
+class Elemental(AbsModule, torch.nn.Module):
   """
     A elemental neural network module, only for testing purposes.
 
@@ -39,39 +38,30 @@ class Elemental(AbsModule):
     """
     return 'Elemental()'
 
-  def __init__(self, *, data: dict|None = None, labels:list = [], input_size: int = 28, dropout: float = 0.0,
-               num_classes: int|None = None) -> None:
+  def __init__(self, init_features:bool = False, **kwargs) -> None:
     """
       Constructor of the neural network.
 
       Parameters:
       -----------
-        data: dict
-          A dictionary containing the data, to load the network though the pth file.
-        labels: list
-          A list of labels.
-        input_size: int
-          The input size.
-        dropout: float
-          The dropout probability.
+        init_features: bool
+          A flag indicating if the features should be initialized with the module
+        **kwargs: dict
+          A dictionary containing the parameters
     """
-    if data is None:
-      AbsModule.__init__(self,
-        labels = labels, input_size = input_size, dropout = dropout, num_classes = num_classes
-      )
+    if init_features:
+      input_size = kwargs.get('input_size', 28)
+      labels = kwargs.get('labels', [])
+      num_classes = kwargs.get('num_classes', len(labels))
+      torch.nn.Module.__init__(self)
       self.features = torch.nn.Sequential(
-        torch.nn.Linear(self.input_size, self.num_classes),
+        torch.nn.Linear(input_size, 64, bias=False),
+        torch.nn.ReLU(),
+        torch.nn.Linear(64, num_classes, bias=False),
+        torch.nn.ReLU(),
         torch.nn.LogSoftmax(dim=1)
       )
-    else:
-      AbsModule.__init__(self, data = data)
-
-  def create(self, *, input_size: int = 28, dropout: float|None = None) -> None: # pyright: ignore
-    """
-      Re creates the neural network.
-
-      Parameters:
-      -----------
-        input_size: int
-          The input size.
-    """
+      kwargs['features'] = self.features
+      kwargs['classifier'] = None
+      kwargs['state_dict'] = {}
+    AbsModule.__init__(self, **kwargs)

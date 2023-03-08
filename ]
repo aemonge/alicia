@@ -7,7 +7,7 @@ class PrettifyComparer(metaclass=ABCMeta):
     Prettify the comparer by adding spinner, and nice diff output.
   """
   BAR_LENGTH = 55
-  LOADING_ICONS = ['⠀','⠁','⠃','⠇','⡇','⡏','⡟','⠿', '⡟', '⡏', '⡇', '⠃', '⠁']
+  LOADING_ICONS = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏']
   WIDTH = 50
 
   @abstractmethod
@@ -60,7 +60,7 @@ class PrettifyComparer(metaclass=ABCMeta):
     """
       Print a loading spinner.
     """
-    s = spinner(icons=['  ' + (colored(i, 'yellow') + ' ') * (self.WIDTH//2) for i in self.LOADING_ICONS])
+    s = spinner(icons=['  ' + colored(i, 'yellow')* self.WIDTH for i in self.LOADING_ICONS])
     while True:
       next(s)
       time.sleep(0.1)

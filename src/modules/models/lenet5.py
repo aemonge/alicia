@@ -1,8 +1,7 @@
 from dependencies.core import torch
-from dependencies.datatypes import Parameter, Iterator
 from .abs_module import AbsModule
 
-class LeNet5(AbsModule):
+class LeNet5(AbsModule, torch.nn.Module):
   """
     A basic neural network module. With randomly selected features, and Conv2d.
 
@@ -43,32 +42,29 @@ class LeNet5(AbsModule):
     """
     return 'LeNet5()'
 
-  def __init__(self, *, data: dict|None = None, labels:list = [], input_size: int = 28, dropout: float = 0.0,
-               num_classes: int|None = None) -> None:
+  def __init__(self, init_features:bool = False, **kwargs) -> None:
     """
       Constructor of the neural network.
 
       Parameters:
       -----------
-        data: dict
-          A dictionary containing the data, to load the network though the pth file.
-        labels: list
-          A list of labels.
-        input_size: int
-          The input size.
-        dropout: float
-          The dropout probability.
+        init_features: bool
+          A flag indicating if the features should be initialized with the module
+        **kwargs: dict
+          A dictionary containing the parameters
     """
-    if data is None:
-      AbsModule.__init__(self,
-        labels = labels, input_size = input_size, dropout = dropout, num_classes = num_classes
-      )
+    if init_features:
+      labels = kwargs.get('labels', [])
+      num_classes = kwargs.get('num_classes', len(labels))
+      torch.nn.Module.__init__(self)
       last_size = self.__create_features__()
-      self.__create_classifier__(last_size)
-    else:
-      AbsModule.__init__(self, data = data)
+      self.__create_classifier__(last_size, num_classes)
+      kwargs['features'] = self.features
+      kwargs['classifier'] = self.classifier
+      kwargs['state_dict'] = {}
+    AbsModule.__init__(self, **kwargs)
 
-  def __create_classifier__(self, last_size: int) -> None:
+  def __create_classifier__(self, last_size: int, num_classes: int) -> None:
     """
       Creates the classifier.
 
@@ -78,7 +74,7 @@ class LeNet5(AbsModule):
           The size of the last layer.
     """
     self.classifier = torch.nn.Sequential(
-      torch.nn.Linear(last_size, self.num_classes),
+      torch.nn.Linear(last_size, num_classes),
       torch.nn.ReLU(),
       torch.nn.LogSoftmax(dim=1)
     )
@@ -94,7 +90,7 @@ class LeNet5(AbsModule):
     """
     last_size = 84
     self.features = torch.nn.Sequential(
-      torch.nn.Conv2d(1, 6, kernel_size=5, padding=0, stride=1),
+      torch.nn.Conv2d(3, 6, kernel_size=5, padding=0, stride=1),
       torch.nn.AvgPool2d(kernel_size=5, stride=1),
       torch.nn.Conv2d(6, 16, kernel_size=5, padding=0, stride=1),
       torch.nn.ReLU(),

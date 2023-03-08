@@ -1,8 +1,7 @@
 from dependencies.core import torch
-from dependencies.datatypes import Parameter, Iterator
 from .abs_module import AbsModule
 
-class BasicConv(AbsModule):
+class BasicConv(AbsModule, torch.nn.Module):
   """
     A basic neural network module. With randomly selected features, and Conv2d.
 
@@ -43,23 +42,30 @@ class BasicConv(AbsModule):
     """
     return 'BasicConv()'
 
-  def __init__(self, **kwargs) -> None:
+  def __init__(self, init_features:bool = False, **kwargs) -> None:
     """
       Constructor of the neural network.
 
       Parameters:
       -----------
+        init_features: bool
+          A flag indicating if the features should be initialized with the module
         **kwargs: dict
           A dictionary containing the parameters
     """
+    if init_features:
+      dropout = kwargs.get('dropout', 0.0)
+      labels = kwargs.get('labels', [])
+      num_classes = kwargs.get('num_classes', len(labels))
+      torch.nn.Module.__init__(self)
+      last_size = self.__create_features__(dropout = dropout)
+      self.__create_classifier__(last_size, num_classes)
+      kwargs['features'] = self.features
+      kwargs['classifier'] = self.classifier
+      kwargs['state_dict'] = {}
     AbsModule.__init__(self, **kwargs)
 
-    if 'features' not in kwargs and 'classifier' not in kwargs:
-      dropout = kwargs.pop('dropout')
-      last_size = self.__create_features__(dropout = dropout)
-      self.__create_classifier__(last_size)
-
-  def __create_classifier__(self, last_size: int) -> None:
+  def __create_classifier__(self, last_size: int, num_classes: int) -> None:
     """
       Creates the classifier.
 
@@ -69,7 +75,7 @@ class BasicConv(AbsModule):
           The size of the last layer.
     """
     self.classifier = torch.nn.Sequential(
-      torch.nn.Linear(last_size, self.num_classes),
+      torch.nn.Linear(last_size, num_classes),
       torch.nn.ReLU(),
       torch.nn.LogSoftmax(dim=1),
     )
@@ -111,6 +117,6 @@ class BasicConv(AbsModule):
 
       torch.nn.Conv2d(512, 64, kernel_size=3, stride=1, padding=1),
       torch.nn.Flatten(),
-      torch.nn.Linear(320*60, last_size),
+      torch.nn.Linear(64, last_size),
     )
     return last_size

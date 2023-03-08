@@ -13,7 +13,9 @@ def diff_info(_, models_files):
   models = []
   for model_file in models_files:
     data = torch.load(model_file)
-    model = getattr(Models, data['name'])(**{"data": data})
+    architecture = data['name']
+    del data['name']
+    model = getattr(Models, architecture)(**data)
     models.append(model)
 
   c = Comparer(Trainer, models, names=[ os.path.basename(n) for n in models_files])
