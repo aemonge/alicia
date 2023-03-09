@@ -90,6 +90,15 @@ To see the full list of features, and option please refer to `alicia --help`
 * Adds the network training history log, to the model. To enhance the info and compare.
 * Supports pre-trained models, with weights settings.
 * Automatically set the input size based on the image resolution.
+* Visualize the model full information include:
+    - Model Name.
+    - Model `pth` file location.
+    - Model size: memory, disk and state dict.
+    - Transforms used: train, valid, test and display.
+    - Data directories paths; train, valid and test.
+    - Labels of the model.
+    - Features of the model.
+    - Classifier for the model.
 
 References
 -----------------------------------------------

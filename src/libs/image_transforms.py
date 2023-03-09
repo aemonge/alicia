@@ -5,6 +5,16 @@ class ImageToMatPlotLib(object):
     PyTorch tensors assume the color channel is the first dimension
       but matplotlib assumes is the third dimension
   """
+  def __str__(self) -> str:
+    """
+      String representation.
+
+      Returns:
+      --------
+        str
+    """
+    return f"ImageToMatPlotLib({self.shape})"
+
   def __init__(self, shape:tuple):
     """
       Parameters:

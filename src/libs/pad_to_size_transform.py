@@ -27,6 +27,16 @@ class PadToSize(object):
     else:
       self.size = size
 
+  def __str__(self) -> str:
+    """
+      String representation.
+
+      Returns:
+      --------
+        str
+    """
+    return f"PadToSize({self.size})"
+
   def __call__(self, x):
     """
       Pad the image to the given size.

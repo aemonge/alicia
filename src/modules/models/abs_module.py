@@ -1,11 +1,12 @@
 from dependencies.core import torch, ABCMeta, textwrap, time, asizeof, os, torch
 from dependencies.datatypes import Parameter, Iterator
 from libs import sizeof_formated, get_args_kwargs_from_string
+from modules import transforms
 
 class AbsModule(torch.nn.Module, metaclass=ABCMeta):
   def __init__(self, *, training_history: list|None = None, state_dict: dict|None = {},
-               labels:list = [], input_size: int = 28, dropout: float = 0.0, num_classes: int|None = None,
-               transform = None, data_paths: dict|None = None, path: str|None = None,
+               labels:list = [], input_size: int = 64, dropout: float = 0.0, num_classes: int|None = None,
+               momentum: float = 0.1, transform = None, data_paths: dict|None = None, path: str|None = None,
                features: torch.nn.Module|None = None, classifier: torch.nn.Module|None = None,
                avgpool: torch.nn.Module|None = None
                ) -> None:
@@ -26,6 +27,8 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
           The dropout probability.
         num_classes: int|None
           The number of classes, to use a output.
+        momentum: float
+          The momentum of the Batch Normalization (when applicable).
         transform: torch.nn.Module
           The transformation to apply to the training or testing data.
         data_paths: dict|None
@@ -45,6 +48,7 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
     self.training_history = []
     self.input_size = input_size
     self.dropout = dropout
+    self.momentum = momentum
     self.transform = transform
     self.data_paths = data_paths
     self.path = path
@@ -79,11 +83,21 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       formated_disk_size = sizeof_formated(os.path.getsize(self.path))
 
     classifier_str = ''
-    meta_str = f"size (memory): {formated_size},\tsize (disk): {formated_disk_size}" + \
-        f",\tstate dict len: {len(self.state_dict())}" + \
-        f"\n{' '*4}path: {self.path},\ttransform: {self.transform}"
+    size_str = f"size (memory): {formated_size},\tsize (disk): {formated_disk_size}" + \
+        f",\tstate dict len: {len(self.state_dict())}"
     train_str = f"train folder: {self.data_paths['train']},,\tvalid folder: {self.data_paths['valid']}"+ \
       f"\n{' '*4}labels map file: {self.data_paths['labels_map']},\ttest folder: {self.data_paths['test']}"
+
+    transform_spec = getattr(transforms, self.transform)()
+    transform_str = f"{self.transform}\n"
+
+    for val in ['train', 'valid', 'test', 'display']:
+      transform_str += f"{' '*4}({val}):\n"
+      ix = 0
+      for trans in transform_spec[val].transforms:
+        transform_str += f"{' '*6}({ix}) {str(trans)}\n"
+        ix += 1
+    transform_str = transform_str[:-1]
 
     if hasattr(self, "classifier"):
       classifier_str = "\n  ".join(str(self.classifier).split("\n"))
@@ -99,14 +113,15 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       training_history_str += f"Time: {time_f}\n" + " "*4
     training_history_str = training_history_str[:-(4-1)] # 4 will be a constant
 
-    return f"{self.__repr__()} (\n" + \
-      f"  (meta): \n    {meta_str}\n" + \
+    return f"{self.__repr__()} @ ./{self.path} " + '{ \n' + \
+      f"  (size): \n    {size_str}\n" + \
+      f"  (transforms): {transform_str}\n" + \
       f"  (data paths): \n    {train_str}\n" + \
       f"  (labels): \n    {labels_str}\n" + \
       f"  (features): {features_str}\n" + \
       (f"  (classifier): {classifier_str}\n" if hasattr(self, 'classifier') else '') + \
       (f"  (training history): \n    {training_history_str[:-1]}" if len(self.training_history) > 0 else '') + \
-    f")"
+    "}"
 
   def __call__(self, x: torch.Tensor) -> torch.Tensor:
     """
@@ -190,6 +205,8 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       obj['training_history'] = self.training_history
     if hasattr(self, 'dropout') and self.dropout > 0.0:
       obj['dropout'] = self.dropout
+    if hasattr(self, 'momentum') and self.momentum != 0.1:
+      obj['momentum'] = self.momentum
     if hasattr(self, 'classifier'):
       obj['classifier'] = self.classifier
     if hasattr(self, 'avgpool'): # Supporting AlexNet

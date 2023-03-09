@@ -55,17 +55,19 @@ class BasicConv(AbsModule, torch.nn.Module):
     """
     if init_features:
       dropout = kwargs.get('dropout', 0.0)
+      momentum = kwargs.get('momentum', 0.1)
       labels = kwargs.get('labels', [])
+      input_size = kwargs.get('input_size', 64)
       num_classes = kwargs.get('num_classes', len(labels))
       torch.nn.Module.__init__(self)
-      self.__create_features__(dropout = dropout)
-      self.__create_classifier__(num_classes)
+      self.__create_features__(dropout = dropout, momentum = momentum)
+      self.__create_classifier__(input_size, num_classes)
       kwargs['features'] = self.features
       kwargs['classifier'] = self.classifier
       kwargs['state_dict'] = {}
     AbsModule.__init__(self, **kwargs)
 
-  def __create_classifier__(self, num_classes: int) -> None:
+  def __create_classifier__(self, last_size: int, num_classes: int) -> None:
     """
       Creates the classifier.
 
@@ -76,12 +78,12 @@ class BasicConv(AbsModule, torch.nn.Module):
     """
     self.classifier = torch.nn.Sequential(
       torch.nn.Flatten(),
-      torch.nn.Linear(64, num_classes),
+      torch.nn.Linear(last_size, num_classes),
       torch.nn.ReLU(),
       torch.nn.LogSoftmax(dim=1),
     )
 
-  def __create_features__(self, dropout: float = 0.0) -> None:
+  def __create_features__(self, dropout: float = 0.0, momentum: float = 0.1) -> None:
     """
       Creates the features.
 
@@ -100,22 +102,22 @@ class BasicConv(AbsModule, torch.nn.Module):
       torch.nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
       torch.nn.BatchNorm2d(128),
       torch.nn.Dropout2d(dropout),
-      torch.nn.ReLU(),
+      torch.nn.Tanh(),
       torch.nn.MaxPool2d(kernel_size=2, stride=2),
 
       torch.nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
-      torch.nn.BatchNorm2d(256, momentum=0.9),
+      torch.nn.BatchNorm2d(256, momentum=momentum),
       torch.nn.Dropout2d(dropout),
       torch.nn.Tanh(),
       torch.nn.MaxPool2d(kernel_size=2, stride=2),
 
       torch.nn.Conv2d(256, 512, kernel_size=3, stride=1, padding=1),
-      torch.nn.BatchNorm2d(512, momentum=0.9),
+      torch.nn.BatchNorm2d(512, momentum=momentum),
       torch.nn.Dropout2d(dropout),
-      torch.nn.ReLU(),
+      torch.nn.Tanh(),
       torch.nn.MaxPool2d(kernel_size=2, stride=2),
 
       torch.nn.Conv2d(512, 64, kernel_size=3, stride=1, padding=1),
-      torch.nn.Tanh(),
-      torch.nn.MaxPool2d(kernel_size=2, stride=2),
+      torch.nn.BatchNorm2d(64),
+      torch.nn.ReLU(),
     )

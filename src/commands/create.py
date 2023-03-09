@@ -25,10 +25,11 @@ help_layer_change='\
 @click.option('-w', '--state-dict-weights-url', type=click.STRING,
               help="In example: https://download.pytorch.org/models/squeezenet1_1-f364aa15.pth")
 @click.option('-d', '--dropout', type=click.FLOAT, default=0.0)
+@click.option('-m', '--momentum', type=click.FLOAT, default=0.0)
 @click.option('-f', '--feature-layers', type=(int, str), help=help_layer_change)
 @click.option('-k', '--classifier-layers', type=(int, str), help=help_layer_change)
 def create(_, model_file, architecture, categories_file, transform_name, data_dir, num_classes, input_size,
-           state_dict_file, state_dict_weights_url, dropout, feature_layers, classifier_layers):
+           state_dict_file, state_dict_weights_url, dropout, momentum, feature_layers, classifier_layers):
   """
     Changes the hyper parameters of a model.
     It also allows you to use pre-trained weights, by re-creating the model
@@ -45,6 +46,8 @@ def create(_, model_file, architecture, categories_file, transform_name, data_di
     kwargs["input_size"] = input_size
   if dropout is not None:
     kwargs["dropout"] = dropout
+  if momentum is not None:
+    kwargs["momentum"] = momentum
   if transform_name is not None:
     kwargs["transform"] = transform_name
   if data_dir is not None:
