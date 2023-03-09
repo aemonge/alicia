@@ -37,6 +37,7 @@
 * [ ] `Tear_down`, `reset()` or `request.getfixturevalue()` fixture to avoid setting a manual order on pytest
 * [ ] Processing huge data, kills the app. Make it performant.
 * [ ] Choose a default width, and adjust all output to such a width
+* [ ] Refactor the `__str__` method, use regex and make it more clear.
 
 # Extras (from new learnings from udacity-deeplearinig)
 

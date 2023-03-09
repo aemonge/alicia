@@ -84,7 +84,12 @@ To see the full list of features, and option please refer to `alicia --help`
     - SqueezeNet
     - AlexNet
     - MNASNet
+    - LetNet5
+    - Basic
+    - Elemental
+    - BasicConv
 * Get information about each model.
+* Edit/modify a model, changing the features and classifier.
 * Compare models training speed, accuracy, and meta information.
 * View test prediction results in the console, or with matplotlib.
 * Adds the network training history log, to the model. To enhance the info and compare.

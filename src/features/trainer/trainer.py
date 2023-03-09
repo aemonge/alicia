@@ -231,7 +231,8 @@ class Trainer(PrettyTrain):
 
     self.model.training_history.append((
       ('epochs', epochs), ('batch size', batch_size), ('items', train_loader_count, validate_loader_count),
-      ('time', time.time() - total_time), ('accuracy', (vd_correct * 100 / validate_loader_count))
+      ('time', time.time() - total_time), ('accuracy', (vd_correct * 100 / validate_loader_count)),
+      ('criterion', self.criterion), ('optimizer', self.optimizer),
     ))
 
   def test(self, data_dir: str, labels: dict, batch_size: int = 64, freeze_parameters: bool = False):

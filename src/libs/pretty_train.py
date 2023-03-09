@@ -24,7 +24,7 @@ class PrettyTrain:
         Prints the training header.
 
   """
-  BAR_LENGTH = 55
+  BAR_LENGTH = 100
   LOADING_ICONS = ['⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏']
 
   def __init__(self):
@@ -82,7 +82,7 @@ class PrettyTrain:
     """
     color = self.__get_step_color__(step)
     loading_bar(
-      ix, total=total, label='  ', bar_length=self.BAR_LENGTH, show_percentage=True, icon=colored('⠿', color)
+      ix, total=total, label='   ', bar_length=self.BAR_LENGTH, show_percentage=True, icon=colored('⠿', color)
     )
 
   def _spin(self, step: str = 'train') -> None:
@@ -119,6 +119,16 @@ class PrettyTrain:
     else:
       print('\r', end='\r')
 
+  def _optimizer_str(self, optimizer) -> str:
+    optmi_str = str(optimizer).replace(' ', '').replace('\n', ', ').replace(':', '=')
+    optmi_str = optmi_str.replace(',}', ')').replace('(, ', '(').replace(', )', ')')
+    optmi_str = optmi_str.replace('ParameterGroup0, ', '')
+    for i in [96, 184]:
+      optmi_str = optmi_str[:i] + '\n' + ' ' * 17 + optmi_str[i:]
+
+    optmi_str = optmi_str.strip()
+    return optmi_str
+
   def _print_train_header(self, epochs:int, batch_size:int,
                           train_loader_count:int, validate_loader_count:int) -> None:
     """
@@ -144,8 +154,11 @@ class PrettyTrain:
     if hasattr(self, 'momentum') and self.momentum is not None:
       momentum_str = f",\tMomentum: {self.momentum}"
 
-    print(f" Epochs: {epochs},\tBatch Size: {batch_size},\tLearning rate: {self.learning_rate}{momentum_str}\n",
-          f"Items: [training: \"{train_loader_count:,}\" ,\tvalidation: \"{validate_loader_count:,}\"]\n")
+    print()
+    print(f"  Epochs: {epochs},  Batch Size: {batch_size}, "
+          f"Items: [training: \"{train_loader_count:,}\" , validation: \"{validate_loader_count:,}\"]")
+    print(f"  Optimizer: {self._optimizer_str(self.optimizer)}")
+    print(f"  Criterion: {self.criterion}", end="\n\n")
 
   def _print_test_header(self, batch_size:int, count:int) -> None:
     """
@@ -180,7 +193,7 @@ class PrettyTrain:
       --------
         None
     """
-    print(f"   Epoch: {epoch + 1}/{epochs} ({colored('traning', 'blue')} and {colored('validating', 'green')})")
+    print(f"    Epoch: {epoch + 1}/{epochs} ({colored('traning', 'blue')} and {colored('validating', 'green')})")
 
   def _print_step(self, epoch:int, epochs:int, start_time:int, time_count:int,
                   tr_loss:float, vd_loss:float, vd_correct:int,

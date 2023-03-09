@@ -29,7 +29,7 @@ def train(_, model_file, batch_size, epochs, learning_rate, momentum, pretend, f
   labels: dict = labels_reader(categories_file, _sorted=False)
 
   if pretend:
-    print(colored(' Results of the training will not saved, since we are just pretending\n', 'yellow'))
+    print('\n', colored(' Results of the training will not saved, since we are just pretending', 'yellow'))
 
   if momentum is not None:
     trainer = Trainer(model, transform, learning_rate = learning_rate, momentum = momentum)

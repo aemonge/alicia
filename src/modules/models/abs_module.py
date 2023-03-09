@@ -104,14 +104,25 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
 
     training_history_str = ""*4
     for line in self.training_history: # pyright: reportGeneralTypeIssues=false
+      time_f = time.strftime("%H:%M:%S", time.gmtime(line[3][1]))
+      training_history_str += f"Accuracy: {line[4][1]:.2f}%, "
+      training_history_str += f"Time: {time_f}, "
+
       training_history_str += f"Epochs: {line[0][1]}, "
       training_history_str += f"Batch: {line[1][1]}, "
       training_history_str += f"Items: ({line[2][1]}, {line[2][2]})\n"
 
-      time_f = time.strftime("%H:%M:%S", time.gmtime(line[3][1]))
-      training_history_str += ' '*6 + f"Accuracy: {line[4][1]:.2f}%, "
-      training_history_str += f"Time: {time_f}\n" + " "*4
-    training_history_str = training_history_str[:-(4-1)] # 4 will be a constant
+      if (len(line) > 5): # Retro-Compatibillity TODO: Will drop on refactor
+        training_history_str += ' '*6 + f"Criterion: {line[5][1]},\n"
+        # optmi_str = self._optimizer_str(self.optimizer)
+        optmi_str = str(line[6][1]).replace(' ', '').replace('\n', ', ').replace(':', '=')
+        optmi_str = optmi_str.replace(', )', '').replace('(, ', '(')
+        for i in [70, 140, 190]:
+          optmi_str = optmi_str[:i] + '\n' + ' ' * 21 + optmi_str[i:]
+        training_history_str += ' '*6 +  f"Optimizer: {optmi_str}"
+      training_history_str += '\n' + ' ' * 4
+
+    training_history_str = training_history_str[:-5] # 4 will be a constant
 
     return f"{self.__repr__()} @ ./{self.path} " + '{ \n' + \
       f"  (size): \n    {size_str}\n" + \
@@ -120,8 +131,7 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       f"  (labels): \n    {labels_str}\n" + \
       f"  (features): {features_str}\n" + \
       (f"  (classifier): {classifier_str}\n" if hasattr(self, 'classifier') else '') + \
-      (f"  (training history): \n    {training_history_str[:-1]}" if len(self.training_history) > 0 else '') + \
-    "}"
+      (f"  (training history): \n    {training_history_str[:-1]}" if len(self.training_history) > 0 else '')
 
   def __call__(self, x: torch.Tensor) -> torch.Tensor:
     """
