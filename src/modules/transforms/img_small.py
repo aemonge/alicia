@@ -42,7 +42,6 @@ def img_small_czy():
     ]),
     "display": torchvision.transforms.Compose([
       torchvision.transforms.ToTensor(),
-      torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
       ImageToMatPlotLib((-1, )),
     ]),
   }
@@ -77,7 +76,6 @@ def img_small():
     ]),
     "display": torchvision.transforms.Compose([
       torchvision.transforms.ToTensor(),
-      torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
       ImageToMatPlotLib((-1, )),
     ]),
   }

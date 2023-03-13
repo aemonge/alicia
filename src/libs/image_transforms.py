@@ -1,4 +1,5 @@
 from torch import Tensor
+from numpy import ndarray
 
 class ImageToMatPlotLib(object):
   """
@@ -15,7 +16,7 @@ class ImageToMatPlotLib(object):
     """
     return f"ImageToMatPlotLib({self.shape})"
 
-  def __init__(self, shape:tuple):
+  def __init__(self, shape:tuple = (1, 2, 0)):
     """
       Parameters:
       -----------
@@ -24,7 +25,7 @@ class ImageToMatPlotLib(object):
     """
     self.shape = shape
 
-  def __call__(self, tensor:Tensor):
+  def __call__(self, tensor:Tensor) -> ndarray:
     """
       Transform a tensor from the original shape to MatPlotLib image.
 

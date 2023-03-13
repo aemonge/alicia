@@ -7,3 +7,4 @@ from modules.models.abs_module import AbsModule
 from PIL.Image import Image as ImageDT
 from matplotlib.axes import Axes
 from torch import Tensor
+from numpy import ndarray as ndarray

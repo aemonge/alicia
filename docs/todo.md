@@ -47,4 +47,4 @@
 * [x] Save the model path location on itself to get the right size
 * [x] Save the last image transform on the model to simplify the usage
 * [x] Also save the data, and data/labels in the pth. With an option on the create/modify to "trim", but they're simple string should be ok
-* [ ] Add a feature `preview` to preview all transforms, to check how the images data
+* [x] Add a feature `preview` to preview all transforms, to check how the images data

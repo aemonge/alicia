@@ -6,3 +6,4 @@ from commands.predict import predict
 from commands.test import test
 from commands.train import train
 from commands.compare import compare
+from commands.preview import preview
