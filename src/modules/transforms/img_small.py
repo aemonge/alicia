@@ -79,3 +79,22 @@ def img_small():
       ImageToMatPlotLib((-1, )),
     ]),
   }
+
+def img_small_raw():
+  size = [320, 240]
+  return {
+    "train": torchvision.transforms.Compose([
+      torchvision.transforms.CenterCrop(size),
+      torchvision.transforms.ToTensor(),
+    ]),
+    "valid": torchvision.transforms.Compose([
+      torchvision.transforms.CenterCrop(size),
+      torchvision.transforms.ToTensor(),
+    ]),
+    "test": torchvision.transforms.Compose([
+      torchvision.transforms.CenterCrop(size),
+      torchvision.transforms.ToTensor(),
+    ]),
+    "display": torchvision.transforms.Compose([
+    ]),
+  }

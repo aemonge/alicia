@@ -178,14 +178,17 @@ class Trainer(PrettyTrain):
     if 'train' not in self.transforms.keys() or 'valid' not in self.transforms.keys():
       raise ValueError('Transforms must be defined and set')
 
+    # Enable multiprocessing, for faster training
+    num_workers = multiprocessing.cpu_count()
+
     category_labels_ids = { v:k for k,v in enumerate(self.model.labels)}
     train_ldr = DataLoader(UnLabeledImageDataset(
         data_dir['train'], labels, category_labels_ids, transform = self.transforms['train']
-      ), batch_size = batch_size, shuffle=True
+      ), batch_size = batch_size, shuffle=True, num_workers=num_workers
     )
     valid_ldr = DataLoader(UnLabeledImageDataset(
         data_dir['valid'], labels, category_labels_ids, transform = self.transforms['valid']
-      ), batch_size = batch_size, shuffle=True
+      ), batch_size = batch_size, shuffle=True, num_workers=num_workers
     )
 
     train_loader_count = len(train_ldr.dataset)
@@ -257,13 +260,16 @@ class Trainer(PrettyTrain):
     if 'test' not in self.transforms.keys():
       raise ValueError('Test or valid transforms must be defined and set')
 
+    # Enable multiprocessing, for faster training
+    num_workers = multiprocessing.cpu_count()
+
     t_correct = 0
     ix = 0
     start_time = time.time()
     category_labels_ids = { v:k for k,v in enumerate(self.model.labels)}
     test_ldr = DataLoader(UnLabeledImageDataset(
       data_dir["test"], labels, category_labels_ids, transform = self.transforms['test']
-      ), batch_size = batch_size, shuffle=True
+      ), batch_size = batch_size, shuffle=True, num_workers=num_workers
     )
 
     test_loader_count = len(test_ldr.dataset)

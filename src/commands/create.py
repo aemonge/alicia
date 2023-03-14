@@ -17,15 +17,15 @@ help_layer_change='\
               help="If the architecture is given for an existing model, it will overwrite the features."
               )
 @click.option('-c', '--categories-file', type=click.Path(file_okay=True, readable=True))
-@click.option("-t", "--transform-name", default=TRANFORMS_NAMES[0], type=click.Choice(TRANFORMS_NAMES))
+@click.option("-t", "--transform-name", type=click.Choice(TRANFORMS_NAMES))
 @click.option("-D", "--data_dir", type=click.Path(exists=True, dir_okay=True, readable=True))
-@click.option('-n', '--num-classes', type=click.INT, default=None)
-@click.option('-i', '--input-size', type=click.INT, default=None)
+@click.option('-n', '--num-classes', type=click.INT)
+@click.option('-i', '--input-size', type=click.INT)
 @click.option('-s', '--state-dict-file', type=click.Path(file_okay=True, writable=True))
 @click.option('-w', '--state-dict-weights-url', type=click.STRING,
               help="In example: https://download.pytorch.org/models/squeezenet1_1-f364aa15.pth")
-@click.option('-d', '--dropout', type=click.FLOAT, default=0.0)
-@click.option('-m', '--momentum', type=click.FLOAT, default=0.0)
+@click.option('-d', '--dropout', type=click.FLOAT)
+@click.option('-m', '--momentum', type=click.FLOAT)
 @click.option('-f', '--feature-layers', type=(int, str), help=help_layer_change)
 @click.option('-k', '--classifier-layers', type=(int, str), help=help_layer_change)
 def create(_, model_file, architecture, categories_file, transform_name, data_dir, num_classes, input_size,

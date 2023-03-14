@@ -1,9 +1,39 @@
 from dependencies.core import torchvision
 from libs import ImageToMatPlotLib, PadToSize
 
+def img_pico_raw():
+  return {
+    "train": torchvision.transforms.Compose([
+      torchvision.transforms.ToTensor(),
+      torchvision.transforms.Normalize((0.5,), (0.5,)),
+    ]),
+    "valid": torchvision.transforms.Compose([
+      torchvision.transforms.ToTensor(),
+      torchvision.transforms.Normalize((0.5,), (0.5,)),
+    ]),
+    "test": torchvision.transforms.Compose([
+      torchvision.transforms.ToTensor(),
+    ]),
+    "display": torchvision.transforms.Compose([
+    ]),
+  }
+
+
 def img_pico():
   return {
+    "train": torchvision.transforms.Compose([
+      torchvision.transforms.Resize(28),
+      torchvision.transforms.CenterCrop(28),
+      torchvision.transforms.ToTensor(),
+      torchvision.transforms.Normalize((0.5,), (0.5,)),
+    ]),
     "valid": torchvision.transforms.Compose([
+      torchvision.transforms.Resize(28),
+      torchvision.transforms.CenterCrop(28),
+      torchvision.transforms.ToTensor(),
+      torchvision.transforms.Normalize((0.5,), (0.5,)),
+    ]),
+    "test": torchvision.transforms.Compose([
       torchvision.transforms.Resize(28),
       torchvision.transforms.CenterCrop(28),
       torchvision.transforms.ToTensor(),
@@ -16,18 +46,6 @@ def img_pico():
       torchvision.transforms.Normalize((0.5,), (0.5,)),
       ImageToMatPlotLib((-1, )),
     ]),
-    "test": torchvision.transforms.Compose([
-      torchvision.transforms.Resize(28),
-      torchvision.transforms.CenterCrop(28),
-      torchvision.transforms.ToTensor(),
-      torchvision.transforms.Normalize((0.5,), (0.5,)),
-    ]),
-    "train": torchvision.transforms.Compose([
-      torchvision.transforms.Resize(28),
-      torchvision.transforms.CenterCrop(28),
-      torchvision.transforms.ToTensor(),
-      torchvision.transforms.Normalize((0.5,), (0.5,)),
-    ])
   }
 
 def img_pico_czy():

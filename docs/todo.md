@@ -48,3 +48,4 @@
 * [x] Save the last image transform on the model to simplify the usage
 * [x] Also save the data, and data/labels in the pth. With an option on the create/modify to "trim", but they're simple string should be ok
 * [x] Add a feature `preview` to preview all transforms, to check how the images data
+* [ ] Include the multiprocessing to the loaders `num_workers=multiprocessing.cpu_count()` `import multiprocessing`
