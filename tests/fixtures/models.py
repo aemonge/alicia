@@ -10,12 +10,28 @@ def labels_fixture():
   ]
 
 @pytest.fixture
-def data_tmp_dir_fixture():
-  return pathlib.Path.cwd().joinpath("tests/fixtures/data")
+def data_tmp_main_dir_fixture():
+  return "tests/fixtures/data"
+
+@pytest.fixture
+def data_tmp_dir_fixture(data_tmp_main_dir_fixture):
+  data_dir = {}
+  data_dir['train'] = pathlib.Path.cwd().joinpath(
+    f"{data_tmp_main_dir_fixture}/train"
+  )
+  data_dir['test'] = pathlib.Path.cwd().joinpath(
+    f"{data_tmp_main_dir_fixture}/test"
+  )
+  data_dir['valid'] = pathlib.Path.cwd().joinpath(
+    f"{data_tmp_main_dir_fixture}/valid"
+  )
+
+  return data_dir
+  # return pathlib.Path.cwd().joinpath("tests/fixtures/data/")
 
 @pytest.fixture
 def data_tmp_dir_labels_fixture():
-  return pathlib.Path.cwd().joinpath("tests/fixtures/data/mnist-labels.csv")
+  return pathlib.Path.cwd().joinpath("tests/fixtures/data/mnist-labels.csv").as_posix()
 
 @pytest.fixture
 def labels_dict_fixture(data_tmp_dir_labels_fixture):
@@ -28,4 +44,4 @@ def labels_dict_fixture(data_tmp_dir_labels_fixture):
 
 @pytest.fixture
 def model_fixture(labels_fixture):
-  return Elemental(labels=labels_fixture, input_size=784)
+  return Elemental(init_features=True, labels=labels_fixture, input_size=(28 * 28))

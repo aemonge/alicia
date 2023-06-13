@@ -73,6 +73,10 @@ pytest-mccabe          = "^2.0"
 robotframework-robocop = "^2.7.0"
 toml                   = "^0.10"
 
+
+[tool.poetry.group.dev.dependencies]
+ipdb = "^0.13.13"
+
 [tool.poetry.scripts]
 alicia = "main:call"
 
