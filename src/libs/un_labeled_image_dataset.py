@@ -35,7 +35,8 @@ class UnLabeledImageDataset(Dataset):
       -------
         None
     """
-    self.__imgs = [file for file in glob.glob(f"{main_dir}**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)]
+    self.__imgs = list(
+        glob.glob(f"{main_dir}**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB))
     self.main_dir = main_dir
     self.transform = transform
     self.__labels = labels

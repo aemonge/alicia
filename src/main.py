@@ -48,10 +48,3 @@ call.add_command(predict)
 call.add_command(info)
 call.add_command(preview)
 call.add_command(compare)
-
-if __name__ == '__main__':
-  # ^  This is a guard statement that will prevent the following code from
-  #    being executed in the case someone imports this file instead of
-  #    executing it as a script.
-  #    SEE: https://docs.python.org/3/library/__main__.html
-  pass

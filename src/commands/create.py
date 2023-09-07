@@ -78,11 +78,10 @@ def create(_, model_file, architecture, categories_file, transform_name, data_di
 
   model = getattr(models, architecture_name)(architecture is not None, **kwargs)
 
-  if feature_layers is not None or classifier_layers is not None:
-    if feature_layers is not None:
-      model.modify_parameters("features", feature_layers[0], feature_layers[1])
-    if classifier_layers is not None:
-      model.modify_parameters("classifier", classifier_layers[0], classifier_layers[1])
+  if feature_layers is not None:
+    model.modify_parameters("features", feature_layers[0], feature_layers[1])
+  if classifier_layers is not None:
+    model.modify_parameters("classifier", classifier_layers[0], classifier_layers[1])
 
   model.save()
   print('💚')

@@ -22,10 +22,7 @@ class PadToSize(object):
       -----------
         size: Tuple|int
     """
-    if isinstance(size, int):
-      self.size = [size, size]
-    else:
-      self.size = size
+    self.size = [size, size] if isinstance(size, int) else size
 
   def __str__(self) -> str:
     """

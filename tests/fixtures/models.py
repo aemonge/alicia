@@ -15,10 +15,10 @@ def data_tmp_main_dir_fixture():
 
 @pytest.fixture
 def data_tmp_dir_fixture(data_tmp_main_dir_fixture):
-  data_dir = {}
-  data_dir['train'] = pathlib.Path.cwd().joinpath(
-    f"{data_tmp_main_dir_fixture}/train"
-  )
+  data_dir = {
+      'train':
+      pathlib.Path.cwd().joinpath(f"{data_tmp_main_dir_fixture}/train")
+  }
   data_dir['test'] = pathlib.Path.cwd().joinpath(
     f"{data_tmp_main_dir_fixture}/test"
   )

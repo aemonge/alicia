@@ -62,14 +62,13 @@ class TorchvisionDownloader:
       os.mkdir(self.__train_dir)
       os.mkdir(self.__valid_dir)
       os.mkdir(self.__test_dir)
+    elif self.__train_dir.exists() or self.__valid_dir.exists() or self.__test_dir.exists():
+      self.__clear_tmp()
+      raise Exception(f"{self.__root_dir} directory is not empty.")
     else:
-      if self.__train_dir.exists() or self.__valid_dir.exists() or self.__test_dir.exists():
-        self.__clear_tmp()
-        raise Exception(f"{self.__root_dir} directory is not empty.")
-      else:
-        os.mkdir(self.__train_dir)
-        os.mkdir(self.__valid_dir)
-        os.mkdir(self.__test_dir)
+      os.mkdir(self.__train_dir)
+      os.mkdir(self.__valid_dir)
+      os.mkdir(self.__test_dir)
 
   def _get_all_posible_splits(self) -> list[Dataset[list[ImageDT]]]:
     """
@@ -87,12 +86,19 @@ class TorchvisionDownloader:
       dataset = getattr(torchvision.datasets, self.dataset_name)
       if self.dataset_name in specific_split:
         for method, values in specific_split[self.dataset_name].items():
-          for value in values:
-            datasets.append(dataset(**{**self.dataset_kwargs, **{ method: value }}))
+          datasets.extend(
+              dataset(**{
+                  **self.dataset_kwargs,
+                  **{
+                      method: value
+                  }
+              }) for value in values)
       else:
         datasets.append(dataset(**self.dataset_kwargs))
     except Exception as msg:
-      raise Exception(f"Target dataset cannot be downloaded!, please try another one.\n\t\t{msg}")
+      raise Exception(
+          f"Target dataset cannot be downloaded!, please try another one.\n\t\t{msg}"
+      ) from msg
 
     return datasets
 
@@ -150,7 +156,7 @@ class TorchvisionDownloader:
     try:
       os.rmdir(f"{self.__tmp_path}/{self.dataset_name}/raw")
       os.rmdir(f"{self.__tmp_path}/{self.dataset_name}")
-    except:
+    except Exception:
       pass
 
   def __idx_to_img(self, idx):
@@ -183,7 +189,7 @@ class TorchvisionDownloader:
         None
     """
     idx = 0
-    total =  sum([len(ds) for ds in self._datasets]) # pyright: reportGeneralTypeIssues=false
+    total = sum(len(ds) for ds in self._datasets)
     max_train_idx = int(total * self.split_percentage[0])
     max_valid_idx = int(total * (self.split_percentage[0] + self.split_percentage[1]))
 
@@ -238,7 +244,7 @@ class TorchvisionDownloader:
     if hasattr(self, '_idx_to_class'):
       try:
         return self._idx_to_class[label]
-      except:
+      except Exception:
         return self._idx_to_class[str(label)]
     return label
 

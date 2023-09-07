@@ -16,10 +16,7 @@ def labels_reader(file: str, _sorted: bool = True) -> list|dict:
       list|dict
         Labels in the CSV file as a list or dictionary, dependent on the `sorted` parameter
   """
-  labels: set|dict = dict()
-  if _sorted:
-    labels = set()
-
+  labels = set() if _sorted else {}
   with open(file, "r", encoding="utf-8") as f:
     reader = csv.reader(f)
     if _sorted:
@@ -29,6 +26,4 @@ def labels_reader(file: str, _sorted: bool = True) -> list|dict:
       for filename, label in reader:
         labels[filename] = label
 
-  if _sorted:
-    return sorted(list(labels))
-  return labels
+  return sorted(list(labels)) if _sorted else labels

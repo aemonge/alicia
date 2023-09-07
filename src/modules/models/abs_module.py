@@ -4,12 +4,7 @@ from libs import sizeof_formated, get_args_kwargs_from_string
 from modules import transforms
 
 class AbsModule(torch.nn.Module, metaclass=ABCMeta):
-  def __init__(self, *, training_history: list|None = None, state_dict: dict|None = {},
-               labels:list = [], input_size: int = 64, dropout: float = 0.0, num_classes: int|None = None,
-               momentum: float = 0.1, transform = None, data_paths: dict|None = None, path: str|None = None,
-               features: torch.nn.Module|None = None, classifier: torch.nn.Module|None = None,
-               avgpool: torch.nn.Module|None = None
-               ) -> None:
+  def __init__(self, *, training_history: list|None = None, state_dict: dict|None = None, labels: list = None, input_size: int = 64, dropout: float = 0.0, num_classes: int|None = None, momentum: float = 0.1, transform = None, data_paths: dict|None = None, path: str|None = None, features: torch.nn.Module|None = None, classifier: torch.nn.Module|None = None, avgpool: torch.nn.Module|None = None) -> None:
     """
       Constructor of the neural network.
 
@@ -42,6 +37,10 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
         avgpool: torch.nn.Module|None
           The avgpool of the neural network (pre-created).
     """
+    if state_dict is None:
+      state_dict = {}
+    if labels is None:
+      labels = []
     super().__init__()
     self.labels = labels
     self.num_classes = len(labels) if num_classes is None else num_classes
@@ -84,19 +83,17 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
 
     classifier_str = ''
     size_str = f"size (memory): {formated_size},\tsize (disk): {formated_disk_size}" + \
-        f",\tstate dict len: {len(self.state_dict())}"
+          f",\tstate dict len: {len(self.state_dict())}"
     train_str = f"train folder: {self.data_paths['train']},,\tvalid folder: {self.data_paths['valid']}"+ \
-      f"\n{' '*4}labels map file: {self.data_paths['labels_map']},\ttest folder: {self.data_paths['test']}"
+        f"\n{' '*4}labels map file: {self.data_paths['labels_map']},\ttest folder: {self.data_paths['test']}"
 
     transform_spec = getattr(transforms, self.transform)()
     transform_str = f"{self.transform}\n"
 
     for val in ['train', 'valid', 'test', 'display']:
       transform_str += f"{' '*4}({val}):\n"
-      ix = 0
-      for trans in transform_spec[val].transforms:
+      for ix, trans in enumerate(transform_spec[val].transforms):
         transform_str += f"{' '*6}({ix}) {str(trans)}\n"
-        ix += 1
     transform_str = transform_str[:-1]
 
     if hasattr(self, "classifier"):
@@ -125,13 +122,13 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
     training_history_str = training_history_str[:-5] # 4 will be a constant
 
     return f"{self.__repr__()} @ ./{self.path} " + '{ \n' + \
-      f"  (size): \n    {size_str}\n" + \
-      f"  (transforms): {transform_str}\n" + \
-      f"  (data paths): \n    {train_str}\n" + \
-      f"  (labels): \n    {labels_str}\n" + \
-      f"  (features): {features_str}\n" + \
-      (f"  (classifier): {classifier_str}\n" if hasattr(self, 'classifier') else '') + \
-      (f"  (training history): \n    {training_history_str[:-1]}" if len(self.training_history) > 0 else '')
+        f"  (size): \n    {size_str}\n" + \
+        f"  (transforms): {transform_str}\n" + \
+        f"  (data paths): \n    {train_str}\n" + \
+        f"  (labels): \n    {labels_str}\n" + \
+        f"  (features): {features_str}\n" + \
+        (f"  (classifier): {classifier_str}\n" if hasattr(self, 'classifier') else '') + \
+        (f"  (training history): \n    {training_history_str[:-1]}" if len(self.training_history) > 0 else '')
 
   def __call__(self, x: torch.Tensor) -> torch.Tensor:
     """
@@ -175,7 +172,7 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       --------
         None
     """
-    if parameter_type != 'classifier' and parameter_type != 'features':
+    if parameter_type not in ['classifier', 'features']:
       raise ValueError(f"parameter_type must be either 'classifier' or 'features', not {parameter_type}")
 
     parameters = list(getattr(self, parameter_type))
@@ -225,11 +222,7 @@ class AbsModule(torch.nn.Module, metaclass=ABCMeta):
       obj['transform'] = self.transform
     if hasattr(self, 'data_paths'):
       obj['data_paths'] = self.data_paths
-    if hasattr(self, 'path'):
-      obj['path'] = self.path
-    else:
-      obj['path'] = path
-
+    obj['path'] = self.path if hasattr(self, 'path') else path
     torch.save(obj, obj['path'])
 
   def forward(self, x: torch.Tensor) -> torch.Tensor:

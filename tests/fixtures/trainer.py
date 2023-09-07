@@ -26,9 +26,7 @@ def path_shirt_image_fixture():
 
 @pytest.fixture
 def data_shirt_image_fixture(path_shirt_image_fixture):
-  img = Image.open(path_shirt_image_fixture)
-
-  return img
+  return Image.open(path_shirt_image_fixture)
 
 @pytest.fixture
 def transforms_fixture():

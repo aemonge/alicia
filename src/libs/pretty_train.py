@@ -126,8 +126,7 @@ class PrettyTrain:
     for i in [96, 184]:
       optmi_str = optmi_str[:i] + '\n' + ' ' * 17 + optmi_str[i:]
 
-    optmi_str = optmi_str.strip()
-    return optmi_str
+    return optmi_str.strip()
 
   def _print_train_header(self, epochs:int, batch_size:int,
                           train_loader_count:int, validate_loader_count:int) -> None:
@@ -417,9 +416,9 @@ class PrettyTrain:
       --------
         None
     """
-    all_imgs = [file for file in glob.glob(f"{path}/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)] + [
-      file for file in glob.glob(f"{path}/**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)
-    ]
+    all_imgs = list(glob.glob(
+        f"{path}/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)) + list(
+            glob.glob(f"{path}/**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB))
 
     _, ax = plt.subplots(count, 2, width_ratios=[4,1])
     if count == 1:
@@ -462,9 +461,9 @@ class PrettyTrain:
       --------
         None
     """
-    all_imgs = [file for file in glob.glob(f"{path}/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)] + [
-      file for file in glob.glob(f"{path}/**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)
-    ]
+    all_imgs = list(glob.glob(
+        f"{path}/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB)) + list(
+            glob.glob(f"{path}/**/*.@(jpg|jpeg|png)", flags=glob.EXTGLOB))
 
     plotext.subplots(count, 2)
     plotext.plot_size(80, 15*count)

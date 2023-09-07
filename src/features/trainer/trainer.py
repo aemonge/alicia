@@ -208,20 +208,18 @@ class Trainer(PrettyTrain):
 
     self.model.train()
     for epoch in range(epochs):
-      tr_loss = 0.0
-      ix = 0
-
-      self._print_step_header(epochs, epoch)
-      for (images, (labels, _)) in iter(train_ldr):
-        ix += batch_size * 1
-        tr_loss = self.train_step(images, labels, tr_loss)
-        self._loading(ix, train_loader_count)
-        if math.isnan(tr_loss):
-          raise Exception('Loss has been lost, check parameters')
-
-      else:
+        tr_loss = 0.0
+        ix = 0
+    
+        self._print_step_header(epochs, epoch)
+        for (images, (labels, _)) in iter(train_ldr):
+            ix += batch_size * 1
+            tr_loss = self.train_step(images, labels, tr_loss)
+            self._loading(ix, train_loader_count)
+            if math.isnan(tr_loss):
+              raise Exception('Loss has been lost, check parameters')
         vd_loss, vd_correct = self.validation_step(valid_ldr, batch_size)
-
+            
         self.__backspace__(hard=True)
         time_now = self._print_step(
           epoch, epochs, start_time, time_count,
@@ -229,8 +227,7 @@ class Trainer(PrettyTrain):
           validate_loader_count, train_loader_count
         )
         start_time = time_now
-    else:
-      self._print_total(vd_correct, validate_loader_count, total_time)
+    self._print_total(vd_correct, validate_loader_count, total_time)
 
     self.model.training_history.append((
       ('epochs', epochs), ('batch size', batch_size), ('items', train_loader_count, validate_loader_count),
@@ -284,22 +281,21 @@ class Trainer(PrettyTrain):
       self._spin(step='test')
 
       for (images, (labels, _)) in iter(test_ldr):
-        ix += batch_size * 1
-        self._spin(step='test')
-
-        # print('shapes', images.shape, images[0].shape)
-        output = self.model(images)
-        self._spin(step='test')
-
-        ps = torch.exp(output)
-        _, top_class = ps.topk(1, dim=1)
-        equals = top_class == labels.view(*top_class.shape)
-        t_correct += equals.sum().item()
-        self._spin(step='test')
-
-        self._loading( ix, test_loader_count, step = 'test')
-      else:
-        self._print_t_step(start_time, t_correct, test_loader_count)
+          ix += batch_size * 1
+          self._spin(step='test')
+      
+          # print('shapes', images.shape, images[0].shape)
+          output = self.model(images)
+          self._spin(step='test')
+      
+          ps = torch.exp(output)
+          _, top_class = ps.topk(1, dim=1)
+          equals = top_class == labels.view(*top_class.shape)
+          t_correct += equals.sum().item()
+          self._spin(step='test')
+      
+          self._loading( ix, test_loader_count, step = 'test')
+      self._print_t_step(start_time, t_correct, test_loader_count)
 
   def predict_image(self, image: str, **kwargs) -> Tuple[np.ndarray, List[str]]:
     """

@@ -26,15 +26,15 @@ def get_args_kwargs_from_string(string) -> tuple[str,list,dict]:
   # Parse the argument string using ast.parse()
   try:
     parsed = ast.parse(f"dummy({arg_str})", mode="eval")
-  except SyntaxError:
-    raise ValueError(f"Invalid function arguments: {arg_str}")
+  except SyntaxError as e:
+    raise ValueError(f"Invalid function arguments: {arg_str}") from e
 
   # Extract the positional arguments
   for arg_node in parsed.body.args: # pyright: reportGeneralTypeIssues=false
     try:
       arg_value = ast.literal_eval(arg_node)
-    except (ValueError, SyntaxError):
-      raise ValueError(f"Invalid function arguments: {arg_node}")
+    except (ValueError, SyntaxError) as exc:
+      raise ValueError(f"Invalid function arguments: {arg_node}") from exc
     args.append(arg_value)
 
   # Extract the keyword arguments
@@ -42,8 +42,8 @@ def get_args_kwargs_from_string(string) -> tuple[str,list,dict]:
     key = kwarg_node.arg
     try:
       value = ast.literal_eval(kwarg_node.value)
-    except (ValueError, SyntaxError):
-      raise ValueError(f"Invalid function arguments: {kwarg_node}")
+    except (ValueError, SyntaxError) as err:
+      raise ValueError(f"Invalid function arguments: {kwarg_node}") from err
     kwargs[key] = value
 
   return func_name, args, kwargs
